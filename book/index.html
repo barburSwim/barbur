@@ -183,7 +183,7 @@ function call(fn, args, cb){
     .catch(function(){ S.busy=false; S.bookingPending=false; $('confirmBtn').disabled=false; msg('תקלה בחיבור. נסו שוב.'); });
 }
 /** TEST-only timing line per server call (W1-6): wall ms, server ms, sheet reads / calendar calls from the server profile. */
-function perfLog(fn, t0, res){ if (!ENV_IS_TEST) return; try { var p = res && res.prof; console.log('[barbur] ' + fn + ' ' + (Date.now() - t0) + 'ms wall · ' + (res && res.ms) + 'ms server' + (p ? ' · sheetReads ' + p.sheetReads + ' (' + p.sheetMs + 'ms) · cal ' + p.cal + ' (' + p.calMs + 'ms)' : '')); } catch (e) {} }
+function perfLog(fn, t0, res){ if (!ENV_IS_TEST) return; try { var p = res && res.prof; console.log('[barbur] ' + fn + ' ' + (Date.now() - t0) + 'ms wall · ' + (res && res.ms) + 'ms server' + (p ? ' · sheetReads ' + p.sheetReads + ' (' + p.sheetMs + 'ms) · cal ' + p.cal + ' (' + p.calMs + 'ms) | platform ' + (p.platform||0) + ' (' + (p.platformMs||0) + 'ms)' : '')); } catch (e) {} }
 function uuid(){ return 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2,10); }
 function fmtDay(ymd){ var d = new Date(ymd+'T12:00:00'); return 'יום ' + DAYS[d.getDay()] + ' ' + ymd.slice(8,10) + '/' + ymd.slice(5,7); }
 function fmtDM(ymd){ return ymd.slice(8,10) + '/' + ymd.slice(5,7); }
@@ -379,7 +379,7 @@ function confirmBooking(){
   call('api_book', [S.token, { request_id: S.req, student_id: S.student, start: S.slot.start }], function(res){
     S.bookingPending = false;
     $('confirmBtn').disabled = false; $('confirmBtn').textContent = 'אישור הזמנה';
-    if (!res.ok) { msg(res.message); if (res.code==='SLOT_TAKEN') { S.weeks = {}; loadWeek(S.weekStart); } return; }
+    if (!res.ok) { msg(res.message); if (res.code==='SLOT_TAKEN') { invalidateWeeks(); loadWeek(S.weekStart); } return; }
     applyBooked(res.data); msg('השיעור נקבע! אישור נשלח באימייל.', 'ok');
     if (applyBalances(res.data.balances)) { renderHome(); show('home'); }
     else refresh(function(){ msg('השיעור נקבע! אישור נשלח באימייל.', 'ok'); }); // compatibility with older TEST backends
@@ -390,7 +390,7 @@ function confirmResched(){
   call('api_reschedule', [S.token, S.resched.booking_id, S.slot.start], function(res){
     S.bookingPending = false;
     $('confirmBtn').disabled = false; $('confirmBtn').textContent = 'אישור שינוי מועד';
-    if (!res.ok) { msg(res.message); if (res.code==='SLOT_TAKEN') { S.weeks = {}; loadWeek(S.weekStart); } if (res.code==='LATE') { S.resched = null; refresh(); } return; }
+    if (!res.ok) { msg(res.message); if (res.code==='SLOT_TAKEN') { invalidateWeeks(); loadWeek(S.weekStart); } if (res.code==='LATE') { S.resched = null; refresh(); } return; }
     S.resched = null; applyBooked(res.data, true); msg('המועד שונה ל-' + fmtDay(res.data.ymd) + ' ' + res.data.hm + '. אישור נשלח באימייל.', 'ok');
     if (applyBalances(res.data.balances)) { renderHome(); show('home'); }
     else refresh(function(){ msg('המועד שונה ל-' + fmtDay(res.data.ymd) + ' ' + res.data.hm + '. אישור נשלח באימייל.', 'ok'); });
