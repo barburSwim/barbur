@@ -158,8 +158,16 @@ details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0
 <script>
 var S = { token:null, email:'', home:null, student:null, weeks:{}, day:null, slot:null, busy:false, weekStart:null, from:null, to:null };
 var DAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'], DS = ['א','ב','ג','ד','ה','ו','ש'];
+
+// Navigation contains identifiers only, scoped to this session; no tokens, names or drafts.
+function navKey(){ var h=2166136261, t=String(S.token||''); for(var i=0;i<t.length;i++) h=Math.imul(h^t.charCodeAt(i),16777619); return 'bbNav:customer:'+ (h>>>0); }
+function readNav(){ try { var r=JSON.parse(sessionStorage.getItem(navKey())||'null'); return r && r.v===1 && Date.now()-r.at<43200000 ? r : null; } catch(e){ return null; } }
+function writeNav(r){ if(!S.token) return; try { r.v=1; r.at=Date.now(); sessionStorage.setItem(navKey(),JSON.stringify(r)); } catch(e){} }
+function clearNav(){ try { sessionStorage.removeItem(navKey()); } catch(e){} }
+function navDate(d){ return /^\d{4}-\d{2}-\d{2}$/.test(d||'') && !isNaN(Date.parse(d)) && new Date(d).toISOString().slice(0,10)===d; }
+
 function $(id){ return document.getElementById(id); }
-function show(id){ ['login','home','book'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('logoutBtn').classList.toggle('hidden', id==='login'); window.scrollTo(0,0); }
+function show(id){ S.screen=id; if(id!=='login') saveCustomerNav(); ['login','home','book'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('logoutBtn').classList.toggle('hidden', id==='login'); window.scrollTo(0,0); }
 function msg(t, kind){ $('msg').innerHTML = t ? '<div class="msg '+(kind||'err')+'">'+esc(t)+'</div>' : ''; }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function store(k,v){ try { if (v==null) localStorage.removeItem(k); else localStorage.setItem(k,v); } catch(e){} }
@@ -172,7 +180,7 @@ function call(fn, args, cb){
   fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ v: 1, fn: fn, args: args }), credentials: 'omit', redirect: 'follow', cache: 'no-store' })
     .then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
     .then(function(res){ S.busy=false; perfLog(fn, t0, res); if (!res.ok && res.code==='AUTH'){ store('bbTok',null); S.token=null; show('login'); msg(res.message); return; } cb(res); })
-    .catch(function(){ S.busy=false; msg('תקלה בחיבור. נסו שוב.'); });
+    .catch(function(){ S.busy=false; S.bookingPending=false; $('confirmBtn').disabled=false; msg('תקלה בחיבור. נסו שוב.'); });
 }
 /** TEST-only timing line per server call (W1-6): wall ms, server ms, sheet reads / calendar calls from the server profile. */
 function perfLog(fn, t0, res){ if (!ENV_IS_TEST) return; try { var p = res && res.prof; console.log('[barbur] ' + fn + ' ' + (Date.now() - t0) + 'ms wall · ' + (res && res.ms) + 'ms server' + (p ? ' · sheetReads ' + p.sheetReads + ' (' + p.sheetMs + 'ms) · cal ' + p.cal + ' (' + p.calMs + 'ms)' : '')); } catch (e) {} }
@@ -193,16 +201,17 @@ function verify(){
     S.token = res.data.token; store('bbTok', S.token); msg(''); refresh();
   });
 }
-function logout(){ var t=S.token; store('bbTok',null); store('bbBypass',null); S.token=null; show('login'); if (t) call('api_logout',[t],function(){}); }
+function logout(){ clearNav(); var t=S.token; store('bbTok',null); store('bbBypass',null); S.token=null; show('login'); if (t) call('api_logout',[t],function(){}); }
 var ENV_IS_TEST = true;
 
-function refresh(cb){
+function refresh(cb, restore){
+  var saved = restore ? readNav() : null;
   // Perf: when home is already rendered we keep it on screen while the refreshed data arrives (no blank page).
   if (S.home) show('home');
   call('api_home', [S.token], function(res){
     if (!res.ok) { msg(res.message); return; }
-    S.home = res.data; S.weeks = {}; renderHome(); show('home'); if (cb) cb();
-    prefetchFirstWeek();
+    S.home = res.data; invalidateWeeks(); renderHome(); show('home'); if (saved) restoreCustomerNav(saved); if (cb) cb();
+    if (!saved || saved.screen!=='book') prefetchFirstWeek();
   });
 }
 /** Perf: after home paints, warm the first bookable week of the first bookable student so "הזמנת שיעור" opens instantly. */
@@ -219,11 +228,20 @@ function fetchWeek(studentId, ws, to, cb){
   var parts = String(studentId).split('#');
   if (to && ws > to) return;
   S.pending = S.pending || {}; if (S.pending[key]) { S.pending[key].push(cb); return; } S.pending[key] = [cb];
+  var generation = S.slotGeneration || 0;
   call('api_slots', [S.token, parts[0], ws, addDays(ws, 6), parts[1] || ''], function(res){
+    if (generation !== (S.slotGeneration || 0)) return; // an older request must not refill invalidated slots
     var cbs = S.pending[key] || []; delete S.pending[key];
     if (!res.ok) { cbs.forEach(function(f){ f(null, res); }); return; }
     S.weeks[key] = res.data; cbs.forEach(function(f){ f(res.data); });
   });
+}
+function invalidateWeeks(){ S.weeks = {}; S.pending = {}; S.slotGeneration = (S.slotGeneration || 0) + 1; }
+function applyBalances(b){
+  if (!b) return false;
+  S.home.balance = b.household;
+  S.home.students.forEach(function(st){ if (b.students[st.student_id]) st.balance = b.students[st.student_id]; });
+  invalidateWeeks(); return true;
 }
 /** D-21: a swimmer can book with their assigned (bookable) coach only, and only with their own credit. */
 function canBook(){ return S.home.students.filter(function(s){ return s.bookable && s.balance && s.balance.usable > 0; }); }
@@ -257,7 +275,12 @@ function askCancel(id, until){
 }
 function cancelB(id){
   $('bk_' + id).innerHTML = '<div class="grow muted">מבטל…</div>';
-  call('api_cancel', [S.token, id], function(res){ if (res.ok) refresh(function(){ msg('השיעור בוטל והיתרה הוחזרה', 'ok'); }); else { msg(res.message); renderHome(); } });
+  call('api_cancel', [S.token, id], function(res){
+    if (!res.ok) { msg(res.message); renderHome(); return; }
+    if (!applyBalances(res.data.balances)) { refresh(function(){ msg('השיעור בוטל והיתרה הוחזרה', 'ok'); }); return; }
+    S.home.upcoming = S.home.upcoming.filter(function(b){ return b.booking_id !== id; });
+    renderHome(); show('home'); msg('השיעור בוטל והיתרה הוחזרה', 'ok');
+  });
 }
 
 function showHome(){ show('home'); msg(''); }
@@ -293,7 +316,9 @@ function pickStudent(el){
   $('coachLine').textContent = 'מדריך/ה: ' + st.coach_name + ' · ' + st.location + ' · ' + st.lesson_name + ' ' + st.lesson_minutes + ' דקות';
   $('picker').classList.remove('hidden'); $('timesBox').classList.add('hidden'); $('review').classList.add('hidden'); step(1);
   S.from = S.home.today; S.to = st.bookable_until; if (st.balance.validUntil && st.balance.validUntil < S.to) S.to = st.balance.validUntil;
-  S.weekStart = weekOf(S.from); loadWeek(S.weekStart);
+  var restored = S.restoringBooking; S.restoringBooking = null;
+  S.weekStart = restored && navDate(restored.week) && restored.week <= S.to && addDays(restored.week,6) >= S.from ? restored.week : weekOf(S.from);
+  S.restoreDay = restored && restored.date; saveCustomerNav(); loadWeek(S.weekStart);
 }
 /** One request per week; already-fetched weeks render instantly. */
 function loadWeek(ws){
@@ -318,12 +343,13 @@ function renderWeek(data){
     html += '<button class="day' + (S.day===d?' sel':'') + '"' + (n && !off ? ' onclick="pickDay(\'' + d + '\')"' : ' disabled') + '><div class="d">' + DS[i] + '</div><div class="n">' + Number(d.slice(8,10)) + '</div><div class="c">' + (n && !off ? n + ' פנויות' : '—') + '</div></button>';
   }
   $('week').innerHTML = html;
+  if (S.restoreDay && data.counts[S.restoreDay]) { var day=S.restoreDay; S.restoreDay=null; pickDay(day); }
   $('prevW').disabled = addDays(ws, 6) < S.from; $('nextW').disabled = addDays(ws, 7) > S.to;
   $('dayHint').textContent = any ? 'בחרו יום. אפשר להזמין עד ' + fmtDM(S.to) + '.' : (addDays(ws, 7) > S.to ? 'אין משבצות פנויות בטווח ההזמנה' : 'אין משבצות בשבוע הזה — נסו את השבוע הבא');
 }
-function moveWeek(n){ S.weekStart = addDays(S.weekStart, 7*n); S.day = null; $('timesBox').classList.add('hidden'); $('review').classList.add('hidden'); loadWeek(S.weekStart); }
+function moveWeek(n){ S.restoreDay=null; S.weekStart = addDays(S.weekStart, 7*n); S.day = null; $('timesBox').classList.add('hidden'); $('review').classList.add('hidden'); saveCustomerNav(); loadWeek(S.weekStart); }
 function pickDay(d){
-  S.day = d; S.slot = null; step(2); $('review').classList.add('hidden');
+  S.day = d; S.slot = null; saveCustomerNav(); step(2); $('review').classList.add('hidden');
   var data = S.weeks[wkey() + '|' + S.weekStart]; renderWeek(data);
   var list = data.slots.filter(function(s){ return s.ymd === d; });
   var groups = [['בוקר', 0, 12*60], ['צהריים', 12*60, 16*60], ['אחר הצהריים וערב', 16*60, 24*60]];
@@ -346,27 +372,42 @@ function pickTime(el){
   $('review').classList.remove('hidden'); S.req = uuid(); $('review').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function confirmBooking(){
-  if (S.busy) return;
+  if (S.bookingPending) return;
+  S.bookingPending = true;
   if (S.resched) return confirmResched();
   $('confirmBtn').disabled = true; $('confirmBtn').textContent = 'קובע…';
   call('api_book', [S.token, { request_id: S.req, student_id: S.student, start: S.slot.start }], function(res){
+    S.bookingPending = false;
     $('confirmBtn').disabled = false; $('confirmBtn').textContent = 'אישור הזמנה';
     if (!res.ok) { msg(res.message); if (res.code==='SLOT_TAKEN') { S.weeks = {}; loadWeek(S.weekStart); } return; }
     applyBooked(res.data); msg('השיעור נקבע! אישור נשלח באימייל.', 'ok');
-    refresh(function(){ msg('השיעור נקבע! אישור נשלח באימייל.', 'ok'); });
+    if (applyBalances(res.data.balances)) { renderHome(); show('home'); }
+    else refresh(function(){ msg('השיעור נקבע! אישור נשלח באימייל.', 'ok'); }); // compatibility with older TEST backends
   });
 }
 function confirmResched(){
   $('confirmBtn').disabled = true; $('confirmBtn').textContent = 'מעדכן…';
   call('api_reschedule', [S.token, S.resched.booking_id, S.slot.start], function(res){
+    S.bookingPending = false;
     $('confirmBtn').disabled = false; $('confirmBtn').textContent = 'אישור שינוי מועד';
     if (!res.ok) { msg(res.message); if (res.code==='SLOT_TAKEN') { S.weeks = {}; loadWeek(S.weekStart); } if (res.code==='LATE') { S.resched = null; refresh(); } return; }
     S.resched = null; applyBooked(res.data, true); msg('המועד שונה ל-' + fmtDay(res.data.ymd) + ' ' + res.data.hm + '. אישור נשלח באימייל.', 'ok');
-    refresh(function(){ msg('המועד שונה ל-' + fmtDay(res.data.ymd) + ' ' + res.data.hm + '. אישור נשלח באימייל.', 'ok'); });
+    if (applyBalances(res.data.balances)) { renderHome(); show('home'); }
+    else refresh(function(){ msg('המועד שונה ל-' + fmtDay(res.data.ymd) + ' ' + res.data.hm + '. אישור נשלח באימייל.', 'ok'); });
   });
 }
 
-(function init(){ S.token = load('bbTok'); if (S.token) refresh(); else show('login'); })();
+
+function saveCustomerNav(){ if(!S.home) return; writeNav({screen:S.screen==='book'?'book':'home',student:S.student||null,week:S.weekStart||null,date:S.day||null,reschedule:S.resched&&S.resched.booking_id||null}); }
+function restoreCustomerNav(r){
+  if(r.screen!=='book') return;
+  var st=S.home.students.filter(function(x){return x.student_id===r.student})[0];
+  if(!st || !st.bookable) return;
+  if(r.reschedule){ var b=S.home.upcoming.filter(function(x){return x.booking_id===r.reschedule&&x.can_reschedule})[0]; if(!b) return; S.restoringBooking=r; startResched(b.booking_id); }
+  else { if(!st.balance || st.balance.usable<=0) return; S.restoringBooking=r; startBooking(); if(S.student!==st.student_id) { var el=$('studentChips').querySelector('[data-id="'+st.student_id+'"]'); if(el) pickStudent(el); } }
+}
+
+(function init(){ S.token = load('bbTok'); if (S.token) refresh(null, true); else show('login'); })();
 </script>
 </body>
 </html>
