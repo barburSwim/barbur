@@ -187,6 +187,13 @@ function perfLog(fn, t0, res){ if (!ENV_IS_TEST) return; try { var p = res && re
 function uuid(){ return 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2,10); }
 function fmtDay(ymd){ var d = new Date(ymd+'T12:00:00'); return 'יום ' + DAYS[d.getDay()] + ' ' + ymd.slice(8,10) + '/' + ymd.slice(5,7); }
 function fmtDM(ymd){ return ymd.slice(8,10) + '/' + ymd.slice(5,7); }
+/** Free-cancellation deadline, same rule as the server's lateCutoff_: real hours before start (DST-safe), in the school's time zone. */
+function cancelUntil(startIso, hours){
+  var p = {};
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+    .formatToParts(new Date(Date.parse(startIso) - Number(hours) * 3600000)).forEach(function(x){ p[x.type] = x.value; });
+  return { ymd: p.year + '-' + p.month + '-' + p.day, hm: p.hour + ':' + p.minute };
+}
 function addDays(ymd, n){ var d = new Date(ymd+'T12:00:00'); d.setDate(d.getDate()+n); return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2); }
 function weekOf(ymd){ var d = new Date(ymd+'T12:00:00'); return addDays(ymd, -d.getDay()); }
 
@@ -360,8 +367,7 @@ function pickTime(el){
   Array.prototype.forEach.call($('timeChips').querySelectorAll('.chip'), function(c){ c.classList.toggle('sel', c===el); });
   S.slot = { start: el.getAttribute('data-start'), hm: el.getAttribute('data-hm'), ymd: el.getAttribute('data-ymd') }; step(3);
   var st = S.home.students.filter(function(x){ return x.student_id===S.student; })[0], bal = st.balance.usable;
-  var dl = new Date(S.slot.start); dl.setHours(dl.getHours() - Number(S.home.late_hours));
-  var dlYmd = dl.getFullYear() + '-' + ('0'+(dl.getMonth()+1)).slice(-2) + '-' + ('0'+dl.getDate()).slice(-2), dlHm = ('0'+dl.getHours()).slice(-2) + ':' + ('0'+dl.getMinutes()).slice(-2);
+  var dl = cancelUntil(S.slot.start, S.home.late_hours), dlYmd = dl.ymd, dlHm = dl.hm;
   var rows = S.resched
     ? [['שחיין/ית', st.first_name], ['מועד נוכחי', fmtDay(S.resched.ymd) + ' ' + S.resched.hm], ['מועד חדש', fmtDay(S.slot.ymd) + ' ' + S.slot.hm], ['מאמן/ת', st.coach_name], ['מיקום', st.location], ['יתרה', 'ללא שינוי (' + bal + ' שיעורים)'], ['ביטול ללא חיוב', 'עד ' + fmtDay(dlYmd) + ' ' + dlHm]]
     : [['שחיין/ית', st.first_name], ['מאמן/ת', st.coach_name], ['תאריך', fmtDay(S.slot.ymd)], ['שעה', S.slot.hm], ['משך', st.lesson_minutes + ' דקות (' + st.lesson_name + ')'], ['מיקום', st.location], ['יתרה', bal + ' → ' + (bal - 1) + ' שיעורים'], ['ביטול ללא חיוב', 'עד ' + fmtDay(dlYmd) + ' ' + dlHm]];
