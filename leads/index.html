@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>ברבור — הרשמה לשיעורי שחייה (TEST)</title>
+<style>
+:root { --bg:#f4f6f9; --card:#fff; --ink:#1b2430; --muted:#5b6674; --line:#dfe4ea; --acc:#0b6bcb; --acc-soft:#e6f0fb; --acc-ink:#fff; --warn:#a15c00; --warn-bg:#fff4e5; --bad:#b42318; --bad-bg:#fdecea; --ok:#1f7a3f; --ok-bg:#e8f5ee; --r:12px; }
+* { box-sizing:border-box; }
+html, body { margin:0; }
+body { font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); font-size:16px; line-height:1.4; }
+header.top { background:var(--acc); color:var(--acc-ink); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:8px; position:sticky; top:0; z-index:5; }
+header.top .brand { font-weight:700; font-size:17px; }
+header.top .sub { font-size:13px; opacity:.85; font-weight:400; }
+header.top button { background:transparent; color:var(--acc-ink); border:1px solid rgba(255,255,255,.55); border-radius:8px; padding:5px 10px; font-size:14px; cursor:pointer; }
+main { max-width:560px; margin:0 auto; padding:16px; }
+main.wide { max-width:1100px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:16px; margin-bottom:12px; }
+.card h2 { font-size:17px; margin:0 0 10px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.card h3 { font-size:15px; margin:12px 0 6px; }
+label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+input, select, textarea { width:100%; font:inherit; font-size:16px; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); }
+input[type=time], input[type=date] { width:auto; min-width:0; }
+input[type=checkbox] { width:auto; transform:scale(1.2); margin:0 0 0 6px; vertical-align:middle; }
+.btn { display:inline-block; font:inherit; font-size:15px; padding:9px 14px; border-radius:9px; border:1px solid var(--acc); background:var(--acc); color:var(--acc-ink); cursor:pointer; text-decoration:none; text-align:center; }
+.btn.sec { background:#fff; color:var(--acc); }
+.btn.ghost { background:transparent; border-color:var(--line); color:var(--ink); }
+.btn.danger { background:#fff; border-color:var(--bad); color:var(--bad); }
+.btn.sm { font-size:13px; padding:5px 10px; border-radius:7px; }
+.btn.block { display:block; width:100%; margin-top:12px; padding:12px; }
+.btn[disabled] { opacity:.5; cursor:default; }
+.link { background:none; border:0; color:var(--acc); padding:0; font:inherit; font-size:15px; cursor:pointer; text-decoration:none; }
+.muted { color:var(--muted); font-size:13px; }
+.big { font-size:30px; font-weight:700; line-height:1.1; }
+.row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
+.row:first-of-type { border-top:0; }
+.row .grow { flex:1 1 180px; min-width:0; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; }
+.chip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:8px 13px; font:inherit; font-size:15px; cursor:pointer; color:var(--ink); }
+.chip.sel { background:var(--acc); color:var(--acc-ink); border-color:var(--acc); }
+.chip[disabled] { opacity:.35; cursor:default; }
+.badge { display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:var(--acc-soft); color:var(--acc); white-space:nowrap; }
+.badge.ok { background:var(--ok-bg); color:var(--ok); } .badge.warn { background:var(--warn-bg); color:var(--warn); } .badge.bad { background:var(--bad-bg); color:var(--bad); } .badge.gray { background:#eef1f4; color:var(--muted); }
+.msg { padding:10px 12px; border-radius:9px; margin-bottom:12px; font-size:15px; }
+.msg.err { background:var(--bad-bg); color:var(--bad); } .msg.ok { background:var(--ok-bg); color:var(--ok); } .msg.warn { background:var(--warn-bg); color:var(--warn); } .msg.info { background:var(--acc-soft); color:var(--acc); }
+.hidden { display:none !important; }
+.tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.tabs button { font:inherit; font-size:14px; padding:7px 12px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer; }
+.tabs button.on { background:var(--acc); color:var(--acc-ink); border-color:var(--acc); }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:700px) { .grid2 { grid-template-columns:1fr; } }
+.kv { display:grid; grid-template-columns:auto 1fr; gap:4px 12px; font-size:14px; }
+.kv b { font-weight:600; }
+.week { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+.day { border:1px solid var(--line); border-radius:10px; padding:8px 2px; text-align:center; background:#fff; cursor:pointer; font:inherit; }
+.day .d { font-size:12px; color:var(--muted); } .day .n { font-size:17px; font-weight:600; } .day .c { font-size:11px; color:var(--acc); }
+.day.sel { background:var(--acc); color:#fff; } .day.sel .d, .day.sel .c { color:#fff; opacity:.9; }
+.day[disabled] { opacity:.35; cursor:default; }
+.nav { display:flex; justify-content:space-between; align-items:center; margin:6px 0 10px; }
+.range { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:4px 0; }
+.range .link { font-size:13px; }
+.range input[type=time] { padding:6px 8px; font-size:14px; }
+.wrow { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-top:1px solid var(--line); }
+.wrow:first-of-type { border-top:0; }
+.wrow .wd { width:88px; font-weight:600; padding-top:6px; }
+.wrow .wr { flex:1; }
+.empty { color:var(--muted); font-size:14px; padding:8px 0; }
+.inline { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.inline > * { margin:0; }
+details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0; }
+.stat { display:flex; gap:12px; flex-wrap:wrap; }
+.stat .card { flex:1 1 140px; margin:0; padding:12px; }
+.stat .n { font-size:26px; font-weight:700; } .stat .l { font-size:13px; color:var(--muted); }
+.sheet { position:fixed; inset:0; background:rgba(20,30,40,.45); display:flex; align-items:flex-end; justify-content:center; z-index:20; }
+.sheet .card { width:100%; max-width:560px; max-height:85vh; overflow:auto; border-radius:16px 16px 0 0; margin:0; }
+@media (min-width:700px) { .sheet { align-items:center; } .sheet .card { border-radius:16px; } }
+.testbar { background:var(--warn-bg); color:var(--warn); font-size:12px; text-align:center; padding:3px; }
+.sw { display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:var(--ink); font-size:15px; margin:0; }
+.range select { width:auto; padding:6px 8px; font-size:14px; }
+.range .rerr:empty { display:none; }
+.range .rerr { flex-basis:100%; font-size:12px; }
+.day.sk { background:linear-gradient(90deg,#eef1f4,#f6f8fa,#eef1f4); background-size:200% 100%; animation:sk 1.2s linear infinite; border-color:transparent; }
+@keyframes sk { from { background-position:200% 0; } to { background-position:-200% 0; } }
+.skel { height:14px; border-radius:6px; background:linear-gradient(90deg,#eef1f4,#f6f8fa,#eef1f4); background-size:200% 100%; animation:sk 1.2s linear infinite; margin:6px 0; }
+.tgroup { margin:8px 0; } .tgroup .tl { font-size:12px; color:var(--muted); margin-bottom:4px; }
+.wa { display:inline-flex; align-items:center; gap:6px; color:var(--ok); text-decoration:none; font-weight:600; }
+.tel { display:inline-flex; align-items:center; gap:6px; color:var(--acc); text-decoration:none; font-weight:600; }
+.hero { display:flex; justify-content:space-between; align-items:flex-end; gap:10px; }
+.steps { display:flex; gap:6px; margin-bottom:10px; } .steps span { flex:1; height:4px; border-radius:2px; background:var(--line); } .steps span.on { background:var(--acc); }
+
+/* Iteration 2.3: report table + highlighted stat tile */
+.tbl { width:100%; border-collapse:collapse; font-size:13px; }
+.tbl th, .tbl td { padding:6px 8px; border-bottom:1px solid var(--line); text-align:right; vertical-align:top; white-space:nowrap; }
+.tbl th { color:var(--muted); font-weight:600; background:var(--bg); position:sticky; top:0; }
+.tbl tr.rep td:first-child { border-right:3px solid var(--ok); }
+.stat .card.hl { border:2px solid var(--ok); }
+
+/* Registration form (owner 2026-10-23): mobile-first, one column; chips for the multi-selects. */
+fieldset { border:0; padding:0; margin:10px 0 0; min-width:0; }
+legend { font-size:13px; color:var(--muted); padding:0; margin-bottom:4px; }
+.req::after { content:' *'; color:var(--bad); }
+.opts { display:flex; flex-wrap:wrap; gap:8px; }
+.opt { position:relative; margin:0; color:var(--ink); font-size:15px; }
+.opt input { position:absolute; opacity:0; width:1px; height:1px; }
+.opt span { display:inline-block; border:1px solid var(--line); background:#fff; border-radius:999px; padding:8px 14px; cursor:pointer; }
+.opt input:checked + span { background:var(--acc); color:var(--acc-ink); border-color:var(--acc); }
+.opt input:focus-visible + span { outline:2px solid var(--acc); outline-offset:2px; }
+.opt small { display:block; font-size:12px; opacity:.8; }
+.ferr { color:var(--bad); font-size:13px; margin-top:4px; }
+.ferr:empty { display:none; }
+.bad-in { border-color:var(--bad) !important; }
+.policy { white-space:pre-wrap; max-height:240px; overflow:auto; border:1px solid var(--line); border-radius:8px; padding:10px; background:var(--bg); font-size:14px; }
+.check { display:flex; gap:8px; align-items:flex-start; color:var(--ink); font-size:15px; margin-top:10px; }
+.check input { margin-top:3px; }
+.hp { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; } /* honeypot: invisible, no RTL overflow */
+.tel { color:var(--acc); text-decoration:none; font-weight:600; }
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">ברבור — הרשמה לשיעורי שחייה פרטיים</div></header>
+<div class="testbar hidden" id="testbar">סביבת בדיקה (TEST) — נתונים לבדיקה בלבד</div>
+<main>
+  <div id="msg" role="alert"></div>
+  <div class="card" id="loading"><div class="skel"></div><div class="skel" style="width:70%"></div></div>
+
+  <form id="leadForm" class="hidden" novalidate onsubmit="submitLead(event)">
+    <div class="card">
+      <h2>פרטי הרישום</h2>
+      <fieldset id="f_audience"><legend class="req">למי השיעורים מיועדים?</legend>
+        <div class="opts"><label class="opt"><input type="radio" name="audience" value="child" onchange="branch()"><span>ילד/ה</span></label><label class="opt"><input type="radio" name="audience" value="adult" onchange="branch()"><span>מבוגר/ת</span></label></div>
+        <div class="ferr" id="e_audience"></div>
+      </fieldset>
+      <fieldset><legend>האם אתם נרשמים חוזרים?</legend>
+        <div class="opts"><label class="opt"><input type="radio" name="returning" value="yes" onchange="branch()"><span>כן</span></label><label class="opt"><input type="radio" name="returning" value="no" onchange="branch()"><span>לא</span></label></div>
+      </fieldset>
+      <fieldset id="f_return" class="hidden"><legend>האם תרצו לחזור למדריכ/ה הקיים/ת?</legend>
+        <div class="opts"><label class="opt"><input type="radio" name="return_to_coach" value="yes" onchange="branch()"><span>כן</span></label><label class="opt"><input type="radio" name="return_to_coach" value="no" onchange="branch()"><span>לא</span></label></div>
+      </fieldset>
+      <div id="f_coach" class="hidden"><label for="preferred_coach_text">מה השם של המדריכ/ה?</label><input id="preferred_coach_text" maxlength="60" autocomplete="off"></div>
+    </div>
+
+    <div class="card">
+      <h2>פרטי השחיין/ית</h2>
+      <label for="first_name" class="req">שם פרטי</label><input id="first_name" maxlength="60" autocomplete="given-name"><div class="ferr" id="e_first_name"></div>
+      <label for="last_name" class="req">שם משפחה</label><input id="last_name" maxlength="60" autocomplete="family-name"><div class="ferr" id="e_last_name"></div>
+      <label for="birth_date">תאריך לידה</label><input id="birth_date" type="date"><div class="ferr" id="e_birth_date"></div>
+      <label for="id_number">ת"ז</label><input id="id_number" inputmode="numeric" maxlength="10" autocomplete="off"><div class="ferr" id="e_id_number"></div>
+      <label for="gender">מגדר</label><select id="gender"><option value="">—</option><option value="זכר">זכר</option><option value="נקבה">נקבה</option></select>
+      <label for="city">עיר מגורים</label><input id="city" maxlength="60" autocomplete="address-level2">
+      <fieldset><legend>האם מנוי/ה בקאנטרי?</legend>
+        <div class="opts"><label class="opt"><input type="radio" name="country_member" value="yes"><span>כן</span></label><label class="opt"><input type="radio" name="country_member" value="no"><span>לא</span></label></div>
+      </fieldset>
+      <div id="adultContact" class="hidden">
+        <label for="phone" class="req">טלפון</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="05XXXXXXXX"><div class="ferr" id="e_phone"></div>
+        <label for="email" class="req">אימייל</label><input id="email" type="email" inputmode="email" autocomplete="email"><div class="ferr" id="e_email"></div>
+      </div>
+    </div>
+
+    <div class="card hidden" id="c1Card">
+      <h2>איש קשר 1</h2>
+      <label for="contact1_name" class="req">שם מלא</label><input id="contact1_name" maxlength="80" autocomplete="name"><div class="ferr" id="e_contact1_name"></div>
+      <label for="contact1_phone" class="req">טלפון</label><input id="contact1_phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="05XXXXXXXX"><div class="ferr" id="e_contact1_phone"></div>
+      <label for="contact1_email" class="req">אימייל</label><input id="contact1_email" type="email" inputmode="email" autocomplete="email"><div class="ferr" id="e_contact1_email"></div>
+    </div>
+    <div class="card hidden" id="c2Card">
+      <h2>איש קשר 2 <span class="muted">לא חובה</span></h2>
+      <label for="contact2_name">שם מלא</label><input id="contact2_name" maxlength="80" autocomplete="off"><div class="ferr" id="e_contact2_name"></div>
+      <label for="contact2_phone">טלפון</label><input id="contact2_phone" type="tel" inputmode="tel" autocomplete="off" placeholder="05XXXXXXXX"><div class="ferr" id="e_contact2_phone"></div>
+      <label for="contact2_email">אימייל</label><input id="contact2_email" type="email" inputmode="email" autocomplete="off"><div class="ferr" id="e_contact2_email"></div>
+    </div>
+
+    <div class="card">
+      <h2>העדפות</h2>
+      <fieldset><legend>ימים מועדפים</legend><div class="opts" id="days"></div></fieldset>
+      <fieldset><legend>שעות נוחות</legend><div class="opts" id="parts"></div></fieldset>
+    </div>
+
+    <div class="card">
+      <h2>הערות</h2>
+      <label for="remarks">משהו שחשוב שנדע? (לא חובה)</label><textarea id="remarks" rows="3" maxlength="1000"></textarea>
+    </div>
+
+    <div class="card hidden" id="policyCard">
+      <h2>מדיניות</h2>
+      <div class="policy" id="policyText" tabindex="0"></div>
+      <label class="check"><input type="checkbox" id="policyOk" onchange="syncSubmit()"> <span>קראתי ואני מאשר/ת את המדיניות</span></label>
+    </div>
+
+    <div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+    <button class="btn block" id="submitBtn" type="submit">שליחת הבקשה</button>
+    <p class="muted" id="formContacts" style="margin-top:12px"></p>
+  </form>
+
+  <section id="done" class="hidden">
+    <div class="card"><h2>הבקשה התקבלה. המזכירות תחזור אליכם.</h2><div id="doneContacts"></div></div>
+  </section>
+</main>
+<script>
+// Static page outside script.google.com (same transport as the customer page): POST {v:1, fn, args}, no cookies, no session.
+var API_URL = 'https://script.google.com/macros/s/AKfycbw9c8KcC5KXeGm-Z5PLIwc0_wMr2QW3w4voM4M6fgU3-Gs8SQU-rBvtEvRrLesXL1fp4Q/exec';
+var ENV_IS_TEST = true;
+var F = { form: null, sending: false };
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function msg(t, kind){ $('msg').innerHTML = t ? '<div class="msg '+(kind||'err')+'">'+esc(t)+'</div>' : ''; }
+function call(fn, args, cb){
+  fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ v: 1, fn: fn, args: args }), credentials: 'omit', redirect: 'follow', cache: 'no-store' })
+    .then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(cb).catch(function(){ cb({ ok: false, code: 'NET', message: 'תקלה בחיבור. נסו שוב.' }); });
+}
+/** Office contact numbers: WhatsApp (wa.me) and the landline (tel:), from Office settings. */
+function contactsHtml(c){ c = c || {}; var a = [];
+  if (c.wa_link) a.push('<a class="wa" target="_blank" rel="noopener" href="' + esc(c.wa_link) + '">וואטסאפ ' + esc(c.whatsapp_display) + '</a>');
+  if (c.tel_link) a.push('<a class="tel" href="' + esc(c.tel_link) + '">טלפון ' + esc(c.phone_display) + '</a>');
+  return a.join(' · '); }
+function radio(name){ var el = document.querySelector('input[name="'+name+'"]:checked'); return el ? el.value : ''; }
+function checked(box){ return Array.prototype.map.call($(box).querySelectorAll('input:checked'), function(x){ return x.value; }); }
+function val(id){ return String(($(id)||{}).value||'').trim(); }
+
+/** The question "למי השיעורים מיועדים?" is the branch point: adult → the swimmer is the contact; child → contact sections. */
+function branch(){
+  var a = radio('audience'), ret = radio('returning') === 'yes';
+  $('adultContact').classList.toggle('hidden', a !== 'adult');
+  $('c1Card').classList.toggle('hidden', a !== 'child'); $('c2Card').classList.toggle('hidden', a !== 'child');
+  $('f_return').classList.toggle('hidden', !ret); $('f_coach').classList.toggle('hidden', !(ret && radio('return_to_coach') === 'yes'));
+  if (a) setErr('audience', '');
+}
+function syncSubmit(){ $('submitBtn').disabled = F.sending || (!!F.form.policy && !$('policyOk').checked); }
+function setErr(k, t){ var e = $('e_' + k); if (e) e.textContent = t || ''; var i = $(k); if (i && i.classList) i.classList.toggle('bad-in', !!t); }
+function mobile(p){ var d = String(p||'').replace(/\D/g,''); if (d.indexOf('972') === 0) d = '0' + d.substr(3); if (d.length === 9 && d.charAt(0) !== '0') d = '0' + d; return /^05\d{8}$/.test(d) ? d : ''; }
+function emailOk(e){ return /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(String(e||'').trim().toLowerCase()); }
+function idOk(id){ var d = String(id||'').replace(/\D/g,''); if (!/^\d{5,9}$/.test(d)) return false; d = ('000000000' + d).slice(-9); var s = 0; for (var i = 0; i < 9; i++) { var x = Number(d.charAt(i)) * ((i % 2) + 1); s += x > 9 ? x - 9 : x; } return s % 10 === 0; }
+/** Same rules as the server (validateLead_); the server stays the authority. Returns the first invalid field id or ''. */
+function validate(){
+  var bad = [], need = function(k, ok, t){ setErr(k, ok ? '' : t); if (!ok) bad.push(k); }, a = radio('audience');
+  ['audience','first_name','last_name','birth_date','id_number','phone','email','contact1_name','contact1_phone','contact1_email','contact2_name','contact2_phone','contact2_email'].forEach(function(k){ setErr(k, ''); });
+  need('audience', !!a, 'בחרו ילד/ה או מבוגר/ת');
+  need('first_name', !!val('first_name'), 'חובה'); need('last_name', !!val('last_name'), 'חובה');
+  if (val('birth_date')) need('birth_date', val('birth_date') <= new Date().toISOString().slice(0,10), 'תאריך לידה לא תקין');
+  if (val('id_number')) need('id_number', idOk(val('id_number')), 'ת"ז לא תקינה (9 ספרות כולל ספרת ביקורת)');
+  var contact = function(n, required){
+    var nm = val(n + '_name'), ph = val(n + '_phone'), em = val(n + '_email');
+    if (!required && !nm && !ph && !em) return;
+    need(n + '_name', !!nm, 'חובה שם מלא');
+    need(n + '_phone', required ? !!mobile(ph) : !ph || !!mobile(ph), ph ? 'טלפון נייד לא תקין (05XXXXXXXX)' : 'חובה טלפון');
+    need(n + '_email', required ? emailOk(em) : !em || emailOk(em), em ? 'אימייל לא תקין' : 'חובה אימייל');
+  };
+  if (a === 'adult') { need('phone', !!mobile(val('phone')), val('phone') ? 'טלפון נייד לא תקין (05XXXXXXXX)' : 'חובה טלפון'); need('email', emailOk(val('email')), val('email') ? 'אימייל לא תקין' : 'חובה אימייל'); }
+  if (a === 'child') { contact('contact1', true); contact('contact2', false); }
+  return bad[0] || '';
+}
+function payload(){
+  var a = radio('audience'), p = { audience: a, first_name: val('first_name'), last_name: val('last_name'), birth_date: val('birth_date'), id_number: val('id_number'), gender: val('gender'), city: val('city'),
+    country_member: radio('country_member'), returning: radio('returning'), return_to_coach: radio('returning') === 'yes' ? radio('return_to_coach') : '', preferred_coach_text: radio('returning') === 'yes' && radio('return_to_coach') === 'yes' ? val('preferred_coach_text') : '',
+    preferred_days: checked('days'), preferred_day_parts: checked('parts'), remarks: String($('remarks').value || ''), website: $('website').value,
+    policy_accepted: !!F.form.policy && $('policyOk').checked, policy_version: F.form.policy ? F.form.policy.version : '' };
+  if (a === 'adult') { p.phone = val('phone'); p.email = val('email'); }
+  else ['contact1_name','contact1_phone','contact1_email','contact2_name','contact2_phone','contact2_email'].forEach(function(k){ p[k] = val(k); });
+  return p;
+}
+function submitLead(ev){
+  if (ev) ev.preventDefault(); if (F.sending) return;
+  var first = validate(); if (first) { msg('יש להשלים או לתקן את השדות המסומנים'); var el = $(first) || $('f_' + first); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (el.focus) el.focus(); } return; }
+  if (F.form.policy && !$('policyOk').checked) { msg('יש לקרוא ולאשר את המדיניות'); return; }
+  F.sending = true; syncSubmit(); $('submitBtn').textContent = 'שולח…'; msg('');
+  call('api_submitLead', [payload()], function(res){
+    F.sending = false; $('submitBtn').textContent = 'שליחת הבקשה'; syncSubmit();
+    if (!res.ok) { msg(res.message || 'הבקשה לא נשלחה. נסו שוב.'); window.scrollTo(0, 0); return; }
+    $('leadForm').classList.add('hidden'); $('done').classList.remove('hidden'); msg('');
+    var h = contactsHtml(res.data.contacts); $('doneContacts').innerHTML = h ? '<div class="muted">אפשר גם לפנות אלינו:</div><div style="margin-top:6px">' + h + '</div>' : '';
+    window.scrollTo(0, 0);
+  });
+}
+function render(d){
+  F.form = d;
+  $('testbar').classList.toggle('hidden', d.env !== 'TEST');
+  $('days').innerHTML = (d.days || []).map(function(x){ return '<label class="opt"><input type="checkbox" value="' + esc(x) + '"><span>' + esc(x) + '</span></label>'; }).join('');
+  $('parts').innerHTML = (d.day_parts || []).map(function(x){ return '<label class="opt"><input type="checkbox" value="' + esc(x.label) + '"><span>' + esc(x.label) + (x.hint ? '<small>' + esc(x.hint) + '</small>' : '') + '</span></label>'; }).join('');
+  // Policy: plain text shown as text (never as HTML); the section is hidden when no policy is configured.
+  $('policyCard').classList.toggle('hidden', !d.policy); $('policyText').textContent = d.policy ? d.policy.text : '';
+  var h = contactsHtml(d.contacts); $('formContacts').innerHTML = h ? 'שאלות? המזכירות: ' + h : '';
+  $('loading').classList.add('hidden'); $('leadForm').classList.remove('hidden'); branch(); syncSubmit();
+}
+(function init(){
+  if (ENV_IS_TEST) $('testbar').classList.remove('hidden');
+  call('api_leadForm', [], function(res){ if (!res.ok) { $('loading').classList.add('hidden'); msg(res.message || 'הטופס לא נטען. נסו שוב מאוחר יותר.'); return; } render(res.data); });
+})();
+</script>
+</body>
+</html>

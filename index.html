@@ -87,6 +87,7 @@ details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0
 .skel { height:14px; border-radius:6px; background:linear-gradient(90deg,#eef1f4,#f6f8fa,#eef1f4); background-size:200% 100%; animation:sk 1.2s linear infinite; margin:6px 0; }
 .tgroup { margin:8px 0; } .tgroup .tl { font-size:12px; color:var(--muted); margin-bottom:4px; }
 .wa { display:inline-flex; align-items:center; gap:6px; color:var(--ok); text-decoration:none; font-weight:600; }
+.tel { display:inline-flex; align-items:center; gap:6px; color:var(--acc); text-decoration:none; font-weight:600; }
 .hero { display:flex; justify-content:space-between; align-items:flex-end; gap:10px; }
 .steps { display:flex; gap:6px; margin-bottom:10px; } .steps span { flex:1; height:4px; border-radius:2px; background:var(--line); } .steps span.on { background:var(--acc); }
 
@@ -116,6 +117,7 @@ details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0
       <input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
       <button class="btn block" onclick="verify()">כניסה</button>
     </div>
+    <div class="muted" id="loginContacts" style="margin-top:12px"></div>
   </section>
 
   <section id="home" class="hidden">
@@ -151,6 +153,7 @@ details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0
       <h2>אישור ההזמנה</h2>
       <div class="kv" id="reviewKv"></div>
       <p class="muted" id="reviewNote"></p>
+      <div id="sameDayBox" class="hidden"></div>
       <button class="btn block" id="confirmBtn" onclick="confirmBooking()">אישור הזמנה</button>
     </div>
   </section>
@@ -167,7 +170,7 @@ function clearNav(){ try { sessionStorage.removeItem(navKey()); } catch(e){} }
 function navDate(d){ return /^\d{4}-\d{2}-\d{2}$/.test(d||'') && !isNaN(Date.parse(d)) && new Date(d).toISOString().slice(0,10)===d; }
 
 function $(id){ return document.getElementById(id); }
-function show(id){ S.screen=id; if(id!=='login') saveCustomerNav(); ['login','home','book'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('logoutBtn').classList.toggle('hidden', id==='login'); window.scrollTo(0,0); }
+function show(id){ if(id==='login' && !S.contacts) loadPublicInfo(); S.screen=id; if(id!=='login') saveCustomerNav(); ['login','home','book'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('logoutBtn').classList.toggle('hidden', id==='login'); window.scrollTo(0,0); }
 function msg(t, kind){ $('msg').innerHTML = t ? '<div class="msg '+(kind||'err')+'">'+esc(t)+'</div>' : ''; }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function store(k,v){ try { if (v==null) localStorage.removeItem(k); else localStorage.setItem(k,v); } catch(e){} }
@@ -252,6 +255,13 @@ function applyBalances(b){
 }
 /** D-21: a swimmer can book with their assigned (bookable) coach only, and only with their own credit. */
 function canBook(){ return S.home.students.filter(function(s){ return s.bookable && s.balance && s.balance.usable > 0; }); }
+/** Office contact numbers (owner 2026-10-23): WhatsApp as a wa.me link and the landline as a tel: link, both from Office settings. */
+function contactsHtml(c){ c = c || {}; var a = [];
+  if (c.wa_link) a.push('<a class="wa" target="_blank" rel="noopener" href="' + esc(c.wa_link) + '">וואטסאפ ' + esc(c.whatsapp_display) + '</a>');
+  if (c.tel_link) a.push('<a class="tel" href="' + esc(c.tel_link) + '">טלפון ' + esc(c.phone_display) + '</a>');
+  return a.join(' · '); }
+/** Login screen: the numbers come from the public info call (no sign-in needed). */
+function loadPublicInfo(){ S.contacts = S.contacts || {}; call('api_publicInfo', [], function(res){ if (!res.ok) return; S.contacts = res.data.contacts || {}; var h = contactsHtml(S.contacts); $('loginContacts').innerHTML = h ? 'שאלות? המזכירות: ' + h : ''; }); }
 function waLink(n){ var d = String(n||'').replace(/\D/g,''); return d ? 'https://wa.me/' + (d.indexOf('0')===0 ? '972'+d.substr(1) : d) : ''; }
 function renderHome(){
   var h = S.home;
@@ -265,12 +275,13 @@ function renderHome(){
   $('noCoach').textContent = h.students.length && !withCoach.length ? (h.students.some(function(s){ return s.coach_id; }) ? 'המדריך עדיין לא פתוח להזמנות באפליקציה — פנו למזכירות' : 'לא נמצא מדריך פעיל — פנו למזכירות') : '';
   if (h.balance.usable <= 0) msg('אין יתרה — פנו למזכירות לרכישה', 'warn');
   $('lateH').textContent = h.late_hours;
-  $('officeContact').innerHTML = (h.office_whatsapp ? '<a class="wa" target="_blank" href="' + esc(waLink(h.office_whatsapp)) + '">וואטסאפ ' + esc(h.office_whatsapp) + '</a>' : '') + (h.office_phone ? ' <span class="muted">· טלפון ' + esc(h.office_phone) + '</span>' : '') || '<span class="muted">פרטי הקשר יתפרסמו בקרוב</span>';
+  var contacts = h.contacts ? contactsHtml(h.contacts) : (h.office_whatsapp ? '<a class="wa" target="_blank" href="' + esc(waLink(h.office_whatsapp)) + '">וואטסאפ ' + esc(h.office_whatsapp) + '</a>' : '') + (h.office_phone ? ' <span class="muted">· טלפון ' + esc(h.office_phone) + '</span>' : ''); // older backends: no contacts field
+  $('officeContact').innerHTML = contacts || '<span class="muted">פרטי הקשר יתפרסמו בקרוב</span>';
   var u = h.upcoming;
   $('upcoming').innerHTML = u.length ? u.map(function(b){
     return '<div class="row" id="bk_' + esc(b.booking_id) + '"><div class="grow"><div><b>' + esc(b.student) + '</b> · ' + esc(fmtDay(b.ymd)) + ' ' + esc(b.hm) + '</div><div class="muted">' + esc(b.coach) + ' · ' + esc(b.location) + '</div></div>' +
       (b.can_cancel ? '<div class="inline">' + (b.can_reschedule ? '<button class="btn sm sec" onclick="startResched(\'' + esc(b.booking_id) + '\')">שינוי מועד</button>' : '') + '<button class="btn sm sec" onclick="askCancel(\'' + esc(b.booking_id) + '\',\'' + esc(b.cancel_until) + '\')">ביטול</button></div>'
-                    : '<span class="muted">ביטול או שינוי מועד פחות מ־' + esc(h.late_hours) + ' שעות — דרך המזכירות' + (h.office_whatsapp ? ' · <a class="wa" target="_blank" href="' + esc(waLink(h.office_whatsapp)) + '">וואטסאפ</a>' : '') + (h.office_phone ? ' · ' + esc(h.office_phone) : '') + '</span>') + '</div>';
+                    : '<span class="muted">ביטול או שינוי מועד פחות מ־' + esc(h.late_hours) + ' שעות — דרך המזכירות' + (contacts ? ' · ' + contacts : '') + '</span>') + '</div>';
   }).join('') : '<p class="muted">אין שיעורים קרובים</p>';
 }
 // Inline confirmation (no native confirm(): blocked/ugly inside the sandboxed iframe).
@@ -375,10 +386,21 @@ function pickTime(el){
   $('review').querySelector('h2').textContent = S.resched ? 'אישור שינוי מועד' : 'אישור ההזמנה';
   $('confirmBtn').textContent = S.resched ? 'אישור שינוי מועד' : 'אישור הזמנה';
   $('reviewNote').textContent = 'ביטול פחות מ־' + S.home.late_hours + ' שעות לפני השיעור מחויב במלואו ונעשה דרך המזכירות.';
+  S.sameDayOk = false; $('sameDayBox').classList.add('hidden'); $('confirmBtn').classList.remove('hidden');
   $('review').classList.remove('hidden'); S.req = uuid(); $('review').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+/** Part 3 (owner 2026-10-23): the swimmer's existing lesson on that date, if any (the server accepts a second one after the parent confirms). */
+function sameDayLesson(studentId, ymd){ return (S.home.upcoming || []).filter(function(b){ return b.student_id === studentId && b.ymd === ymd && (b.status === 'CONFIRMED' || b.status === 'PENDING'); })[0] || null; }
+function askSameDay(b){
+  $('sameDayBox').innerHTML = '<div class="msg warn"><div id="sameDayQ">' + esc('כבר יש ל-' + b.student + ' שיעור ב-' + fmtDM(b.ymd) + ' בשעה ' + b.hm + '. להזמין שיעור נוסף באותו יום?') + '</div>' +
+    '<div class="inline" style="margin-top:8px"><button class="btn sm" id="sameDayYes" onclick="sameDayYes()">כן, להזמין</button><button class="btn sm sec" id="sameDayNo" onclick="sameDayNo()">ביטול</button></div></div>';
+  $('sameDayBox').classList.remove('hidden'); $('confirmBtn').classList.add('hidden'); $('sameDayYes').focus();
+}
+function sameDayYes(){ S.sameDayOk = true; $('sameDayBox').classList.add('hidden'); $('confirmBtn').classList.remove('hidden'); confirmBooking(); }
+function sameDayNo(){ $('sameDayBox').classList.add('hidden'); $('confirmBtn').classList.remove('hidden'); $('review').classList.add('hidden'); $('timesBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
 function confirmBooking(){
   if (S.bookingPending) return;
+  if (!S.resched && !S.sameDayOk) { var same = sameDayLesson(S.student, S.slot.ymd); if (same) { askSameDay(same); return; } }
   S.bookingPending = true;
   if (S.resched) return confirmResched();
   $('confirmBtn').disabled = true; $('confirmBtn').textContent = 'קובע…';
