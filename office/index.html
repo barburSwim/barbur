@@ -109,6 +109,13 @@ a.ux-pending { pointer-events:none; opacity:.7; }
 .tbl tr.rep td:first-child { border-right:3px solid var(--ok); }
 .stat .card.hl { border:2px solid var(--ok); }
 
+.linksbar { display:flex; gap:8px 18px; flex-wrap:wrap; align-items:center; background:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; margin-bottom:10px; font-size:13px; }
+.linksbar .lk { display:flex; align-items:center; gap:8px; min-width:0; flex:1 1 280px; }
+.linksbar .lkl { font-weight:600; white-space:nowrap; }
+.linksbar .lkv { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; direction:ltr; text-align:left; }
+.linksbar .btn { flex:0 0 auto; }
+.linksbar .btn.copied { background:#1a7f37; border-color:#1a7f37; color:#fff; }
+
 </style>
 </head>
 <body>
@@ -127,6 +134,7 @@ a.ux-pending { pointer-events:none; opacity:.7; }
   </section>
 
   <section id="app" class="hidden">
+    <div class="linksbar" id="linksBar"><div class="lk"><span class="lkl">קישור להזמנת שיעורים (הורים)</span><a id="lkBook" class="link lkv" target="_blank" rel="noopener"></a><button class="btn sm" id="lkBookCopy" onclick="copyLink('lkBook','lkBookCopy')">העתק</button></div><div class="lk"><span class="lkl">טופס הרשמה (לידים)</span><a id="lkLeads" class="link lkv" target="_blank" rel="noopener"></a><button class="btn sm" id="lkLeadsCopy" onclick="copyLink('lkLeads','lkLeadsCopy')">העתק</button></div></div>
     <div class="tabs"><button id="t_home" class="on" onclick="tab('home')">בית</button><button id="t_hh" onclick="tab('hh')">משפחות</button><button id="t_ld" onclick="tab('ld')">לידים</button><button id="t_co" onclick="tab('co')">מדריכים</button><button id="t_gr" onclick="tab('gr')">קבוצות</button><button id="t_cl" onclick="tab('cl')">סגירות בית הספר</button><button id="t_exc" onclick="tab('exc')">חריגות</button><button id="t_rep" class="hidden" onclick="tab('rep')">דוח חודשי</button><button id="t_set" onclick="tab('set')">הגדרות</button></div>
 
     <div id="p_home">
@@ -689,7 +697,7 @@ function boot(){
   // the app shell is shown immediately and each card fills in when its call returns.
   var saved=readNav(); S.restoring=!!(saved && saved.tab!=='home'); show('app'); tab(S.restoring ? saved.tab : 'home');
   call('off_bootstrap', [S.token], function(d){
-    S.B = d; $('who').textContent = d.email; $('testbar').classList.toggle('hidden', d.env !== 'TEST'); $('dbLink').href = d.db_url;
+    S.B = d; $('who').textContent = d.email; $('testbar').classList.toggle('hidden', d.env !== 'TEST'); $('dbLink').href = d.db_url; setLinksBar();
     if (!$('p_co').classList.contains('hidden')) renderCoaches(); if (!$('p_set').classList.contains('hidden')) renderCfg();
     if(S.restoring){ S.restoring=false; restoreOfficeNav(saved); }
     syncPlatform();
@@ -1099,6 +1107,10 @@ function restoreOfficeNav(r){
   if(r.tab==='co' && r.availability && S.B.coaches.some(function(c){return c.coach_id===r.availability.coach&&c.booking_calendar.id})){ S.restoreAvail=r.availability.state; openAvail(r.availability.coach); }
 }
 
+function setLinksBar(){ [['lkBook',S.B&&S.B.book_url],['lkLeads',S.B&&S.B.leads_url]].forEach(function(p){ var a=$(p[0]),u=p[1]||''; a.textContent=u||'לא מוגדר (כתובת אפליקציית הלקוח בהגדרות)'; if(u)a.href=u; else a.removeAttribute('href'); $(p[0]+'Copy').disabled=!u; }); }
+function copyLink(aId,btnId){ var a=$(aId),u=a.getAttribute('href'),b=$(btnId); if(!u)return; var done=function(){ b.textContent='הועתק'; b.classList.add('copied'); setTimeout(function(){ b.textContent='העתק'; b.classList.remove('copied'); },1500); };
+  var fallback=function(){ var t=document.createElement('textarea'); t.value=u; t.style.position='fixed'; t.style.opacity='0'; document.body.appendChild(t); t.select(); try{ if(document.execCommand('copy'))done(); }catch(e){} document.body.removeChild(t); };
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(done,fallback); else fallback(); }
 (function init(){ $('testbar').classList.toggle('hidden', !ENV_IS_TEST); /* TEST marker before sign-in too (acceptance 2026-10-22) */ S.token = load('bbOffice'); if (S.token) boot(); else { show('login'); } })();
 </script>
 </body>

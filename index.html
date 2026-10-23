@@ -109,6 +109,13 @@ a.ux-pending { pointer-events:none; opacity:.7; }
 .tbl tr.rep td:first-child { border-right:3px solid var(--ok); }
 .stat .card.hl { border:2px solid var(--ok); }
 
+.linksbar { display:flex; gap:8px 18px; flex-wrap:wrap; align-items:center; background:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; margin-bottom:10px; font-size:13px; }
+.linksbar .lk { display:flex; align-items:center; gap:8px; min-width:0; flex:1 1 280px; }
+.linksbar .lkl { font-weight:600; white-space:nowrap; }
+.linksbar .lkv { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; direction:ltr; text-align:left; }
+.linksbar .btn { flex:0 0 auto; }
+.linksbar .btn.copied { background:#1a7f37; border-color:#1a7f37; color:#fff; }
+
 </style>
 </head>
 <body>
