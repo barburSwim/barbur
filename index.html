@@ -91,6 +91,17 @@ details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0
 .hero { display:flex; justify-content:space-between; align-items:flex-end; gap:10px; }
 .steps { display:flex; gap:6px; margin-bottom:10px; } .steps span { flex:1; height:4px; border-radius:2px; background:var(--line); } .steps span.on { background:var(--acc); }
 
+/* Responsive UI (2026-10-23): pending control, progress bar after 1 s, optimistic row ("שומר…") */
+.ux-pending { cursor:progress !important; }
+.btn.ux-pending { opacity:.75; }
+a.ux-pending { pointer-events:none; opacity:.7; }
+.tabs .ux-pending { opacity:.75; }
+.uxbar { position:fixed; top:0; left:0; right:0; z-index:50; display:none; padding:4px 12px 0; font-size:13px; text-align:center; color:var(--acc); background:var(--acc-soft); box-shadow:0 1px 3px rgba(0,0,0,.12); }
+.uxbar.on { display:block; }
+.uxbar::after { content:''; display:block; height:3px; margin-top:4px; background:linear-gradient(90deg,transparent,var(--acc),transparent); background-size:200% 100%; animation:sk 1.1s linear infinite; }
+.row.ux-ghost { opacity:.75; }
+.row.ux-ghost.ux-saved { opacity:1; }
+
 /* Iteration 2.3: report table + highlighted stat tile */
 .tbl { width:100%; border-collapse:collapse; font-size:13px; }
 .tbl th, .tbl td { padding:6px 8px; border-bottom:1px solid var(--line); text-align:right; vertical-align:top; white-space:nowrap; }
@@ -171,19 +182,124 @@ function navDate(d){ return /^\d{4}-\d{2}-\d{2}$/.test(d||'') && !isNaN(Date.par
 
 function $(id){ return document.getElementById(id); }
 function show(id){ if(id==='login' && !S.contacts) loadPublicInfo(); S.screen=id; if(id!=='login') saveCustomerNav(); ['login','home','book'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('logoutBtn').classList.toggle('hidden', id==='login'); window.scrollTo(0,0); }
-function msg(t, kind){ $('msg').innerHTML = t ? '<div class="msg '+(kind||'err')+'">'+esc(t)+'</div>' : ''; }
+function msg(t, kind){ UX.seq++; $('msg').innerHTML = t ? '<div class="msg '+(kind||'err')+'">'+esc(t)+'</div>' : ''; }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function store(k,v){ try { if (v==null) localStorage.removeItem(k); else localStorage.setItem(k,v); } catch(e){} }
 function load(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+/*UX_START*/
+// Responsive UI (owner 2026-10-23, "feels instant"). ONE layer around every server call of this page: call() is its only user, and
+// the same block is in Office, Coach, Customer and Leads (test/ux.test.js keeps the copies identical). Server behaviour is unchanged.
+// - The control that started the call (clicked, or Enter pressed in it, in the same browser event) shows a pending state at once:
+//   disabled, aria-busy, the action's text ("מתבצע…" by default). It comes back when the answer arrives, success or error.
+// - The same write is never in flight twice: a second click, Enter or re-sent form sends nothing and says so.
+// - A thin progress bar with the action's text appears after 1 s; at once when the control is gone (a form that closed on אישור).
+// - opt.ghost shows the new row at once, marked "שומר…". On success it is marked "נשמר" until the list re-renders with the real
+//   row; on any failure it is removed at once and the caller's red error is shown — never a row the server did not create.
+// - A write started by the user whose own code shows no message ends with a green "בוצע". opt.quiet = background call, no bar.
+var UX = { seq: 0, live: [], writes: {}, trig: null, trigAt: 0, trigWas: null, bar: null, timer: null, log: [] };
+var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit|syncPlatform)|co_(schedule|week|calendars|recentChanges|preview)|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
+// Calls that carry a password or a one-time secret: de-duplicated by function name only, so the secret is never kept in a key.
+var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_platformLogin|st_redeemInvitation|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
+var UX_TEXT = { off_inviteCoach: 'שולח הזמנה…', off_coachReport: 'מכין דוח…', off_coachAnnual: 'מכין דוח…', off_coachReportCsv: 'מכין קובץ CSV…',
+  off_refreshCache: 'מרענן נתונים…', off_exceptions: 'בודק מול היומן…', off_adminRun: 'הפעולה רצה — עד כמה דקות…', off_createFamily: 'יוצר משפחה…',
+  off_convertLead: 'יוצר כרטיסייה…', off_addGrant: 'רושם כרטיסייה…', off_book: 'קובע שיעור…', off_cancel: 'מבטל…', off_reschedule: 'משנה מועד…',
+  off_createBookingCalendar: 'יוצר יומן…', off_shareBookingCalendar: 'משתף יומן…', off_unlinkPlatformCoach: 'מנתק…', off_deleteCoach: 'מוחק…',
+  off_revokeInvitation: 'מבטל הזמנה…', off_saveGroup: 'שומר ומשבץ מפגשים…', off_editGroupFrom: 'מעדכן מפגשים…', off_setConfig: 'מעדכן…',
+  api_book: 'קובע שיעור…', api_reschedule: 'משנה מועד…', api_cancel: 'מבטל…', api_requestOtp: 'שולח קוד…', api_verifyOtp: 'מאמת…',
+  api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_platformLogin: 'נכנס…', st_redeemInvitation: 'מחבר…',
+  co_saveRules: 'שומר…', co_saveOverride: 'שומר…', co_saveSettings: 'שומר…', co_cancel: 'מבטל…', co_reschedule: 'משנה מועד…', co_noShow: 'מסמן…' };
+function uxMark(e){ var t = e.target, el = t && t.closest ? t.closest('button,a,input,select,textarea') : null; UX.trig = el; UX.trigAt = performance.now(); UX.trigWas = el && { disabled: el.disabled, html: el.innerHTML }; setTimeout(function(){ if (UX.trig === el) UX.trig = null; }, 0); }
+document.addEventListener('click', uxMark, true);
+document.addEventListener('keydown', function(e){ if (e.key === 'Enter') uxMark(e); }, true);
+function uxKey(args){ try { return JSON.stringify(args, function(k, v){ return k === 'request_id' ? undefined : v; }); } catch (e) { return String(Math.random()); } }
+function uxShown(el){ return !!(el && el.isConnected && el.getClientRects().length); }
+/** Start of a server call. Returns the call handle, or null when the same write is already on its way (then nothing is sent). */
+function uxStart(fn, args, opt){
+  opt = opt || {};
+  var write = !UX_READ.test(fn), key = fn + '|' + (UX_SECRET.test(fn) ? '' : uxKey(args));
+  if (write && UX.writes[key]) { msg('הפעולה כבר נשלחה ומתבצעת — המתינו לתשובה', 'warn'); return null; }
+  var el = UX.trig, shown = uxShown(el);
+  var h = { fn: fn, write: write, key: key, seq: UX.seq, from: el, user: !!el && !opt.quiet, quiet: !!opt.quiet, text: UX_TEXT[fn] || (write ? 'מתבצע…' : 'טוען…'), t0: performance.now(), ev: el ? UX.trigAt : 0 };
+  UX.trig = null; // one call per user action owns the control
+  if (write) UX.writes[key] = h;
+  if (shown && !el.disabled && !el.readOnly) { h.el = el; uxPend(el, h.text); }
+  else if (el && el.disabled && UX.trigWas && !UX.trigWas.disabled) h.own = { el: el, html: UX.trigWas.html }; // the page set its own pending state: give the control back on every outcome
+  if (opt.ghost) h.ghost = uxGhost(opt.ghost);
+  UX.live.push(h); uxBar(h.user && !shown && !h.ghost ? 0 : 1000);
+  if (h.ev) requestAnimationFrame(function(){ h.fb = Math.round(performance.now() - h.ev); });
+  return h;
+}
+function uxPend(el, text){
+  el.setAttribute('aria-busy', 'true'); el.classList.add('ux-pending');
+  if (el.closest('.tabs')) return; // a tab only shows that it is loading; switching tabs stays possible
+  if (el.tagName === 'BUTTON' || (el.tagName === 'INPUT' && /^(button|submit)$/.test(el.type))) {
+    el.disabled = true;
+    if (el.classList.contains('btn')) { el.style.minWidth = el.offsetWidth + 'px'; el.setAttribute('data-ux-label', el.innerHTML); el.textContent = text; }
+  } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.readOnly = true;
+}
+function uxRestore(el){
+  el.removeAttribute('aria-busy'); el.classList.remove('ux-pending');
+  if (el.closest('.tabs')) return;
+  var l = el.getAttribute('data-ux-label'); if (l != null) { el.innerHTML = l; el.removeAttribute('data-ux-label'); el.style.minWidth = ''; }
+  if (el.tagName === 'BUTTON' || (el.tagName === 'INPUT' && /^(button|submit)$/.test(el.type))) el.disabled = false;
+  else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.readOnly = false;
+}
+/** Optimistic row: g = { into: element id or element, after: selector inside it (optional), label: text }. */
+function uxGhost(g){
+  var box = typeof g.into === 'string' ? document.getElementById(g.into) : g.into; if (!uxShown(box)) return null;
+  var row = document.createElement('div'); row.className = 'row ux-ghost'; row.setAttribute('aria-busy', 'true');
+  row.innerHTML = '<div class="grow"><b></b></div><span class="badge warn ux-state">שומר…</span>'; row.querySelector('b').textContent = g.label;
+  var at = g.after ? box.querySelector(g.after) : null;
+  if (at) at.insertAdjacentElement('afterend', row); else box.insertBefore(row, box.firstChild);
+  return row;
+}
+function uxGhostEnd(row, ok){
+  if (!row) return;
+  if (!ok) { row.remove(); return; }
+  row.removeAttribute('aria-busy'); row.classList.add('ux-saved'); var s = row.querySelector('.ux-state'); s.className = 'badge ok ux-state'; s.textContent = 'נשמר';
+  setTimeout(function(){ row.remove(); }, 20000); // the list normally re-renders with the real row long before this
+}
+function uxBar(delay){
+  if (!UX.bar) { UX.bar = document.createElement('div'); UX.bar.id = 'uxBar'; UX.bar.className = 'uxbar'; UX.bar.setAttribute('role', 'status'); UX.bar.setAttribute('aria-live', 'polite'); document.body.appendChild(UX.bar); }
+  var shown = UX.live.filter(function(h){ return !h.quiet; });
+  if (!shown.length) { clearTimeout(UX.timer); UX.timer = null; UX.bar.classList.remove('on'); return; }
+  UX.bar.textContent = (shown.filter(function(h){ return h.user; }).pop() || shown[shown.length - 1]).text;
+  if (UX.bar.classList.contains('on')) return;
+  if (delay === 0) { clearTimeout(UX.timer); UX.timer = null; UX.bar.classList.add('on'); return; }
+  if (!UX.timer) UX.timer = setTimeout(function(){ UX.timer = null; if (UX.live.some(function(h){ return !h.quiet; })) UX.bar.classList.add('on'); }, delay || 1000);
+}
+/** The answer arrived (ok) or the call failed: control back, write unlocked, optimistic row reconciled or removed. Before the caller's code. */
+function uxEnd(h, ok){
+  if (!h || h.done) return; h.done = true;
+  if (h.write && UX.writes[h.key] === h) delete UX.writes[h.key];
+  UX.live.splice(UX.live.indexOf(h), 1); uxBar();
+  if (h.el) uxRestore(h.el);
+  if (h.own && h.own.el.disabled) { h.own.el.disabled = false; if (h.own.el.classList.contains('btn')) h.own.el.innerHTML = h.own.html; }
+  uxGhostEnd(h.ghost, ok);
+  h.ms = Math.round(performance.now() - h.t0);
+  UX.log.push({ fn: h.fn, ok: !!ok, control: h.el ? 'pending' : h.ghost ? 'ghost' : h.user ? 'bar' : 'none', feedback_ms: h.fb == null ? null : h.fb, answer_ms: h.ms }); if (UX.log.length > 200) UX.log.shift();
+  if (ENV_IS_TEST) try { console.log('[ux] ' + h.fn + ' feedback ' + (h.fb == null ? '-' : h.fb + 'ms') + ' · answer ' + h.ms + 'ms' + (ok ? '' : ' · failed')); } catch (e) {}
+}
+/** After the caller's success code: a user write that showed no message of its own gets the green "בוצע". */
+function uxDone(h){ if (h && h.write && h.user && UX.seq === h.seq) msg('בוצע', 'ok'); }
+function uxNetMsg(h){ return h && h.write ? 'אין תשובה מהשרת — ייתכן שהפעולה לא נשמרה. רעננו את המסך ובדקו לפני שמנסים שוב.' : 'אין חיבור לשרת. בדקו את החיבור ונסו שוב.'; }
+/*UX_END*/
+/*TRANSPORT_START*/
 // Static page (served outside script.google.com): the customer JSON API of the Apps Script backend. No Google cookies are
 // sent (credentials 'omit'); the session token travels in the POST body only. Same answers as the Apps Script page calls.
 var API_URL = 'https://script.google.com/macros/s/AKfycbw9c8KcC5KXeGm-Z5PLIwc0_wMr2QW3w4voM4M6fgU3-Gs8SQU-rBvtEvRrLesXL1fp4Q/exec';
-function call(fn, args, cb){
-  var t0 = Date.now(); S.busy = true;
+function rpc(fn, args, onRes, onFail){
   fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ v: 1, fn: fn, args: args }), credentials: 'omit', redirect: 'follow', cache: 'no-store' })
     .then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-    .then(function(res){ S.busy=false; perfLog(fn, t0, res); if (!res.ok && res.code==='AUTH'){ store('bbTok',null); S.token=null; show('login'); msg(res.message); return; } cb(res); })
-    .catch(function(){ S.busy=false; S.bookingPending=false; $('confirmBtn').disabled=false; msg('תקלה בחיבור. נסו שוב.'); });
+    .then(onRes, function(e){ onFail(e && e.message ? e.message : String(e)); });
+}
+/*TRANSPORT_END*/
+// opt.fail runs after a transport failure (no answer); opt.ghost / opt.quiet: see the UX block.
+function call(fn, args, cb, opt){
+  opt = opt || {}; var t0 = Date.now(), h = uxStart(fn, args, opt); if (!h) return;
+  S.busy = true;
+  rpc(fn, args, function(res){ S.busy=false; perfLog(fn, t0, res); uxEnd(h, res.ok); if (!res.ok && res.code==='AUTH'){ S.bookingPending=false; store('bbTok',null); S.token=null; show('login'); msg(res.message); return; } cb(res); if (res.ok) uxDone(h); },
+    function(e){ S.busy=false; S.bookingPending=false; uxEnd(h, false); console.log('[barbur] ' + fn + ' transport: ' + e); msg(uxNetMsg(h)); if (opt.fail) opt.fail(); });
 }
 /** TEST-only timing line per server call (W1-6): wall ms, server ms, sheet reads / calendar calls from the server profile. */
 function perfLog(fn, t0, res){ if (!ENV_IS_TEST) return; try { var p = res && res.prof; console.log('[barbur] ' + fn + ' ' + (Date.now() - t0) + 'ms wall · ' + (res && res.ms) + 'ms server' + (p ? ' · sheetReads ' + p.sheetReads + ' (' + p.sheetMs + 'ms) · cal ' + p.cal + ' (' + p.calMs + 'ms) | platform ' + (p.platform||0) + ' (' + (p.platformMs||0) + 'ms)' : '')); } catch (e) {} }
@@ -211,7 +327,7 @@ function verify(){
     S.token = res.data.token; store('bbTok', S.token); msg(''); refresh(null, true); // restore the screen the parent was on (e.g. after an idle sign-out mid-booking)
   });
 }
-function logout(){ clearNav(); var t=S.token; store('bbTok',null); store('bbBypass',null); S.token=null; show('login'); if (t) call('api_logout',[t],function(){}); }
+function logout(){ clearNav(); var t=S.token; store('bbTok',null); store('bbBypass',null); S.token=null; show('login'); if (t) call('api_logout',[t],function(){},{ quiet: true }); }
 var ENV_IS_TEST = true;
 
 function refresh(cb, restore){
@@ -228,12 +344,12 @@ function refresh(cb, restore){
 function prefetchFirstWeek(){
   var st = canBook()[0]; if (!st) return;
   var to = st.bookable_until; if (st.balance.validUntil && st.balance.validUntil < to) to = st.balance.validUntil;
-  fetchWeek(st.student_id, weekOf(S.home.today), to, function(){});
+  fetchWeek(st.student_id, weekOf(S.home.today), to, function(){}, true);
 }
 /** Fetch (or reuse) one week for a student; the result is cached in S.weeks. */
 /** Week-cache key of the current flow: student, plus the booking being moved when rescheduling (its own slot must not block). */
 function wkey(){ return S.student + (S.resched ? '#' + S.resched.booking_id : ''); }
-function fetchWeek(studentId, ws, to, cb){
+function fetchWeek(studentId, ws, to, cb, quiet){
   var key = studentId + '|' + ws; if (S.weeks[key]) { cb(S.weeks[key]); return; }
   var parts = String(studentId).split('#');
   if (to && ws > to) return;
@@ -244,7 +360,7 @@ function fetchWeek(studentId, ws, to, cb){
     var cbs = S.pending[key] || []; delete S.pending[key];
     if (!res.ok) { cbs.forEach(function(f){ f(null, res); }); return; }
     S.weeks[key] = res.data; cbs.forEach(function(f){ f(res.data); });
-  });
+  }, { quiet: !!quiet });
 }
 function invalidateWeeks(){ S.weeks = {}; S.pending = {}; S.slotGeneration = (S.slotGeneration || 0) + 1; }
 function applyBalances(b){
@@ -261,7 +377,7 @@ function contactsHtml(c){ c = c || {}; var a = [];
   if (c.tel_link) a.push('<a class="tel" href="' + esc(c.tel_link) + '">טלפון ' + esc(c.phone_display) + '</a>');
   return a.join(' · '); }
 /** Login screen: the numbers come from the public info call (no sign-in needed). */
-function loadPublicInfo(){ S.contacts = S.contacts || {}; call('api_publicInfo', [], function(res){ if (!res.ok) return; S.contacts = res.data.contacts || {}; var h = contactsHtml(S.contacts); $('loginContacts').innerHTML = h ? 'שאלות? המזכירות: ' + h : ''; }); }
+function loadPublicInfo(){ S.contacts = S.contacts || {}; call('api_publicInfo', [], function(res){ if (!res.ok) return; S.contacts = res.data.contacts || {}; var h = contactsHtml(S.contacts); $('loginContacts').innerHTML = h ? 'שאלות? המזכירות: ' + h : ''; }, { quiet: true }); }
 function waLink(n){ var d = String(n||'').replace(/\D/g,''); return d ? 'https://wa.me/' + (d.indexOf('0')===0 ? '972'+d.substr(1) : d) : ''; }
 function renderHome(){
   var h = S.home;
@@ -298,7 +414,7 @@ function cancelB(id){
     if (!applyBalances(res.data.balances)) { refresh(function(){ msg('השיעור בוטל והיתרה הוחזרה', 'ok'); }); return; }
     S.home.upcoming = S.home.upcoming.filter(function(b){ return b.booking_id !== id; });
     renderHome(); show('home'); msg('השיעור בוטל והיתרה הוחזרה', 'ok');
-  });
+  }, { fail: renderHome });
 }
 
 function showHome(){ show('home'); msg(''); }
@@ -353,7 +469,7 @@ function loadWeek(ws){
   });
 }
 /** Perf: the next week is fetched in the background right after the current one renders. */
-function prefetchNext(ws){ var nx = addDays(ws, 7); if (nx > S.to) return; fetchWeek(wkey(), nx, S.to, function(){}); }
+function prefetchNext(ws){ var nx = addDays(ws, 7); if (nx > S.to) return; fetchWeek(wkey(), nx, S.to, function(){}, true); }
 function renderWeek(data){
   var ws = S.weekStart, html = '', any = 0;
   for (var i = 0; i < 7; i++) {
@@ -404,14 +520,16 @@ function confirmBooking(){
   S.bookingPending = true;
   if (S.resched) return confirmResched();
   $('confirmBtn').disabled = true; $('confirmBtn').textContent = 'קובע…';
+  var st = S.home.students.filter(function(x){ return x.student_id===S.student; })[0], back = function(){ $('confirmBtn').disabled = false; $('confirmBtn').textContent = 'אישור הזמנה'; renderHome(); show('book'); $('review').scrollIntoView({ block: 'start' }); };
+  show('home'); msg(''); $('bookStart').disabled = true;
   call('api_book', [S.token, { request_id: S.req, student_id: S.student, start: S.slot.start }], function(res){
     S.bookingPending = false;
     $('confirmBtn').disabled = false; $('confirmBtn').textContent = 'אישור הזמנה';
-    if (!res.ok) { msg(res.message); if (res.code==='SLOT_TAKEN') { invalidateWeeks(); loadWeek(S.weekStart); } return; }
+    if (!res.ok) { back(); msg(res.message); if (res.code==='SLOT_TAKEN') { invalidateWeeks(); loadWeek(S.weekStart); } return; }
     applyBooked(res.data); msg('השיעור נקבע! אישור נשלח באימייל.', 'ok');
     if (applyBalances(res.data.balances)) { renderHome(); show('home'); }
     else refresh(function(){ msg('השיעור נקבע! אישור נשלח באימייל.', 'ok'); }); // compatibility with older TEST backends
-  });
+  }, { ghost: { into: 'upcoming', label: (st ? st.first_name + ' · ' : '') + fmtDay(S.slot.ymd) + ' ' + S.slot.hm }, fail: function(){ renderHome(); $('confirmBtn').textContent = 'אישור הזמנה'; } });
 }
 function confirmResched(){
   $('confirmBtn').disabled = true; $('confirmBtn').textContent = 'מעדכן…';
