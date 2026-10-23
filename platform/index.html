@@ -1,1 +1,125 @@
-<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=https://script.google.com/macros/s/AKfycbw8OpKyGV-PmyLiBnnqlrXY_1CUpcJt-hEXqg4bSQ9Gt7-pbjxoFfmaMbay4OxD0xRv/exec"><title>BARBUR TEST</title></head><body><a href="https://script.google.com/macros/s/AKfycbw8OpKyGV-PmyLiBnnqlrXY_1CUpcJt-hEXqg4bSQ9Gt7-pbjxoFfmaMbay4OxD0xRv/exec">BARBUR TEST</a><script>location.replace("https://script.google.com/macros/s/AKfycbw8OpKyGV-PmyLiBnnqlrXY_1CUpcJt-hEXqg4bSQ9Gt7-pbjxoFfmaMbay4OxD0xRv/exec");</script></body></html>
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://kbabzoyupwkwpeguztwg.supabase.co; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>פלטפורמת המאמנים (TEST)</title>
+<style>
+body{font:15px system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:#f4f6fa;color:#1d2433}
+header{background:#3b4cca;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+header b{font-size:17px} main{max-width:560px;margin:18px auto;padding:0 16px}
+.card{background:#fff;border:1px solid #e3e7ef;border-radius:12px;padding:16px;margin-bottom:14px}
+.btn{display:block;text-align:center;background:#3b4cca;color:#fff;border:0;border-radius:10px;padding:12px;font-size:15px;text-decoration:none;cursor:pointer}
+.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6);border-radius:8px;padding:6px 10px;cursor:pointer}
+.muted{color:#647089;font-size:13px} .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid #eef1f6}
+.badge{font-size:12px;border-radius:999px;padding:2px 10px;background:#eef1f6} .ok{background:#e3f6ea;color:#17703c} .warn{background:#fff3d9;color:#8a5a00} .gray{color:#647089}
+.sm{font-size:13px;padding:4px 10px;border-radius:8px;border:1px solid #c9d0de;background:#fff;color:#1d2433;cursor:pointer} .danger{background:#c62828;color:#fff;border-color:#c62828}
+.confirm{background:#fff6f6;border:1px solid #f1c7c7;border-radius:10px;padding:10px;margin:6px 0}
+.hidden{display:none} .test{background:#fff3d9;color:#8a5a00;text-align:center;font-size:12px;padding:4px}
+</style>
+</head>
+<body>
+<header><b>פלטפורמת המאמנים</b><button id="out" class="ghost hidden" onclick="signOut()">התנתק</button></header>
+<div class="test">סביבת בדיקה (TEST)</div>
+<main>
+  <div id="msg"></div>
+  <section id="login" class="card hidden">
+    <h2 style="margin-top:0">האזור שלי</h2>
+    <p class="muted">כניסה עם חשבון Google שלכם. בכניסה הראשונה נוצר לכם חשבון בפלטפורמה — אין צורך בהרשמה נפרדת.</p>
+    <a class="btn" id="go" href="#">כניסה עם Google</a>
+  </section>
+  <section id="me" class="hidden">
+    <div class="card"><div style="font-size:18px;font-weight:600" id="name"></div><div class="muted" id="email"></div><div class="muted" id="since"></div></div>
+    <div class="card"><h3 style="margin:0 0 6px">בתי הספר שלי</h3><div id="schools"></div>
+      <p class="muted" style="margin-bottom:0">חיבור לבית ספר נעשה באמצעות הזמנה שבית הספר שולח לכם במייל. התנתקות מבית ספר לא משפיעה על החשבון שלכם כאן.</p></div>
+  </section>
+</main>
+<script>
+// Static Coach Platform page (owner decision D3, 2026-10-23). Independent of BARBUR: it talks to Supabase only, with the
+// publishable key (public by design) and the coach's own access token; RLS limits every read to the coach's own rows.
+// The Apps Script Platform page (platform/web/src/Index.html) stays as the fallback entry.
+// Addresses: nothing environment-specific is injected except the Supabase URL/key and the exact Apps Script coach page of this
+// environment; the OAuth redirect is this page's own canonical address, and the only other coach page this page will ever hand
+// the token to is its sibling …/coach/ on the same origin (Codex gate 1: an exact trust list, never a pattern).
+var SUPABASE_URL = 'https://kbabzoyupwkwpeguztwg.supabase.co', SUPABASE_KEY = 'sb_publishable_Gki1ILTJY7NE-yP4kO433w_g9o03Doy', APPS_SCRIPT_COACH_URL = 'https://script.google.com/macros/s/AKfycbw9c8KcC5KXeGm-Z5PLIwc0_wMr2QW3w4voM4M6fgU3-Gs8SQU-rBvtEvRrLesXL1fp4Q/exec?p=coach';
+function selfUrl(){ return location.origin + location.pathname; }
+function siblingCoachUrl(){ return selfUrl().replace(/platform\/?$/, 'coach/'); }
+/** The exact coach-page addresses the token may be handed to: the sibling page on this very origin, and this environment's Apps Script coach page (https only). */
+function trustedCoachUrls(){ var l = [siblingCoachUrl()]; if (/^https:\/\//.test(APPS_SCRIPT_COACH_URL)) l.push(APPS_SCRIPT_COACH_URL); return l; }
+function authorizeUrl(){ return SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(selfUrl()); }
+function $(i){ return document.getElementById(i); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function show(id){ ['login','me'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('out').classList.toggle('hidden', id!=='me'); }
+function note(t){ $('msg').innerHTML = t ? '<div class="card">' + esc(t) + '</div>' : ''; }
+function tokenOk(t){ return typeof t === 'string' && !!t && t.length <= 8192 && !/[\s"<>]/.test(t); }
+var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+function sb(method, path, token, body){
+  return fetch(SUPABASE_URL + path, { method: method, headers: Object.assign({ apikey: SUPABASE_KEY, Authorization: 'Bearer ' + token }, body ? { 'Content-Type': 'application/json' } : {}), body: body ? JSON.stringify(body) : undefined, credentials: 'omit', cache: 'no-store' })
+    .then(function(r){ return r.text().then(function(t){ var j; try { j = JSON.parse(t); } catch(e){ j = undefined; } return { status: r.status, json: j }; }); });
+}
+var ST = { active:['פעיל','ok'], invited:['הוזמן','warn'], ended:['הסתיים','gray'] };
+var ME = null;
+function render(me){
+  $('name').textContent = me.name || 'מאמן'; $('email').textContent = me.email;
+  $('since').textContent = me.since ? 'חשבון בפלטפורמה מאז ' + me.since.split('-').reverse().join('/') : '';
+  ME = me;
+  $('schools').innerHTML = me.schools.length ? me.schools.map(function(s, i){ var b = ST[s.status] || [s.status,''];
+    return '<div class="row"><span>'+esc(s.name)+'</span><span><span class="badge '+b[1]+'">'+esc(b[0])+'</span>'+(s.status==='active' ? ' <button class="sm" onclick="askLeave('+i+')">התנתקות</button>' : '')+'</span></div>'
+      + (s.app_url ? '<a class="btn" id="open'+i+'" href="#" target="_top" onclick="return openApp('+i+', this)" style="margin:4px 0 8px">פתח את BARBUR</a>' : '')
+      + '<div id="leave'+i+'"></div>'; }).join('') : '<div class="muted">עדיין לא מחוברים לאף בית ספר.</div>';
+  show('me');
+}
+// Coach entry: open the school's coach page in the top window with the Platform session in the URL fragment (never a query
+// string, never logged); the school's page scrubs it from the address bar and validates it on its own server (C3).
+function openApp(i, a){ var s = ME && ME.schools[i], t = null; try { t = sessionStorage.getItem('cpTok'); } catch(e){}
+  if (!s || trustedCoachUrls().indexOf(s.app_url) < 0 || !t) { forget(); show('login'); return false; }
+  a.href = s.app_url + '#access_token=' + encodeURIComponent(t); setTimeout(function(){ a.href = '#'; }, 0); return true; }
+function askLeave(i){ var s = ME.schools[i];
+  $('leave'+i).innerHTML = '<div class="confirm"><b>התנתקות מ'+esc(s.name)+'</b><p class="muted" style="margin:6px 0">לא תוכלו להיכנס למערכת של בית הספר, ולקוחות לא יוכלו להזמין אצלכם שיעורים שם. החשבון שלכם כאן נשאר. חיבור מחדש מחייב הזמנה חדשה מבית הספר.</p><button class="sm danger" id="lv'+i+'" onclick="leave('+i+')">כן, להתנתק</button> <button class="sm" onclick="cancelLeave('+i+')">ביטול</button></div>'; }
+function cancelLeave(i){ $('leave'+i).innerHTML = ''; }
+function leave(i){ var s = ME.schools[i], t = null; try { t = sessionStorage.getItem('cpTok'); } catch(e){}
+  if (!tokenOk(t) || !UUID_RE.test(String(s.organization_id || ''))) { forget(); show('login'); return; }
+  $('lv'+i).disabled = true;
+  sb('POST', '/functions/v1/memberships-leave', t, { organization_id: s.organization_id }).then(function(r){
+    if (r.status === 200) { note('התנתקתם מ'+s.name+'.'); load(t); return; }
+    if (r.status === 401) { forget(); show('login'); return; }
+    $('lv'+i).disabled = false; note('ההתנתקות לא הושלמה. נסו שוב.');
+  }).catch(function(){ $('lv'+i).disabled = false; note('ההתנתקות לא הושלמה. נסו שוב.'); }); }
+function forget(){ try { sessionStorage.removeItem('cpTok'); } catch(e){} }
+/** The coach's own area: user → own profile → own memberships with the school names and coach pages (RLS). */
+function load(t){
+  if (!tokenOk(t)) { forget(); show('login'); return; }
+  var me = {};
+  sb('GET', '/auth/v1/user', t).then(function(u){
+    if (u.status !== 200 || !u.json || !u.json.id) throw { code: 'SIGNED_OUT' };
+    me.email = u.json.email || ''; me.meta = u.json.user_metadata || {};
+    return sb('GET', '/rest/v1/coach_profiles?select=id,display_name,created_at', t);
+  }).then(function(p){
+    if (p.status !== 200 || !Array.isArray(p.json) || p.json.length !== 1) throw { code: 'NO_PROFILE' };
+    me.name = p.json[0].display_name || me.meta.full_name || ''; me.coach_id = p.json[0].id; me.since = String(p.json[0].created_at || '').slice(0, 10);
+    return sb('GET', '/rest/v1/organization_memberships?select=status,created_at,organization_id,organizations(name,coach_app_url)&order=created_at', t);
+  }).then(function(m){
+    var trusted = trustedCoachUrls();
+    me.schools = (m.status === 200 && Array.isArray(m.json) ? m.json : []).map(function(x){
+      var app = String((x.organizations && x.organizations.coach_app_url) || '');
+      return { organization_id: x.organization_id, name: (x.organizations && x.organizations.name) || '', status: x.status, since: String(x.created_at || '').slice(0, 10),
+        app_url: x.status === 'active' && trusted.indexOf(app) >= 0 ? app : '' };
+    });
+    render(me);
+  }).catch(function(e){ forget(); show('login'); if (!e || e.code !== 'SIGNED_OUT') note('לא ניתן לטעון את האזור שלך כרגע. נסו שוב.'); });
+}
+function signOut(){ forget(); ME = null; $('schools').innerHTML = ''; show('login'); }
+(function init(){
+  $('go').href = authorizeUrl();
+  var h = new URLSearchParams(String(location.hash || '').replace(/^#/, '')), t = h.get('access_token');
+  if (location.hash) { try { history.replaceState(null, '', location.pathname); } catch(e){} }
+  h = null;
+  if (!t) { try { t = sessionStorage.getItem('cpTok'); } catch(e){} }
+  if (t) { try { sessionStorage.setItem('cpTok', t); } catch(e){} load(t); t = null; } else show('login');
+})();
+</script>
+</body>
+</html>

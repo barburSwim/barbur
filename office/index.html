@@ -1,1 +1,992 @@
-<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=https://script.google.com/macros/s/AKfycbw9c8KcC5KXeGm-Z5PLIwc0_wMr2QW3w4voM4M6fgU3-Gs8SQU-rBvtEvRrLesXL1fp4Q/exec?p=office"><title>BARBUR TEST</title></head><body><a href="https://script.google.com/macros/s/AKfycbw9c8KcC5KXeGm-Z5PLIwc0_wMr2QW3w4voM4M6fgU3-Gs8SQU-rBvtEvRrLesXL1fp4Q/exec?p=office">BARBUR TEST</a><script>location.replace("https://script.google.com/macros/s/AKfycbw9c8KcC5KXeGm-Z5PLIwc0_wMr2QW3w4voM4M6fgU3-Gs8SQU-rBvtEvRrLesXL1fp4Q/exec?p=office");</script></body></html>
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>ברבור — משרד (TEST)</title>
+<style>
+:root { --bg:#f4f6f9; --card:#fff; --ink:#1b2430; --muted:#5b6674; --line:#dfe4ea; --acc:#0b6bcb; --acc-soft:#e6f0fb; --acc-ink:#fff; --warn:#a15c00; --warn-bg:#fff4e5; --bad:#b42318; --bad-bg:#fdecea; --ok:#1f7a3f; --ok-bg:#e8f5ee; --r:12px; }
+* { box-sizing:border-box; }
+html, body { margin:0; }
+body { font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); font-size:16px; line-height:1.4; }
+header.top { background:var(--acc); color:var(--acc-ink); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:8px; position:sticky; top:0; z-index:5; }
+header.top .brand { font-weight:700; font-size:17px; }
+header.top .sub { font-size:13px; opacity:.85; font-weight:400; }
+header.top button { background:transparent; color:var(--acc-ink); border:1px solid rgba(255,255,255,.55); border-radius:8px; padding:5px 10px; font-size:14px; cursor:pointer; }
+main { max-width:560px; margin:0 auto; padding:16px; }
+main.wide { max-width:1100px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:16px; margin-bottom:12px; }
+.card h2 { font-size:17px; margin:0 0 10px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.card h3 { font-size:15px; margin:12px 0 6px; }
+label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+input, select, textarea { width:100%; font:inherit; font-size:16px; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); }
+input[type=time], input[type=date] { width:auto; min-width:0; }
+input[type=checkbox] { width:auto; transform:scale(1.2); margin:0 0 0 6px; vertical-align:middle; }
+.btn { display:inline-block; font:inherit; font-size:15px; padding:9px 14px; border-radius:9px; border:1px solid var(--acc); background:var(--acc); color:var(--acc-ink); cursor:pointer; text-decoration:none; text-align:center; }
+.btn.sec { background:#fff; color:var(--acc); }
+.btn.ghost { background:transparent; border-color:var(--line); color:var(--ink); }
+.btn.danger { background:#fff; border-color:var(--bad); color:var(--bad); }
+.btn.sm { font-size:13px; padding:5px 10px; border-radius:7px; }
+.btn.block { display:block; width:100%; margin-top:12px; padding:12px; }
+.btn[disabled] { opacity:.5; cursor:default; }
+.link { background:none; border:0; color:var(--acc); padding:0; font:inherit; font-size:15px; cursor:pointer; text-decoration:none; }
+.muted { color:var(--muted); font-size:13px; }
+.big { font-size:30px; font-weight:700; line-height:1.1; }
+.row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
+.row:first-of-type { border-top:0; }
+.row .grow { flex:1 1 180px; min-width:0; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; }
+.chip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:8px 13px; font:inherit; font-size:15px; cursor:pointer; color:var(--ink); }
+.chip.sel { background:var(--acc); color:var(--acc-ink); border-color:var(--acc); }
+.chip[disabled] { opacity:.35; cursor:default; }
+.badge { display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:var(--acc-soft); color:var(--acc); white-space:nowrap; }
+.badge.ok { background:var(--ok-bg); color:var(--ok); } .badge.warn { background:var(--warn-bg); color:var(--warn); } .badge.bad { background:var(--bad-bg); color:var(--bad); } .badge.gray { background:#eef1f4; color:var(--muted); }
+.msg { padding:10px 12px; border-radius:9px; margin-bottom:12px; font-size:15px; }
+.msg.err { background:var(--bad-bg); color:var(--bad); } .msg.ok { background:var(--ok-bg); color:var(--ok); } .msg.warn { background:var(--warn-bg); color:var(--warn); } .msg.info { background:var(--acc-soft); color:var(--acc); }
+.hidden { display:none !important; }
+.tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.tabs button { font:inherit; font-size:14px; padding:7px 12px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer; }
+.tabs button.on { background:var(--acc); color:var(--acc-ink); border-color:var(--acc); }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:700px) { .grid2 { grid-template-columns:1fr; } }
+.kv { display:grid; grid-template-columns:auto 1fr; gap:4px 12px; font-size:14px; }
+.kv b { font-weight:600; }
+.week { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+.day { border:1px solid var(--line); border-radius:10px; padding:8px 2px; text-align:center; background:#fff; cursor:pointer; font:inherit; }
+.day .d { font-size:12px; color:var(--muted); } .day .n { font-size:17px; font-weight:600; } .day .c { font-size:11px; color:var(--acc); }
+.day.sel { background:var(--acc); color:#fff; } .day.sel .d, .day.sel .c { color:#fff; opacity:.9; }
+.day[disabled] { opacity:.35; cursor:default; }
+.nav { display:flex; justify-content:space-between; align-items:center; margin:6px 0 10px; }
+.range { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:4px 0; }
+.range .link { font-size:13px; }
+.range input[type=time] { padding:6px 8px; font-size:14px; }
+.wrow { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-top:1px solid var(--line); }
+.wrow:first-of-type { border-top:0; }
+.wrow .wd { width:88px; font-weight:600; padding-top:6px; }
+.wrow .wr { flex:1; }
+.empty { color:var(--muted); font-size:14px; padding:8px 0; }
+.inline { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.inline > * { margin:0; }
+details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0; }
+.stat { display:flex; gap:12px; flex-wrap:wrap; }
+.stat .card { flex:1 1 140px; margin:0; padding:12px; }
+.stat .n { font-size:26px; font-weight:700; } .stat .l { font-size:13px; color:var(--muted); }
+.sheet { position:fixed; inset:0; background:rgba(20,30,40,.45); display:flex; align-items:flex-end; justify-content:center; z-index:20; }
+.sheet .card { width:100%; max-width:560px; max-height:85vh; overflow:auto; border-radius:16px 16px 0 0; margin:0; }
+@media (min-width:700px) { .sheet { align-items:center; } .sheet .card { border-radius:16px; } }
+.testbar { background:var(--warn-bg); color:var(--warn); font-size:12px; text-align:center; padding:3px; }
+.sw { display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; color:var(--ink); font-size:15px; margin:0; }
+.range select { width:auto; padding:6px 8px; font-size:14px; }
+.range .rerr:empty { display:none; }
+.range .rerr { flex-basis:100%; font-size:12px; }
+.day.sk { background:linear-gradient(90deg,#eef1f4,#f6f8fa,#eef1f4); background-size:200% 100%; animation:sk 1.2s linear infinite; border-color:transparent; }
+@keyframes sk { from { background-position:200% 0; } to { background-position:-200% 0; } }
+.skel { height:14px; border-radius:6px; background:linear-gradient(90deg,#eef1f4,#f6f8fa,#eef1f4); background-size:200% 100%; animation:sk 1.2s linear infinite; margin:6px 0; }
+.tgroup { margin:8px 0; } .tgroup .tl { font-size:12px; color:var(--muted); margin-bottom:4px; }
+.wa { display:inline-flex; align-items:center; gap:6px; color:var(--ok); text-decoration:none; font-weight:600; }
+.tel { display:inline-flex; align-items:center; gap:6px; color:var(--acc); text-decoration:none; font-weight:600; }
+.hero { display:flex; justify-content:space-between; align-items:flex-end; gap:10px; }
+.steps { display:flex; gap:6px; margin-bottom:10px; } .steps span { flex:1; height:4px; border-radius:2px; background:var(--line); } .steps span.on { background:var(--acc); }
+
+/* Iteration 2.3: report table + highlighted stat tile */
+.tbl { width:100%; border-collapse:collapse; font-size:13px; }
+.tbl th, .tbl td { padding:6px 8px; border-bottom:1px solid var(--line); text-align:right; vertical-align:top; white-space:nowrap; }
+.tbl th { color:var(--muted); font-weight:600; background:var(--bg); position:sticky; top:0; }
+.tbl tr.rep td:first-child { border-right:3px solid var(--ok); }
+.stat .card.hl { border:2px solid var(--ok); }
+
+</style>
+</head>
+<body>
+<header class="top"><div><div class="brand">ברבור — משרד</div><div class="sub" id="who"></div></div><div class="inline"><a class="btn sm ghost hidden" id="dbLink" target="_blank" style="color:#fff;border-color:rgba(255,255,255,.55)">גיליון הנתונים</a><button id="logoutBtn" class="hidden" onclick="logout()">התנתק</button></div></header>
+<div class="testbar hidden" id="testbar">סביבת בדיקה (TEST) — נתונים מלאכותיים בלבד</div>
+<main class="wide">
+  <div id="msg" style="position:sticky;top:0;z-index:30"></div>
+  <section id="login" class="card hidden" style="max-width:520px;margin:0 auto">
+    <h2>כניסת משרד</h2>
+    <div id="pwBox">
+      <label for="pw">סיסמה</label>
+      <input id="pw" type="password" autocomplete="current-password" maxlength="200" onkeydown="if(event.key==='Enter')pwLogin()">
+      <button class="btn block" onclick="pwLogin()">כניסה</button>
+      <div class="muted" style="margin-top:6px">כניסה ראשונה: הסיסמה שתוקלד תישמר כסיסמת המשרד. לשינוי: הגדרות → סיסמת כניסה למשרד.</div>
+    </div>
+  </section>
+
+  <section id="app" class="hidden">
+    <div class="tabs"><button id="t_home" class="on" onclick="tab('home')">בית</button><button id="t_hh" onclick="tab('hh')">משפחות</button><button id="t_ld" onclick="tab('ld')">לידים</button><button id="t_co" onclick="tab('co')">מדריכים</button><button id="t_gr" onclick="tab('gr')">קבוצות</button><button id="t_cl" onclick="tab('cl')">סגירות בית הספר</button><button id="t_exc" onclick="tab('exc')">חריגות</button><button id="t_rep" class="hidden" onclick="tab('rep')">דוח חודשי</button><button id="t_set" onclick="tab('set')">הגדרות</button></div>
+
+    <div id="p_home">
+      <div class="card"><input id="q0" placeholder="חיפוש מהיר: שם משפחה / איש קשר / טלפון / אימייל / שחיין/ית / מס לקוח" onkeydown="if(event.key==='Enter'){$('q').value=this.value;tab('hh');search();}"></div>
+      <div class="card" id="todoCard"><h2>לטיפול <span class="badge warn" id="todoCount"></span></h2><div id="homeTodo"></div></div>
+      <div class="grid2">
+        <div class="card"><h2>חריגות לטיפול <span class="badge bad" id="excCount"></span></h2><div id="homeExc"></div><button class="link" onclick="tab('exc')">לכל החריגות ›</button></div>
+        <div class="card"><h2>משפחות שדורשות תשומת לב</h2><div id="homeAtt"></div></div>
+      </div>
+      <div class="card"><h2>שיעורים בשבוע הקרוב</h2><div id="homeUp"></div></div>
+    </div>
+
+    <div id="p_hh" class="hidden">
+      <div class="card"><div class="inline"><input id="q" placeholder="חיפוש: שם / טלפון / אימייל / שחיין/ית / מס לקוח" onkeydown="if(event.key==='Enter')search()" style="flex:1"><button class="btn" onclick="search()">חיפוש</button><button class="btn sec" onclick="newHousehold()">משפחה חדשה</button></div><div id="results"></div></div>
+      <div id="hh" class="hidden"></div>
+    </div>
+
+    <div id="p_ld" class="hidden">
+      <div class="card"><h2>לידים — בקשות מטופס ההרשמה</h2><div class="muted">טופס ההרשמה הציבורי: <a id="ldFormLink" class="link" target="_blank" rel="noopener"></a>. ליד אינו לקוח: אין לו כניסה, יתרה או מאמן עד "צור כרטיסייה".</div>
+        <div class="inline" style="margin:8px 0"><select id="ld_status" onchange="loadLeads()" style="width:auto"><option value="">כל הסטטוסים</option><option value="NEW">חדש</option><option value="UNPAID">לא שולם</option><option value="PAID">שולם</option><option value="PAID_SINGLE">שולם יחידני</option><option value="CONVERTED">בוצע המרה</option></select><input id="ld_q" placeholder="חיפוש: שם שחיין/ית / איש קשר / טלפון" onkeydown="if(event.key==='Enter')loadLeads()" style="flex:1"><button class="btn sm" onclick="loadLeads()">חיפוש</button></div>
+        <div id="leads"><div class="muted">טוען…</div></div></div>
+      <div id="ld_detail"></div>
+    </div>
+
+    <div id="p_exc" class="hidden"><div class="card"><h2>חריגות מול היומן <button class="btn sm" onclick="loadExc(true)">בדיקה מול היומן עכשיו</button></h2><div class="muted">הבדיקה רצה אוטומטית כל 15 דקות. אירוע שנמחק ביומן לא מבטל הזמנה לבד — המשרד מחליט כאן.</div><div id="exc"></div><div id="grRev"></div></div></div>
+
+    <div id="p_co" class="hidden"><div class="card"><h2>מדריכים <button class="btn sm sec" onclick="newCoach()">מדריך חדש</button></h2><div class="muted">מדריך <b>מנהל את עצמו</b> נכנס לאפליקציית המדריך ומגדיר זמינות בעצמו. מדריך <b>בניהול המשרד</b> — המשרד מגדיר עבורו כאן.</div><div id="coachList"></div></div><div id="coachAvailBox" class="hidden"><div class="card"><h2 id="coachAvailTitle"></h2><div class="muted">אותו מסך שהמדריך רואה. שינויים כאן נשמרים עבור המדריך.</div></div><div id="avail"></div></div></div>
+    <div id="p_gr" class="hidden"><div class="card"><h2>קבוצות <button class="btn sm" onclick="newGroup()">קבוצה חדשה</button></h2>
+      <div class="muted">חוגים שנתיים וקורסים. המפגשים נוצרים אוטומטית מהלוח השבועי; סגירת בית ספר סוגרת מפגשים עתידיים בלבד. קבוצות אינן חוסמות שיעורים פרטיים. אין קבוצות בשבת.</div>
+      <div class="inline" style="margin:8px 0"><select id="gr_type" onchange="loadGroups()"><option value="">כל הסוגים</option><option value="ANNUAL">חוג שנתי</option><option value="COURSE">קורס</option></select><select id="gr_coach" onchange="loadGroups()"><option value="">כל המדריכים</option></select><select id="gr_status" onchange="loadGroups()"><option value="ACTIVE">פעילות</option><option value="ARCHIVED">בארכיון</option><option value="ALL">הכול</option></select></div>
+      <div id="groups"><div class="muted">טוען…</div></div></div><div id="gr_detail"></div></div>
+    <div id="p_cl" class="hidden"><div class="card"><h2>סגירות בית הספר <button class="btn sm" onclick="newClosure()">הוספת סגירה</button></h2><div class="muted">יום כיפור, תחזוקה, אירוע — סגירה חלה על כל המדריכים ולקוחות לא יוכלו להזמין בזמן הזה. מדריך לא יכול לעקוף סגירה.</div><div id="closures"></div></div></div>
+
+    <div id="p_rep" class="hidden">
+      <div class="card"><div class="inline" style="justify-content:space-between;align-items:center"><h2 id="repTitle" style="margin:0">דוח חודשי</h2><div class="inline"><select id="repCoach" onchange="reportPick()" style="width:auto"></select><button class="btn sm sec" onclick="reportCsv()">ייצוא CSV</button></div></div>
+        <div class="nav" style="margin-top:8px"><button class="btn sm ghost" onclick="reportMove(-1)">→ חודש קודם</button><span class="inline"><select id="repM" onchange="reportPickMonth()" style="width:auto"></select><select id="repY" onchange="reportPickMonth()" style="width:auto"></select></span><button class="btn sm ghost" onclick="reportMove(1)">חודש הבא ←</button></div>
+        <div class="stat" id="repStats" style="margin-top:10px"></div>
+      </div>
+      <div class="card"><h2>סיכום עונה <span class="muted" id="repSeasonLbl"></span></h2><div class="chips" id="repSeason"></div></div>
+      <div class="card"><h2>פירוט שיעורים <span class="muted" id="repMonthLbl"></span></h2><div style="overflow:auto"><table class="tbl" id="repTable"></table></div></div>
+    </div>
+    <div id="p_set" class="hidden"><div class="card"><h2>הגדרות</h2><div class="muted">שינוי תוקף ברירת המחדל לא משנה זיכויים קיימים.</div><div id="cfg"></div></div><div class="card" id="policyCard"><h2>מדיניות לטופס ההרשמה</h2><div class="muted">מדביקים כאן את טקסט המדיניות (טקסט רגיל; מעברי שורה נשמרים). כל שמירה יוצרת גרסה חדשה; הטופס מציג תמיד את הגרסה האחרונה, וכל ליד שומר את הגרסה שאישר. בלי מדיניות — הסעיף לא מוצג בטופס.</div><textarea id="policyText" rows="10" style="width:100%;margin-top:8px" oninput="this.dataset.dirty=1"></textarea><div class="inline" style="margin-top:8px"><button class="btn sm" onclick="savePolicy()">שמירת גרסה חדשה</button><span class="muted" id="policyState"></span></div><details style="margin-top:8px"><summary>כל הגרסאות (לקריאה בלבד)</summary><div id="policyVersions"></div></details></div><div class="card"><h2>זהות המשרד ודואר יוצא</h2><div class="muted">המשרד = Barbur Swim. חשבון המערכת (Apps Script, יומנים, DB) אינו המשרד ואינו מוצג ללקוחות.</div><div id="mailId"></div></div><div class="card"><h2>רענון נתונים</h2><div class="muted">אם מישהו שינה משהו ישירות בגיליון או ביומן ולא דרך המסך הזה — לוחצים כאן והמערכת קוראת הכול מחדש. לא נדרשת סיסמה נוספת.</div><button class="btn sm sec" onclick="refreshCache()">רענון נתונים</button></div><div class="card hidden" id="pwCard"><h2>סיסמת כניסה למשרד <span class="badge warn">TEST</span></h2><div class="muted">כניסה לחשבון המשרד המחובר עם אימייל וסיסמה. נשמר רק גיבוב (hash); הסיסמה עצמה לא נשמרת ולא מוצגת. <span id="pwState"></span></div><div class="inline" style="margin-top:8px"><input id="newPw" type="password" autocomplete="new-password" maxlength="200" placeholder="8 תווים לפחות" style="width:240px"><button class="btn sm sec" onclick="setTestPw()">שמירת סיסמה</button></div></div><div class="card" id="adminCard"><h2>כלי תחזוקה <span class="badge warn">TEST</span></h2><div class="muted">משימות חד-פעמיות של המערכת (רצות בחשבון המערכת, מתועדות ביומן הביקורת). עשויות לקחת עד כמה דקות.</div><div class="inline" style="margin-top:8px;flex-wrap:wrap"><button class="btn sm sec" onclick="adminRun('runHistoryImport')">ייבוא היסטוריית שיעורים</button><button class="btn sm sec" onclick="adminRun('migrateIteration23')">מיגרציה 2.3</button><button class="btn sm sec" onclick="adminRun('reconcileTrigger')">סנכרון יומנים</button><button class="btn sm ghost" onclick="adminRun('runIteration2E2E')">בדיקת E2E</button><button class="btn sm ghost" onclick="adminRun('cleanTestLessonEvents')">ניקוי אירועי TEST</button><button class="btn sm ghost" onclick="adminRun('installDbChangeTrigger')">התקנת עדכון אוטומטי מהגיליון</button></div><button class="btn sm sec" onclick="adminRun('diagnostics')">בדיקת מערכת</button><pre id="adminOut" class="muted" style="white-space:pre-wrap;word-break:break-all;margin-top:8px"></pre></div></div>
+  </section>
+</main>
+<div id="sheet" class="sheet hidden"><div class="card"><h2 id="shTitle"></h2><div id="shBody"></div><div id="shErr" class="muted" style="color:var(--bad)"></div><div class="inline" style="margin-top:12px"><button class="btn" id="shOk">אישור</button><button class="btn ghost" onclick="closeSheet()">ביטול</button></div></div></div>
+<!-- Coach scheduling component: ONE implementation, two authorized callers (the coach for themselves; Office for any coach).
+     Host supplies Avail.init({token, coachId, call, mount, isOffice}). Grid is fixed at 15 minutes; lesson length comes from the server. -->
+<script>
+var Avail = (function(){
+  var S = {}, DAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'], DS = ['א','ב','ג','ד','ה','ו','ש'];
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function fmt(ymd){ var d = new Date(ymd+'T12:00:00'); return 'יום ' + DAYS[d.getDay()] + ' ' + ymd.slice(8,10) + '/' + ymd.slice(5,7); }
+  function fmtDM(ymd){ return ymd.slice(8,10) + '/' + ymd.slice(5,7); }
+  function addDays(ymd, n){ var d = new Date(ymd+'T12:00:00'); d.setDate(d.getDate()+n); return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2); }
+  function hm2m(hm){ var p = hm.split(':'); return Number(p[0])*60 + Number(p[1]); }
+  function m2hm(m){ return ('0'+Math.floor(m/60)).slice(-2) + ':' + ('0'+(m%60)).slice(-2); }
+  function msg(t, kind){ var m = $('av_msg'); m.innerHTML = t ? '<div class="msg '+(kind||'err')+'">'+esc(t)+'</div>' : ''; if (t) m.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+  // --- time selection (Task E): pool hours 06:00–22:00, starts on the 15-minute grid, window length a multiple of 30 minutes and at
+  // least one lesson. Only valid choices are offered; the server re-validates everything (validateWindow_ / validateNoOverlap_).
+  var OPEN = 6*60, CLOSE = 22*60, STEP = 30;
+  function minLen(){ var L = (S.d && S.d.coach.lesson.minutes) || 30; return Math.ceil(Math.max(L, STEP) / STEP) * STEP; }
+  function opt(v, sel){ return '<option value="'+v+'"'+(v===sel?' selected':'')+'>'+v+'</option>'; }
+  function blank(){ return '<option value="" selected>בחרו…</option>'; }
+  /** Start times from floor (end of the previous window, or 06:00) that still leave room for one valid window before 22:00. */
+  function startOpts(floor, sel){ var o = '', ok = false; for (var m = Math.max(OPEN, floor||0); m + minLen() <= CLOSE; m += 15) { var v = m2hm(m); if (v===sel) ok = true; o += opt(v, sel); } return (ok ? '' : blank()) + o; }
+  /** End times after start: only lengths that are multiples of 30 minutes (start :00/:30 → :00/:30, start :15/:45 → :15/:45), ≤ 22:00. */
+  function endOpts(start, sel){ if (!start) return blank(); var o = '', ok = false, a = hm2m(start); for (var m = a + minLen(); m <= CLOSE; m += STEP) { var v = m2hm(m); if (v===sel) ok = true; o += opt(v, sel); } return (ok ? '' : blank()) + o; }
+  /** Default end for a start: one hour (or one lesson if longer), shortened in 30-minute steps to fit before 22:00. '' if nothing fits. */
+  function defEnd(start){ var a = hm2m(start), e = a + Math.max(minLen(), 60); while (e > CLOSE && e - STEP - a >= minLen()) e -= STEP; return e <= CLOSE ? m2hm(e) : ''; }
+  // --- validation mirrored from the server (validateWindow_ / validateNoOverlap_) ---
+  function winErr(s, e){ if (!s || !e) return 'בחרו שעת התחלה וסיום'; var L = S.d.coach.lesson.minutes, a = hm2m(s), b = hm2m(e); if (a % 15 || b % 15) return 'שעות חייבות להיות ב-:00 / :15 / :30 / :45'; if (b <= a) return 'שעת הסיום חייבת להיות אחרי ההתחלה'; if (a < OPEN || b > CLOSE) return 'שעות הבריכה: 06:00–22:00'; if ((b - a) % STEP) return 'אורך החלון בכפולות של 30 דקות'; if (b - a < L) return 'חלון קצר משיעור אחד (' + L + ' דקות): ' + s + '–' + e; return ''; }
+  function overlapErr(rows){ var r = rows.slice().sort(function(a,b){ return hm2m(a.s)-hm2m(b.s); }); for (var i=1;i<r.length;i++) if (hm2m(r[i].s) < hm2m(r[i-1].e)) return 'חלונות חופפים: ' + r[i-1].s + '–' + r[i-1].e + ' ו-' + r[i].s + '–' + r[i].e; return ''; }
+
+  function shell(){
+    S.mount.innerHTML = '<div id="av_msg"></div>' +
+      '<div class="tabs" id="av_tabs"><button class="on" onclick="Avail.tab(\'sch\')">לוח שיעורים</button><button onclick="Avail.tab(\'av\')">זמינות</button><button onclick="Avail.tab(\'set\')">הגדרות</button><button onclick="Avail.tab(\'up\')">שיעורים קרובים</button></div>' +
+      '<div id="av_p_sch"><div class="card"><h2>לוח שיעורים <a class="btn sm sec" id="av_calbtn2" target="_blank">פתיחת היומן</a></h2>' +
+        '<div class="nav"><button class="btn sm ghost" onclick="Avail.schWeek(-1)">→ שבוע קודם</button><button class="btn sm ghost" onclick="Avail.schWeek(0)">השבוע</button><button class="btn sm ghost" onclick="Avail.schWeek(1)">שבוע הבא ←</button></div>' +
+        '<div class="muted" id="av_schLbl" style="text-align:center;margin-bottom:6px"></div><div id="av_sch"><div class="empty">טוען…</div></div>' +
+        '<div class="muted" style="margin-top:8px">שעות הבריכה 06:00–22:00. <span class="badge">שיעור</span> הזמנה אמיתית · <span class="badge ok">זמין</span> חלון זמינות · <span class="badge gray">תפוס</span> יומן חוסם / אירוע אחר · <span class="badge bad">סגור</span> סגירת בית הספר.<br>אפשר להזיז שיעור גם ביומן Google (רק השעה): ההזמנה מתעדכנת בבדיקת היומן הבאה (עד כרבע שעה). מחיקה ביומן אינה ביטול — בטלו כאן.</div></div></div>' +
+      '<div id="av_p_av" class="hidden">' +
+        '<div class="card"><h2>שעות קבועות בשבוע <button class="btn sm" id="av_saveBtn" onclick="Avail.saveRules()">שמירה</button></h2>' +
+        '<div class="muted">בימים ובשעות האלה לקוחות יכולים להזמין <span id="av_lessonName"></span>. שיעורי קבוצה ואירועים ביומן יורדים אוטומטית.</div><div id="av_week"></div></div>' +
+        '<div class="card"><h2>תצוגה ללקוח <span class="muted" id="av_prevLbl"></span></h2><div class="nav"><button class="btn sm ghost" id="av_pprev" onclick="Avail.prevWeek(-1)">→ שבוע קודם</button><span class="muted" id="av_weekLbl"></span><button class="btn sm ghost" id="av_pnext" onclick="Avail.prevWeek(1)">שבוע הבא ←</button></div><div class="week" id="av_prev"></div><div class="chips" id="av_prevTimes" style="margin-top:8px"></div><div class="muted" style="margin-top:6px">בדיוק מה שלקוח רואה: אחרי הורדת יומן, שיעורים קיימים, הפסקות, סגירות בית הספר, התראה מינימלית ואופק ההזמנה.</div></div>' +
+        '<div class="card"><h2>שינויים לתאריך מסוים</h2><div id="av_over"></div>' +
+        '<details><summary>הוספת שינוי</summary><div class="inline"><input type="date" id="av_od"><select id="av_ok" onchange="Avail.kindChanged()"><option value="CLOSED">סגור — אין שיעורים</option><option value="CUSTOM">שעות מיוחדות (במקום הקבוע)</option><option value="EXTRA">זמינות נוספת (בנוסף לקבוע)</option></select></div>' +
+        '<div class="inline hidden" id="av_ot"><select id="av_os" onchange="Avail.overStart()"></select> עד <select id="av_oe"></select></div><input id="av_on" placeholder="הערה (לא חובה)"><button class="btn sm" onclick="Avail.addOverride()">הוספה</button></details>' +
+        '<div id="av_closures"></div></div>' +
+      '</div>' +
+      '<div id="av_p_set" class="hidden"><div class="card"><h2>הגדרות הזמנה <button class="btn sm" onclick="Avail.saveSettings()">שמירה</button></h2><div id="av_set"></div></div>' +
+        '<div class="card"><h2>יומני Google</h2><div id="av_cals"></div></div>' +
+        '<div class="card"><h2>מדיניות בית הספר</h2><div id="av_policy" class="muted"></div></div></div>' +
+      '<div id="av_p_up" class="hidden"><div class="card"><h2>שיעורים קרובים <a class="btn sm sec" id="av_calbtn" target="_blank">פתיחת היומן</a></h2><div id="av_up"></div><div class="muted" style="margin-top:8px">היומן של Google הוא העורך התפעולי: הזזת אירוע ביומן מעדכנת את ההזמנה תוך כרבע שעה. מחיקה ביומן לא מבטלת — היא מופיעה למשרד כחריגה.</div></div>' +
+        '<div class="card"><h2>שינויים אחרונים <span class="muted">7 ימים</span></h2><div id="av_recent"><div class="empty">טוען…</div></div></div></div>';
+  }
+  // Perf (W1-4): every tab fetches its own data when it is opened — the customer preview (a FreeBusy read) only on the availability
+  // tab, the upcoming list only when its tab opens after a lesson action made it stale. The default (schedule) tab never pays for them.
+  function tab(t){ if(['sch','av','set','up'].indexOf(t)<0)t='sch'; S.activeTab=t; notifyNavigation(); ['sch','av','set','up'].forEach(function(x, i){ $('av_p_'+x).classList.toggle('hidden', x!==t); $('av_tabs').children[i].classList.toggle('on', x===t); }); msg(''); if (t === 'set' && S.d && !S.calsLoaded) loadCals(); if (t === 'up' && !S.recentLoaded) loadRecent(); if (t === 'up' && S.upStale) refreshUp(); if (t === 'av' && S.d && !S.prevLoaded) preview(); if (t === 'sch') loadWeek(true); }
+  /** The upcoming list after a lesson action: refetched only when its tab is actually shown. */
+  function refreshUp(){ S.upStale = false; if (!S.d) return; var coach = S.coachId; S.call('co_schedule', [S.token, coach], function(d){ if (S.coachId !== coach) return; S.d = d; renderUp(); }); }
+  // Perf: the audit-derived feed is fetched only when the "שיעורים קרובים" tab is opened (never on first paint).
+  function loadRecent(){
+    S.recentLoaded = true; var coach = S.coachId;
+    S.call('co_recentChanges', [S.token, coach], function(list){
+      if (S.coachId !== coach || !$('av_recent')) return;
+      var K = { RESCHEDULE: ['שינוי מועד', 'warn'], CANCEL: ['ביטול', 'gray'], LATE: ['ביטול מאוחר', 'warn'], NOSHOW: ['אי-הגעה', 'warn'], CHANGE: ['עדכון', ''] };
+      $('av_recent').innerHTML = list.length ? list.map(function(x){ var k = K[x.kind] || ['', '']; return '<div class="row" style="padding:6px 0"><div class="grow">' + esc(x.text) + '<div class="muted">' + esc(fmtTs(x.ts)) + '</div></div><span class="badge ' + k[1] + '">' + k[0] + '</span></div>'; }).join('') : '<div class="empty">אין שינויים בשבוע האחרון</div>';
+    });
+  }
+  function fmtTs(ts){ return ts ? ts.slice(8,10) + '/' + ts.slice(5,7) + ' ' + ts.slice(11,16) : ''; }
+  function load(cb){
+    if (S.d) { S.week = null; S.weekGeneration = (S.weekGeneration || 0) + 1; S.weekPending = false; }
+    S.mount.querySelectorAll('.card').forEach(function(c){ c.style.opacity = .6; });
+    var current = S;
+    S.call('co_schedule', [S.token, S.coachId], function(d){
+      if (S !== current) return;
+      S.d = d; S.prevLoaded = false; S.ro = !d.is_office && d.coach.management_mode === 'OFFICE_MANAGED'; S.mount.querySelectorAll('.card').forEach(function(c){ c.style.opacity = 1; });
+      $('av_lessonName').textContent = d.coach.lesson.name + ' (' + d.coach.lesson.minutes + ' דקות)';
+      renderWeek(); renderOver(); renderClosures(); renderSet(); renderCals(); renderUp(); overStart('16:00', '18:00');
+      if (!$('av_p_up').classList.contains('hidden')) { S.recentLoaded = false; loadRecent(); } // reload after save if the tab is open
+      $('av_calbtn').href = d.coach.booking_calendar.url; $('av_calbtn2').href = d.coach.booking_calendar.url;
+      if (!S.weekStart) S.weekStart = weekOf(d.today);
+      if (S.startTab && S.startTab !== 'sch') { var st0 = S.startTab; S.startTab = null; tab(st0); } // Office: open straight on a tab
+      if (!$('av_p_sch').classList.contains('hidden')) loadWeek();
+      // Task D: OFFICE_MANAGED → the coach views; Office edits (enforced on the server too).
+      var ro = !d.is_office && d.coach.management_mode === 'OFFICE_MANAGED', note = $('av_ro');
+      if (!note) { note = document.createElement('div'); note.id = 'av_ro'; note.className = 'msg'; S.mount.insertBefore(note, S.mount.firstChild); }
+      note.textContent = ro ? 'ההגדרות מנוהלות על ידי משרד בארבור — צפייה בלבד.' : ''; note.style.display = ro ? '' : 'none';
+      $('av_policy').innerHTML = 'ביטול ללא חיוב עד <b>' + esc(d.policy.late_hours) + ' שעות</b> לפני השיעור — מדיניות המשרד לכל המדריכים (לא ניתן לשינוי כאן).<br>שיעור: <b>' + esc(d.coach.lesson.name) + '</b>, ' + esc(d.coach.lesson.minutes) + ' דקות, ' + esc(d.coach.lesson.credits) + ' זיכוי.';
+      if (!S.weekStart) S.weekStart = weekOf(d.today);
+      S.upStale = false; if (!$('av_p_av').classList.contains('hidden') && !S.prevLoaded) preview(); // hidden tab: fetched when opened
+      applyAuthority();
+      if (cb) cb();
+    });
+  }
+  // Presentation only: every write is independently authorized by the server.
+  function applyAuthority(){
+    if (!S.ro) return;
+    S.mount.querySelectorAll('#av_week input, #av_week select, #av_week button, #av_over button, #av_p_set input, #av_p_set select, #av_p_set button, #av_od, #av_ok, #av_os, #av_oe, #av_on, button[onclick="Avail.addOverride()"]' ).forEach(function(el){ el.disabled = true; });
+  }
+  function weekOf(ymd){ var d = new Date(ymd+'T12:00:00'); return addDays(ymd, -d.getDay()); }
+  // --- weekly windows ---
+  function renderWeek(){
+    var by = {}; S.d.rules.forEach(function(r){ (by[r.weekday] = by[r.weekday] || []).push(r); });
+    $('av_week').innerHTML = DAYS.slice(0, 6).map(function(n, wd){ // no Saturday row: no lessons on Saturday (owner decision 2026-10-13)
+      var rs = (by[wd] || []);
+      return '<div class="wrow" data-wd="'+wd+'"><div class="wd"><label class="sw"><input type="checkbox" class="av_on" '+(rs.length?'checked':'')+' onchange="Avail.toggleDay('+wd+', this.checked)"> '+n+'</label></div><div class="wr">' +
+        rs.map(function(r){ return rangeHtml(r.start_time, r.end_time); }).join('') +
+        '<div class="rng-empty muted'+(rs.length?' hidden':'')+'">לא זמין</div>' +
+        '<button class="link av_add'+(rs.length?'':' hidden')+'" onclick="Avail.addRange('+wd+')">+ עוד חלון</button></div></div>';
+    }).join('');
+    refreshAll(); check();
+  }
+  // Each range keeps its chosen values in data-s / data-e; refreshDay() rebuilds the option lists of every window of the day in order,
+  // so window N never starts before the end of window N-1, and a value that became impossible is cleared (visible correction, Save off).
+  function rangeHtml(s, e){ return '<div class="range" data-s="'+s+'" data-e="'+e+'"><select class="rs" onchange="Avail.pick(this)"></select> עד <select class="re" onchange="Avail.pick(this)"></select> <button class="link" onclick="Avail.removeRange(this)">הסרה</button><div class="rerr muted" style="color:var(--bad)"></div></div>'; }
+  function refreshDay(wr){
+    var floor = OPEN;
+    wr.querySelectorAll('.range').forEach(function(r){
+      var s = r.getAttribute('data-s') || '', e = r.getAttribute('data-e') || '';
+      if (s && (hm2m(s) < floor || hm2m(s) + minLen() > CLOSE || hm2m(s) % 15)) s = '';
+      if (e && (!s || hm2m(e) > CLOSE || (hm2m(e) - hm2m(s)) % STEP || hm2m(e) - hm2m(s) < minLen())) e = '';
+      r.setAttribute('data-s', s); r.setAttribute('data-e', e);
+      r.querySelector('.rs').innerHTML = startOpts(floor, s); r.querySelector('.re').innerHTML = endOpts(s, e);
+      floor = e ? hm2m(e) : s ? hm2m(s) + minLen() : floor;
+    });
+    var add = wr.querySelector('.av_add'); if (add) add.disabled = floor + minLen() > CLOSE;
+  }
+  function refreshAll(){ document.querySelectorAll('.wrow .wr').forEach(refreshDay); }
+  function pick(sel){
+    var r = sel.closest('.range'), isStart = sel.classList.contains('rs');
+    r.setAttribute(isStart ? 'data-s' : 'data-e', sel.value);
+    if (isStart && sel.value) { var e = r.getAttribute('data-e'), a = hm2m(sel.value); if (!e || hm2m(e) - a < minLen() || (hm2m(e) - a) % STEP) r.setAttribute('data-e', defEnd(sel.value)); }
+    refreshDay(r.closest('.wr')); check();
+  }
+  function toggleDay(wd, on){ var wr = document.querySelector('.wrow[data-wd="'+wd+'"] .wr'); wr.querySelectorAll('.range').forEach(function(r){ r.remove(); }); if (on) wr.insertAdjacentHTML('afterbegin', rangeHtml('16:00','18:00')); wr.querySelector('.rng-empty').classList.toggle('hidden', on); wr.querySelector('.av_add').classList.toggle('hidden', !on); refreshDay(wr); check(); }
+  function addRange(wd){
+    var wr = document.querySelector('.wrow[data-wd="'+wd+'"] .wr'), last = wr.querySelectorAll('.range'), lr = last[last.length-1];
+    if (lr && !lr.getAttribute('data-e')) { msg('השלימו קודם את החלון הקודם'); return; }
+    var floor = lr ? hm2m(lr.getAttribute('data-e')) : OPEN;
+    if (floor + minLen() > CLOSE) { msg('אין מקום לחלון נוסף לפני 22:00'); return; }
+    wr.querySelector('.av_add').insertAdjacentHTML('beforebegin', rangeHtml(m2hm(floor), defEnd(m2hm(floor)))); refreshDay(wr); check();
+  }
+  function removeRange(btn){ var row = btn.closest('.wrow'), wr = row.querySelector('.wr'); btn.parentNode.remove(); if (!wr.querySelectorAll('.range').length) { row.querySelector('.av_on').checked = false; wr.querySelector('.rng-empty').classList.remove('hidden'); wr.querySelector('.av_add').classList.add('hidden'); } refreshDay(wr); check(); }
+  function collectRules(){
+    var rows = [];
+    document.querySelectorAll('.wrow').forEach(function(w){ var wd = Number(w.getAttribute('data-wd')); w.querySelectorAll('.range').forEach(function(r){ rows.push({ weekday: wd, start_time: r.getAttribute('data-s') || '', end_time: r.getAttribute('data-e') || '', el: r }); }); });
+    return rows;
+  }
+  /** Live validation: marks each invalid window and disables Save while anything is wrong. */
+  function check(){
+    var rows = collectRules(), bad = 0;
+    rows.forEach(function(r){ r.el.querySelector('.rerr').textContent = ''; });
+    rows.forEach(function(r){ var e = winErr(r.start_time, r.end_time); if (e) { r.el.querySelector('.rerr').textContent = e; bad++; } });
+    for (var wd = 0; wd <= 6; wd++) { var d = rows.filter(function(r){ return r.weekday===wd && !winErr(r.start_time, r.end_time); }).map(function(r){ return {s:r.start_time, e:r.end_time, el:r.el}; }); var o = overlapErr(d); if (o) { bad++; d[d.length-1].el.querySelector('.rerr').textContent = o; } }
+    $('av_saveBtn').disabled = bad > 0 || !!S.ro; $('av_saveBtn').textContent = S.ro ? 'צפייה בלבד' : bad ? 'יש שגיאות' : 'שמירה'; // OFFICE_MANAGED: the coach views (server refuses anyway)
+    return !bad;
+  }
+  function saveRules(){
+    if (S.ro) return;
+    if (!check()) { msg('תקנו את החלונות המסומנים באדום'); return; }
+    var rows = collectRules().map(function(r){ return { weekday: r.weekday, start_time: r.start_time, end_time: r.end_time }; });
+    $('av_saveBtn').disabled = true; $('av_saveBtn').textContent = 'שומר…';
+    S.call('co_saveRules', [S.token, S.coachId, rows], function(){ msg('השעות נשמרו. לקוחות רואים את השינוי מיד.', 'ok'); load(); });
+    setTimeout(function(){ if ($('av_saveBtn') && $('av_saveBtn').textContent === 'שומר…') check(); }, 15000); // a refused save never leaves the button stuck
+  }
+  // --- customer preview (one week; times only for the selected day) ---
+  function preview(){
+    S.prevLoaded = true; var ws = S.weekStart;
+    $('av_weekLbl').textContent = fmtDM(ws) + ' – ' + fmtDM(addDays(ws, 6));
+    $('av_prev').innerHTML = DS.map(function(d){ return '<div class="day sk"><div class="d">'+d+'</div><div class="n">&nbsp;</div><div class="c">&nbsp;</div></div>'; }).join('');
+    $('av_prevTimes').innerHTML = '';
+    S.call('co_preview', [S.token, S.coachId, ws, addDays(ws, 6)], function(r){
+      S.prev = r; S.prevDay = null;
+      $('av_pprev').disabled = addDays(ws, 6) < r.from; $('av_pnext').disabled = addDays(ws, 7) > r.to;
+      $('av_prev').innerHTML = DS.map(function(dn, i){ var d = addDays(ws, i), n = r.counts[d] || 0, off = d < r.from || d > r.to; return '<button class="day"'+(n && !off ? ' onclick="Avail.prevDay(\''+d+'\')"' : ' disabled')+'><div class="d">'+dn+'</div><div class="n">'+Number(d.slice(8,10))+'</div><div class="c">'+(n && !off ? n+' פנויות' : (off ? '—' : 'אין'))+'</div></button>'; }).join('');
+      $('av_prevLbl').textContent = 'אופק ' + S.d.coach.settings.horizon_days + ' ימים';
+    });
+  }
+  function prevWeek(n){ S.weekStart = addDays(S.weekStart, 7*n); notifyNavigation(); preview(); }
+  function prevDay(d){ S.prevDay=d; notifyNavigation(); Array.prototype.forEach.call($('av_prev').children, function(c){ c.classList.toggle('sel', c.getAttribute('onclick') && c.getAttribute('onclick').indexOf(d) >= 0); }); $('av_prevTimes').innerHTML = S.prev.slots.filter(function(s){ return s.ymd===d; }).map(function(s){ return '<span class="chip" style="cursor:default">'+s.hm+'</span>'; }).join(''); }
+  // --- overrides + closures ---
+  function renderOver(){
+    var K = { CLOSED: 'סגור', CUSTOM: 'שעות מיוחדות', EXTRA: 'זמינות נוספת' };
+    $('av_over').innerHTML = S.d.overrides.length ? S.d.overrides.map(function(o){
+      return '<div class="row"><div class="grow"><b>' + esc(fmt(o.date)) + '</b> · <span class="badge ' + (o.kind==='CLOSED'?'bad':o.kind==='EXTRA'?'ok':'warn') + '">' + K[o.kind] + '</span>' + (o.kind!=='CLOSED' ? ' ' + esc(o.start_time) + '–' + esc(o.end_time) : '') + (o.note ? '<div class="muted">' + esc(o.note) + '</div>' : '') + '</div><button class="btn sm ghost" onclick="Avail.removeOverride(\'' + o.override_id + '\')">ביטול השינוי</button></div>';
+    }).join('') : '<div class="empty">אין שינויים עתידיים</div>';
+  }
+  function renderClosures(){
+    var c = S.d.closures || [];
+    $('av_closures').innerHTML = c.length ? '<h3>סגירות בית הספר (נקבעות במשרד)</h3>' + c.map(function(x){ var s = x.start.slice(0,10), e = x.end.slice(0,10); return '<div class="row"><div class="grow"><b>' + esc(fmtDM(s)) + (x.end.slice(11,16)==='00:00' && e > s ? (addDays(s,1)===e ? '' : ' – ' + fmtDM(addDays(e,-1))) : ' ' + x.start.slice(11,16) + '–' + x.end.slice(11,16)) + '</b> · ' + esc(x.reason) + '</div><span class="badge bad">סגור לכולם</span></div>'; }).join('') : '';
+  }
+  function overStart(s, e){
+    var os = $('av_os'), oe = $('av_oe'); if (!os) return;
+    var sv = s != null ? s : os.value, ev = e != null ? e : oe.value; os.innerHTML = startOpts(OPEN, sv); sv = os.value;
+    if (!sv) ev = ''; else if (!ev || hm2m(ev) > CLOSE || (hm2m(ev) - hm2m(sv)) % STEP || hm2m(ev) - hm2m(sv) < minLen()) ev = defEnd(sv);
+    oe.innerHTML = endOpts(sv, ev);
+  }
+  function kindChanged(){ $('av_ot').classList.toggle('hidden', $('av_ok').value === 'CLOSED'); }
+  function addOverride(){
+    if (S.ro) return;
+    var o = { date: $('av_od').value, kind: $('av_ok').value, start_time: $('av_os').value, end_time: $('av_oe').value, note: $('av_on').value };
+    if (!o.date) { msg('בחרו תאריך'); return; }
+    if (o.kind !== 'CLOSED') { var e = winErr(o.start_time, o.end_time); if (e) { msg(e); return; } }
+    S.call('co_saveOverride', [S.token, S.coachId, o], function(){ msg('השינוי נשמר', 'ok'); $('av_on').value = ''; load(); });
+  }
+  function removeOverride(id){ if (S.ro) return; S.call('co_removeOverride', [S.token, id], function(){ msg('השינוי בוטל', 'ok'); load(); }); }
+  // --- settings (coach-owned only) ---
+  function renderSet(){
+    var c = S.d.coach, s = c.settings;
+    $('av_set').innerHTML =
+      '<div class="grid2">' +
+      '<div><label>כמה ימים קדימה לקוחות יכולים להזמין</label><input id="av_horizon" type="number" min="7" max="120" value="' + esc(s.horizon_days) + '"><div class="muted">7–120 ימים</div></div>' +
+      '<div><label>התראה מינימלית להזמנה (שעות)</label><input id="av_notice" type="number" min="0" max="168" value="' + esc(s.notice_hours) + '"><div class="muted">לקוח לא יוכל להזמין פחות משעות אלה לפני השיעור</div></div>' +
+      '<div><label>זמן הפסקה אחרי שיעור</label><select id="av_buffer">' + [0,5,10,15,20,30].map(function(v){ return '<option value="'+v+'"'+(Number(s.buffer_min)===v?' selected':'')+'>'+(v?v+' דקות':'ללא הפסקה')+' — שיעור כל '+(c.lesson.minutes+v)+' דקות</option>'; }).join('') + '</select><div class="muted">השעות המוצעות מתחילות בתחילת כל חלון זמינות וממשיכות כל ' + (c.lesson.minutes) + ' דקות + ההפסקה.</div></div>' +
+      (S.isOffice && S.d.is_office ? '<div><label>מיקום (מופיע ללקוח ובאירוע) — נקבע על ידי המשרד</label><input id="av_loc" value="' + esc(c.location) + '"></div>'
+                     : '<div><label>מיקום</label><div class="row"><b>' + esc(c.location || '—') + '</b></div><div class="muted">נקבע על ידי המשרד</div></div>') +
+      '</div>' +
+      '<h3>ריכוז שיעורים</h3><label class="sw"><input type="checkbox" id="av_cluster"' + (s.cluster_enabled ? ' checked' : '') + '> להציע ללקוחות רק שעות סמוכות לשיעורים שכבר נקבעו באותו יום</label>' +
+      '<div class="grid2"><div><label>שעות לפני השיעור הראשון</label><input id="av_before" type="number" min="0" max="10" value="' + esc(s.slots_before) + '"></div><div><label>שעות אחרי השיעור האחרון</label><input id="av_after" type="number" min="0" max="10" value="' + esc(s.slots_after) + '"></div></div>' +
+      '<div class="muted">ביום בלי שיעורים כל השעות פתוחות. השעות בין שיעורים תמיד פתוחות. רק ללקוחות — המשרד והמדריך קובעים בכל שעה.</div>' +
+      '<div class="muted" style="margin-top:8px">שיעור: ' + esc(c.lesson.name) + ' · ' + esc(c.lesson.minutes) + ' דקות · ' + esc(c.lesson.credits) + ' זיכוי (הגדרת המשרד).</div>';
+  }
+  function renderCals(){
+    var c = S.d.coach;
+    $('av_cals').innerHTML = '<label>יומן הזמנות (Booking calendar)</label><div class="row"><div class="grow"><b>' + esc(c.booking_calendar.name) + '</b><div class="muted">כל שיעור שמוזמן נוצר כאירוע ביומן הזה.</div></div><a class="link" target="_blank" href="' + esc(c.booking_calendar.url) + '">פתיחה</a></div>' +
+      '<div id="av_bookpick" class="muted">טוען…</div>' +
+      '<label style="margin-top:14px">יומנים שחוסמים זמינות (Calendars that block availability)</label><div class="muted">אירועים ביומנים האלה נחשבים "תפוס" (רק פנוי/תפוס נקרא, לא תוכן האירועים). יומן ההזמנות עצמו תמיד נבדק.</div>' +
+      (c.busy_calendars.map(function(b){ return '<div class="row"><div class="grow">' + esc(b.name) + '</div><a class="link" target="_blank" href="' + esc(b.url) + '">פתיחה</a></div>'; }).join('') || '<div class="empty">אין יומנים נוספים</div>') +
+      '<div id="av_busypick" class="muted">טוען…</div>';
+    S.calsLoaded = false; if (!$('av_p_set').classList.contains('hidden')) loadCals();
+  }
+  // Perf: the Google calendar list (Calendar API) is only fetched when the settings tab is actually opened.
+  function loadCals(){
+    var c = S.d.coach; S.calsLoaded = true;
+    S.call('co_calendars', [S.token], function(list){
+      var cur = c.busy_calendars.map(function(b){ return b.id; });
+      var R = {owner:'בעלים',writer:'עריכה',reader:'קריאה בלבד',freeBusyReader:'פנוי/תפוס בלבד'};
+      var bookable = list.filter(function(x){ return x.can_book; });
+      $('av_bookpick').innerHTML = bookable.some(function(x){ return x.id === c.booking_calendar.id; }) ? 'יומן ההזמנות שייך לבית הספר ונקבע על ידי המשרד.' : '<b>לחשבון המערכת אין הרשאת עריכה ביומן ההזמנות — הזמנות חדשות לא ייקלטו. פנו למשרד.</b>';
+      $('av_busypick').innerHTML = '<details><summary>בחירת יומנים חוסמים</summary>' + (list.filter(function(x){ return x.id !== c.booking_calendar.id; }).map(function(x){ return '<label style="display:flex;align-items:center;gap:6px;color:var(--ink);font-size:14px"><input type="checkbox" class="av_cal" value="' + esc(x.id) + '"' + (cur.indexOf(x.id) >= 0 ? ' checked' : '') + '>' + esc(x.name) + ' <span class="muted">(' + esc(R[x.role]||x.role) + ')</span></label>'; }).join('') || 'אין יומנים נוספים') + '</details>';
+      applyAuthority();
+    });
+  }
+  function saveSettings(){
+    if (S.ro) return;
+    var p = { horizon_days: $('av_horizon').value, notice_hours: $('av_notice').value, buffer_min: $('av_buffer').value, cluster_enabled: !!$('av_cluster').checked, slots_before: $('av_before').value, slots_after: $('av_after').value };
+    if ($('av_loc')) p.location = $('av_loc').value; // Office only; the server refuses a coach location change anyway
+    if (document.querySelectorAll('.av_cal').length) p.busy_calendar_ids = [].map.call(document.querySelectorAll('.av_cal:checked'), function(x){ return x.value; }).join(',');
+    S.call('co_saveSettings', [S.token, S.coachId, p], function(){ msg('ההגדרות נשמרו', 'ok'); load(); });
+  }
+  // --- coach schedule (Task E): real lessons of one week + availability, busy and closures, 06:00–22:00 ---
+  function loadWeek(force){
+    if (force) { // explicit entry also permits retry after a failed transport
+      S.week = null;
+      if (S.weekPending) { S.weekGeneration = (S.weekGeneration || 0) + 1; S.weekPending = false; }
+    }
+    if (S.weekPending) return;
+    if (!S.schWeek && S.d) S.schWeek = weekOf(S.d.today);
+    if (!S.schWeek) S.schWeek = ''; // server chooses its local current week before profile arrives
+    if (S.week && S.week.week_start === S.schWeek) { renderWeekSched(); return; }
+    S.weekPending = true;
+    var coach = S.coachId, ws = S.schWeek, generation = S.weekGeneration || 0;
+    if (ws) $('av_schLbl').textContent = fmtDM(ws) + ' – ' + fmtDM(addDays(ws, 6));
+    S.call('co_week', [S.token, coach, ws], function(w){ if (S.coachId !== coach || generation !== (S.weekGeneration || 0)) return; S.weekPending = false; if (S.schWeek !== ws) { loadWeek(); return; } S.schWeek = w.week_start; S.week = w; notifyNavigation(); $('av_schLbl').textContent = fmtDM(S.schWeek) + ' – ' + fmtDM(addDays(S.schWeek, 6)); renderWeekSched(); });
+  }
+  function schWeek(n){ if (!S.d) return; S.schWeek = n ? addDays(S.schWeek || weekOf(S.d.today), 7*n) : weekOf(S.d.today); S.open = null; notifyNavigation(); loadWeek(); } // ignored until the first load (browser-found: early click threw)
+  var LST = { CONFIRMED: ['מאושר','ok'], PENDING: ['ממתין','gray'], CANCELLED: ['בוטל','gray'], LATE_CANCEL: ['ביטול מאוחר','warn'], NO_SHOW: ['לא הגיע/ה','warn'] };
+  var ATT = { COMPLETED: 'התקיים', IN_PROGRESS: 'מתקיים עכשיו', UPCOMING: 'עתידי', NO_SHOW: 'לא הגיע/ה' };
+  function clipHm(ymd, x, endSide){ var y = endSide ? x.end_ymd : x.ymd, hm = endSide ? x.end_hm : x.hm; if (y < ymd) return S.week.open; if (y > ymd) return S.week.close; return hm < S.week.open ? S.week.open : hm > S.week.close ? S.week.close : hm; }
+  function renderWeekSched(){
+    var w = S.week, out = '';
+    w.days.forEach(function(d){
+      var items = [];
+      w.closures.forEach(function(x){ if (x.ymd <= d.ymd && x.end_ymd >= d.ymd) { var a = clipHm(d.ymd, x), z = clipHm(d.ymd, x, true); if (a < z) items.push({ s: a, k: 0, html: '<div class="row" style="background:var(--bad-bg);border-radius:8px;padding:6px 8px"><div class="grow"><b>' + a + '–' + z + '</b> סגירת בית הספר · ' + esc(x.reason) + '</div><span class="badge bad">סגור</span></div>' }); } });
+      w.lessons.filter(function(l){ return l.ymd === d.ymd; }).forEach(function(l){
+        var st = LST[l.status] || [l.status, 'gray'], off = l.status === 'CANCELLED' || l.status === 'LATE_CANCEL';
+        items.push({ s: l.hm, k: 1, html: '<div class="row" style="border:1px solid var(--acc);border-radius:8px;padding:8px;margin:4px 0;background:' + (off ? '#f6f7f9' : 'var(--acc-soft)') + (off ? ';opacity:.7' : '') + '"><div class="grow" style="cursor:pointer" onclick="Avail.openLesson(\'' + l.booking_id + '\')"><b>' + esc(l.hm) + '–' + esc(l.end_hm) + '</b> · <b>' + esc(l.student) + '</b>' + (l.location ? '<div class="muted">' + esc(l.location) + '</div>' : '') + '</div><span class="badge ' + st[1] + '">' + st[0] + '</span>' + (l.needs_review ? '<span class="badge warn">לבדיקה</span>' : '') + '<button class="btn sm ghost" onclick="Avail.openLesson(\'' + l.booking_id + '\')">' + (S.open === l.booking_id ? 'סגירה' : 'פרטים') + '</button></div>' + (S.open === l.booking_id ? lessonPanel(l) : '') });
+      });
+      (w.groups || []).filter(function(g){ return g.ymd === d.ymd; }).forEach(function(g){ items.push({ s: g.hm, k: 1.5, html: groupRow(g) }); }); // read-only layer (groups G1)
+      d.windows.forEach(function(r){ items.push({ s: r.start_time, k: 2, html: '<div class="row" style="padding:4px 8px;border:1px dashed var(--ok);border-radius:8px;margin:4px 0"><div class="grow muted">' + esc(r.start_time) + '–' + esc(r.end_time) + ' זמין ללקוחות</div><span class="badge ok">זמין</span></div>' }); });
+      w.busy.forEach(function(x){ if (x.ymd <= d.ymd && x.end_ymd >= d.ymd) { var a = clipHm(d.ymd, x), z = clipHm(d.ymd, x, true); if (a < z) items.push({ s: a, k: 3, html: '<div class="row" style="padding:4px 8px;background:#eef1f4;border-radius:8px;margin:4px 0"><div class="grow muted">' + a + '–' + z + ' ' + esc(x.label) + '</div><span class="badge gray">תפוס</span></div>' }); } });
+      items.sort(function(a, b){ return a.s < b.s ? -1 : a.s > b.s ? 1 : a.k - b.k; });
+      var n = w.lessons.filter(function(l){ return l.ymd === d.ymd && (l.status === 'CONFIRMED' || l.status === 'PENDING' || l.status === 'NO_SHOW'); }).length;
+      var ng = (w.groups || []).filter(function(g){ return g.ymd === d.ymd && g.mine && (g.status === 'PLANNED' || g.status === 'HELD'); }).length;
+      var cnt = [n ? n + ' שיעורים' : '', ng ? (ng === 1 ? 'קבוצה' : ng + ' קבוצות') : ''].filter(String).join(' · ') || 'אין שיעורים';
+      out += '<div style="border-top:1px solid var(--line);padding:8px 0' + (d.ymd === w.today ? ';background:linear-gradient(var(--acc-soft),transparent 40px)' : '') + '"><h3 style="margin:2px 0 4px">' + esc(fmt(d.ymd)) + (d.ymd === w.today ? ' <span class="badge">היום</span>' : '') + ' <span class="muted">' + cnt + '</span></h3>' + (items.map(function(i){ return i.html; }).join('') || '<div class="empty">—</div>') + '</div>';
+    });
+    $('av_sch').innerHTML = (w.warn ? '<div class="msg warn">' + esc(w.warn) + '</div>' : '') + out;
+  }
+  /** Groups (G1): a separate, read-only layer of the schedule. A group session never blocks private lessons; no edit, no attendance here. */
+  var GST = { PLANNED: 'ok', HELD: 'gray', CANCELLED: 'gray', CLOSED_BY_SCHOOL: 'bad' };
+  function groupRow(g){
+    var off = g.status === 'CANCELLED' || g.status === 'CLOSED_BY_SCHOOL', open = S.openG === g.session_id;
+    return '<div class="row" style="border:1px solid #7a5cc7;border-radius:8px;padding:8px;margin:4px 0;background:' + (off ? '#f6f7f9' : '#f3effc') + (off || !g.mine ? ';opacity:.75' : '') + '"><div class="grow" style="cursor:pointer" onclick="Avail.openGroup(\'' + g.session_id + '\')">' +
+      '<b>' + esc(g.hm) + '–' + esc(g.end_hm) + '</b> · <b>' + esc(g.name) + '</b> <span class="badge" style="background:#e4dbf7;color:#4a2f8f">קבוצה</span>' + (g.makeup ? ' <span class="badge gray">השלמה</span>' : '') + (g.exception ? ' <span class="badge warn">חריג</span>' : '') +
+      (g.mine ? '' : '<div class="muted">מחליף/ה: ' + esc(g.substitute_name) + '</div>') + (g.mine && g.substitute_name ? '' : '') + '</div><span class="badge ' + (GST[g.status] || 'gray') + '">' + esc(g.status_label) + '</span></div>' +
+      (open ? '<div class="card" style="margin:4px 0 8px;padding:10px"><div class="kv">' + [['קבוצה', g.name], ['סוג', g.type === 'COURSE' ? 'קורס' : 'חוג שנתי'], ['רמת פתיחה', g.start_level], ['רמה נוכחית', g.current_level], ['מחזור / גיל', g.age_cohort], ['מדריך/ה קבוע/ה', g.coach_name], ['מחליף/ה', g.substitute_name], ['הערה', g.note]]
+        .map(function(kv){ return kv[1] ? '<b>' + kv[0] + '</b><span>' + esc(kv[1]) + '</span>' : ''; }).join('') + '</div><div class="muted" style="margin-top:6px">תצוגה בלבד — הקבוצות מנוהלות במשרד.</div></div>' : '');
+  }
+  function openGroup(id){ S.openG = S.openG === id ? null : id; renderWeekSched(); }
+  function openLesson(id){ S.open = S.open === id ? null : id; renderWeekSched(); }
+  function lessonPanel(l){
+    var kv = function(k, v){ return v ? '<b>' + k + '</b><span>' + v + '</span>' : ''; };
+    var acts = '';
+    if (l.can_no_show) acts += '<button class="btn sm sec" onclick="Avail.noShow(\'' + l.booking_id + '\')">סימון: לא הגיע/ה</button>';
+    if (l.can_change) acts += '<details style="margin-top:6px"><summary>שינוי מועד</summary><div class="inline"><input type="date" id="av_rd_' + l.booking_id + '" value="' + l.ymd + '"><select id="av_rt_' + l.booking_id + '">' + lessonTimes(l.hm) + '</select><button class="btn sm" onclick="Avail.resched(\'' + l.booking_id + '\')">העברה</button></div><div class="muted">אותה הזמנה ואותו אירוע ביומן; בדיקת התנגשויות, הודעה ללקוח.</div></details>' +
+      '<details style="margin-top:6px"><summary>ביטול שיעור</summary><input id="av_cr_' + l.booking_id + '" placeholder="סיבת הביטול (חובה)"><button class="btn sm danger" onclick="Avail.cancelLesson(\'' + l.booking_id + '\')">אישור ביטול</button><div class="muted">ביטול על ידי המדריך: היתרה חוזרת ללקוח, הלקוח מקבל הודעה, האירוע יוסר מהיומן.</div></details>';
+    return '<div class="card" style="margin:4px 0 8px;padding:10px"><div class="kv">' + kv('שחיין/ית', esc(l.student) + (l.customer_no ? ' · מס לקוח ' + esc(l.customer_no) : '')) + kv('איש קשר', esc(l.payer) + (l.household && l.household.trim() !== String(l.payer).trim() ? ' (' + esc(l.household) + ')' : '')) +
+      kv('טלפון', l.phone ? '<a class="link" href="tel:' + esc(l.phone) + '">' + esc(l.phone) + '</a>' : '') + kv('מועד', esc(fmt(l.ymd)) + ' ' + esc(l.hm) + '–' + esc(l.end_hm)) + kv('מיקום', esc(l.location)) + kv('מס הזמנה', esc(l.booking_id)) +
+      kv('סטטוס', (LST[l.status] || [l.status])[0]) + kv('נוכחות', ATT[l.attendance] || '') + kv('לבדיקה', l.needs_review ? esc(l.review_reason) : '') +
+      kv('אזור אישי ללקוח', l.area_url ? '<a class="link" target="_blank" href="' + esc(l.area_url) + '">קישור</a>' : '') + kv('יומן', l.event_url ? '<a class="link" target="_blank" href="' + esc(l.event_url) + '">פתיחת האירוע</a>' : '') + '</div>' +
+      (acts ? '<div style="margin-top:8px">' + acts + '</div>' : '') + '</div>';
+  }
+  function lessonTimes(sel){ var L = S.week.lesson_minutes, o = ''; for (var m = OPEN; m + L <= CLOSE; m += 15) o += opt(m2hm(m), sel); return o; }
+  function afterLesson(t){ msg(t, 'ok'); S.week = null; S.weekGeneration = (S.weekGeneration || 0) + 1; S.weekPending = false; S.prevLoaded = false; S.recentLoaded = false; loadWeek(); S.upStale = true; if (!$('av_p_up').classList.contains('hidden')) refreshUp(); }
+  function noShow(id){ S.call('co_noShow', [S.token, id], function(){ afterLesson('סומן: לא הגיע/ה'); }); }
+  function cancelLesson(id){ var r = $('av_cr_' + id).value.trim(); if (!r) { msg('כתבו סיבה לביטול'); return; } S.call('co_cancel', [S.token, id, r], function(){ S.open = null; afterLesson('השיעור בוטל. הלקוח קיבל הודעה והיתרה הוחזרה.'); }); }
+  function resched(id){ var d = $('av_rd_' + id).value, t = $('av_rt_' + id).value; if (!d || !t) { msg('בחרו תאריך ושעה'); return; } S.call('co_reschedule', [S.token, id, d + 'T' + t + ':00' + tzOff(d)], function(l){ S.open = id; if (l.ymd < S.schWeek || l.ymd > addDays(S.schWeek, 6)) S.schWeek = weekOf(l.ymd); afterLesson('המועד שונה ל-' + fmt(l.ymd) + ' ' + l.hm + '. הלקוח קיבל הודעה.'); }); }
+  /** Asia/Jerusalem UTC offset for a local date (+02:00 / +03:00), from the browser's own zone data. */
+  function tzOff(ymd){ try { var p = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Jerusalem', timeZoneName: 'longOffset' }).formatToParts(new Date(ymd + 'T12:00:00Z')).filter(function(x){ return x.type === 'timeZoneName'; })[0].value.replace('GMT', ''); return /^[+-]\d{2}:\d{2}$/.test(p) ? p : '+03:00'; } catch (e) { return '+03:00'; } }
+  function renderUp(){
+    // private lessons + the coach's group sessions (read-only, groups G1), one list in time order
+    var rows = S.d.upcoming.map(function(b){ return { k: b.ymd + ' ' + b.hm, html: '<div class="row"><div class="grow"><b>' + esc(fmt(b.ymd)) + ' ' + esc(b.hm) + '</b> · ' + esc(b.student) + '<div class="muted">' + esc(b.household) + ' · ' + esc(b.location) + '</div></div>' +
+        '<span class="badge ' + (b.needs_review ? 'warn' : b.status==='CONFIRMED' ? 'ok' : 'gray') + '">' + (b.needs_review ? 'לבדיקה' : b.status==='CONFIRMED' ? 'מאושר' : 'ממתין') + '</span>' +
+        (b.event_url ? '<a class="link" target="_blank" href="' + esc(b.event_url) + '">פתח ביומן</a>' : '') + '</div>' }; })
+      .concat((S.d.upcoming_groups || []).map(function(g){ return { k: g.ymd + ' ' + g.hm, html: '<div class="row" style="border-inline-start:3px solid #7a5cc7;padding-inline-start:8px"><div class="grow"><b>' + esc(fmt(g.ymd)) + ' ' + esc(g.hm) + '–' + esc(g.end_hm) + '</b> · ' + esc(g.name) + ' <span class="badge" style="background:#e4dbf7;color:#4a2f8f">קבוצה</span>' + (g.exception ? ' <span class="badge warn">חריג</span>' : '') +
+        '<div class="muted">' + (g.type === 'COURSE' ? 'קורס' : 'חוג שנתי') + (g.mine ? '' : ' · מחליף/ה: ' + esc(g.substitute_name)) + '</div></div><span class="badge ' + (GST[g.status] || 'gray') + '">' + esc(g.status_label) + '</span></div>' }; }))
+      .sort(function(a, b){ return a.k < b.k ? -1 : a.k > b.k ? 1 : 0; });
+    $('av_up').innerHTML = rows.length ? rows.map(function(r){ return r.html; }).join('') : '<div class="empty">אין שיעורים קרובים</div>';
+  }
+  function validNavDate(d){ return /^\d{4}-\d{2}-\d{2}$/.test(d||'') && !isNaN(Date.parse(d)) && new Date(d).toISOString().slice(0,10)===d; }
+  function notifyNavigation(){ if(S.onNavigate)S.onNavigate({tab:S.activeTab||'sch',week:S.schWeek||null,previewWeek:S.weekStart||null}); }
+  return {
+    init: function(o){ S = o; var n=o.navigation||{}; S.weekStart=validNavDate(n.previewWeek)?n.previewWeek:null; S.schWeek=validNavDate(n.week)?n.week:null; S.startTab=['sch','av','set','up'].indexOf(n.tab)>=0?n.tab:(o.startTab||'sch'); S.activeTab=S.startTab; S.open = null; S.openG = null; S.recentLoaded = false; S.prevLoaded = false; S.upStale = false; shell(); if (S.startTab === 'sch') loadWeek(); load(); },
+    tab: tab, pick: pick, overStart: function(){ overStart(); }, schWeek: schWeek, openLesson: openLesson, openGroup: openGroup, noShow: noShow, cancelLesson: cancelLesson, resched: resched, saveRules: saveRules, addRange: addRange, removeRange: removeRange, toggleDay: toggleDay, check: check, kindChanged: kindChanged, addOverride: addOverride, removeOverride: removeOverride,
+    _opts: { startOpts: startOpts, endOpts: endOpts, minLen: minLen, defEnd: defEnd }, // pure option builders (logic tests)
+    saveSettings: saveSettings, preview: preview, prevWeek: prevWeek, prevDay: prevDay, reload: function(){ load(); }
+  };
+})();
+</script>
+
+<script>
+var S = { token:null, email:'', B:null, H:null, hid:null };
+var DAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+var STATUS = { CONFIRMED:['מאושר','ok'], PENDING:['ממתין','gray'], CANCELLED:['בוטל','gray'], LATE_CANCEL:['ביטול מאוחר (חויב)','warn'], NO_SHOW:['לא הגיע/ה (חויב)','warn'] };
+var KIND = { CUSTOMER_ONTIME:'ביטול לקוח', OFFICE_ONTIME:'ביטול משרד', OFFICE_WAIVED_LATE:'ויתור על חיוב', COACH:'ביטול מדריך', SCHOOL:'ביטול בי"ס', SYSTEM_FAILED:'כשל מערכת' };
+var GT = { PURCHASE:'רכישה', OPENING:'יתרת פתיחה', ADJUSTMENT:'תיקון' };
+
+// Navigation contains identifiers only, scoped to this session; no tokens, names or drafts.
+function navKey(){ var h=2166136261, t=String(S.token||''); for(var i=0;i<t.length;i++) h=Math.imul(h^t.charCodeAt(i),16777619); return 'bbNav:office:'+ (h>>>0); }
+function readNav(){ try { var r=JSON.parse(sessionStorage.getItem(navKey())||'null'); return r && r.v===1 && Date.now()-r.at<43200000 ? r : null; } catch(e){ return null; } }
+function writeNav(r){ if(!S.token) return; try { r.v=1; r.at=Date.now(); sessionStorage.setItem(navKey(),JSON.stringify(r)); } catch(e){} }
+function clearNav(){ try { sessionStorage.removeItem(navKey()); } catch(e){} }
+
+function $(i){ return document.getElementById(i); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function fmtDay(ymd){ var d = new Date(ymd+'T12:00:00'); return 'יום ' + DAYS[d.getDay()] + ' ' + ymd.slice(8,10) + '/' + ymd.slice(5,7); }
+/** Same wording as the server (customerNoProblem_): the expected format is always named. */
+function custNoMsg(v){ v = String(v||'').trim(); return v ? 'מס לקוח "' + v + '" לא תקין: נדרשות בדיוק 5 ספרות, ספרות בלבד (למשל 01234).' : 'חסר מס לקוח: נדרשות בדיוק 5 ספרות (למשל 01234).'; }
+function dmy(ymd){ return ymd ? String(ymd).split('-').reverse().join('/') : ''; }
+function fmtTs(ts){ return ts ? ts.slice(0,10).split('-').reverse().join('/') + ' ' + ts.slice(11,16) : ''; }
+function msg(t, ok){ $('msg').innerHTML = t ? '<div class="msg '+(ok===true?'ok':ok||'err')+'">'+esc(t)+'</div>' : ''; }
+function store(k,v){ try { if (v==null) tokenStorage().removeItem(k); else tokenStorage().setItem(k,v); } catch(e){} }
+function load(k){ try { return tokenStorage().getItem(k); } catch(e){ return null; } }
+function uuid(){ return 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+/*TRANSPORT_START*/
+// Static page (served outside script.google.com): the JSON API of the Apps Script backend. No Google cookies are sent
+// (credentials 'omit'); the session token travels in the POST body only. Same answers as the Apps Script page calls.
+var API_URL = 'https://script.google.com/macros/s/AKfycbw9c8KcC5KXeGm-Z5PLIwc0_wMr2QW3w4voM4M6fgU3-Gs8SQU-rBvtEvRrLesXL1fp4Q/exec';
+function rpc(fn, args, onRes, onFail){
+  fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ v: 1, fn: fn, args: args }), credentials: 'omit', redirect: 'follow', cache: 'no-store' })
+    .then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(onRes)
+    .catch(function(e){ onFail(e && e.message ? e.message : String(e)); });
+}
+var LOGIN_FN = 'st_officeWebLogin';          // JSON-only Office login (D2): the Apps Script-page login is not reachable over HTTP
+function tokenStorage(){ return window.sessionStorage; }  // per tab: closing the browser ends the sign-in; the shared github.io origin never keeps an Office token (D2)
+/*TRANSPORT_END*/
+function call(fn, args, cb){
+  var t0 = Date.now();
+  rpc(fn, args, function(res){
+    perfLog(fn, t0, res);
+    if (!res.ok) { if(fn==='off_household'){S.hid=null;S.H=null;$('hh').classList.add('hidden');tab('hh',true);} if(fn==='off_groupDetail'){S.GD=null;$('gr_detail').innerHTML='';tab('gr',true);} if (res.code==='AUTH') onAuthLost(res); msg(res.message + (res.debug ? ' [' + res.debug + ']' : '')); return; }
+    cb(res.data);
+  }, function(e){ msg('תקלה בחיבור: ' + e); });
+}
+/** TEST-only timing line per server call (W1-6). */
+function perfLog(fn, t0, res){ if (!ENV_IS_TEST) return; try { var p = res && res.prof; console.log('[barbur] ' + fn + ' ' + (Date.now() - t0) + 'ms wall · ' + (res && res.ms) + 'ms server' + (p ? ' · sheetReads ' + p.sheetReads + ' (' + p.sheetMs + 'ms) · cal ' + p.cal + ' (' + p.calMs + 'ms) | platform ' + (p.platform||0) + ' (' + (p.platformMs||0) + 'ms)' : '')); } catch (e) {} }
+function show(id){ ['login','app'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('logoutBtn').classList.toggle('hidden', id==='login'); $('dbLink').classList.toggle('hidden', id==='login'); }
+function tab(t, keepMsg){ S.activeTab=t; if(!S.restoring) saveOfficeNav(); ['home','hh','ld','co','gr','cl','exc','rep','set'].forEach(function(x){ $('p_'+x).classList.toggle('hidden', x!==t); $('t_'+x).classList.toggle('on', x===t); }); if (!keepMsg) msg(''); if(S.restoring) return; if (t==='home') home(); if (t==='exc') loadExc(false); if (t==='co') renderCoaches(); if (t==='cl') loadClosures(); if (t==='gr') loadGroups(); if (t==='set') { renderCfg(); loadPolicies(); } if (t==='ld') loadLeads(); if (t==='rep') { $('t_rep').classList.remove('hidden'); if (!S.rep) reportOpen(); } }
+// --- bottom sheet form (replaces browser prompts) ---
+function ask(title, fields, cb){
+  $('shTitle').textContent = title;
+  $('shBody').innerHTML = fields.map(function(f){ return f.type==='note' ? '<p>' + esc(f.label) + '</p>' : '<label>' + esc(f.label) + '</label>' + (f.type==='days' ? '<div class="inline" id="f_'+f.k+'">' + GD_DAYS.map(function(n, i){ return '<label style="display:inline-flex;gap:4px;align-items:center"><input type="checkbox" data-d="'+i+'"'+((f.value||[]).indexOf(i)>=0?' checked':'')+'> '+n+'</label>'; }).join('') + '</div>' : f.type==='select' ? '<select id="f_'+f.k+'">' + f.options.map(function(o){ return '<option value="'+esc(o[0])+'"'+(f.value!=null && String(f.value)===String(o[0])?' selected':'')+'>'+esc(o[1])+'</option>'; }).join('') + '</select>' : f.type==='textarea' ? '<textarea id="f_'+f.k+'" rows="2"></textarea>' : '<input id="f_'+f.k+'" type="'+(f.type||'text')+'" value="'+esc(f.value||'')+'" placeholder="'+esc(f.ph||'')+'"'+(f.step?' step="'+f.step+'"':'')+'>') + (f.help ? '<div class="muted">'+esc(f.help)+'</div>' : ''); }).join('');
+  $('shErr').textContent=''; $('sheet').classList.remove('hidden');
+  $('shOk').onclick = function(){ var v = {}; fields.forEach(function(f){ if (f.type==='days') v[f.k] = [].map.call($('f_'+f.k).querySelectorAll('input:checked'), function(x){ return Number(x.getAttribute('data-d')); }); else if (f.type!=='note') v[f.k] = $('f_'+f.k).value; }); for (var i=0;i<fields.length;i++) if (fields[i].req && !String(v[fields[i].k]||'').trim()) { $('shErr').textContent = 'חסר: ' + fields[i].label; return; } $('shErr').textContent=''; closeSheet(); cb(v); };
+  var af = fields.filter(function(f){ return f.autofocus; })[0], first = af ? $('f_'+af.k) : $('shBody').querySelector('input,select,textarea'); if (first) first.focus();
+}
+function closeSheet(){ $('sheet').classList.add('hidden'); $('shBody').querySelectorAll('input[type=password]').forEach(function(el){ el.value=''; }); }
+function maintenancePrompt(cb){
+  ask('פעולת תחזוקה', [{k:'password',type:'password',label:'סיסמת מנהל',req:1}], function(v){
+    var password = v.password; v.password = '';
+    cb(password);
+  });
+}
+document.addEventListener('keydown', function(e){ if (e.key==='Escape' && !$('sheet').classList.contains('hidden')) closeSheet(); });
+function tzOff(d,t){ var m = -new Date(d+'T'+t+':00').getTimezoneOffset(); var s=m<0?'-':'+'; m=Math.abs(m); return s+('0'+Math.floor(m/60)).slice(-2)+':'+('0'+m%60).slice(-2); }
+function isoOf(d,t){ return d+'T'+t+':00'+tzOff(d,t); }
+
+// --- auth ---
+// Office sign-in is email + password (D-5b); the email-code path left this page.
+function pwLogin(){ var p = $('pw').value; $('pw').value = ''; if (!p) { msg('הזינו סיסמה'); return; } call(LOGIN_FN, [p], function(d){ /* the Office address is fixed on the server */ if (!d.office) { msg('לחשבון הזה אין הרשאת משרד'); return; } S.token = d.token; store('bbOffice', S.token); store('bbBypass', null); msg(''); boot(); resumeSheet(); }); }
+function setTestPw(){ var p = $('newPw').value; $('newPw').value = ''; if (!p) { msg('הזינו סיסמה'); return; } call('off_setTestPassword', [S.token, p], function(r){ msg('הסיסמה נשמרה. כניסות משרד אחרות נותקו' + (r && r.revoked ? ' (' + r.revoked + ')' : '') + '; הכניסה הזו נשארת פעילה.', true); S.B.test_pw_set = true; renderCfg(); }); }
+function logout(){ clearNav(); var t=S.token; store('bbOffice',null); store('bbBypass',null); S.token=null; show('login'); if (t) call('st_logout',[t],function(){}); }
+var ENV_IS_TEST = true; // Office sign-in = password only (owner decision 2026-10-13)
+function boot(){
+  // Perf: bootstrap (config/coaches) and home (exceptions/attention/upcoming) are independent → fire both at once;
+  // the app shell is shown immediately and each card fills in when its call returns.
+  var saved=readNav(); S.restoring=!!(saved && saved.tab!=='home'); show('app'); tab(S.restoring ? saved.tab : 'home');
+  call('off_bootstrap', [S.token], function(d){
+    S.B = d; $('who').textContent = d.email; $('testbar').classList.toggle('hidden', d.env !== 'TEST'); $('dbLink').href = d.db_url;
+    if (!$('p_co').classList.contains('hidden')) renderCoaches(); if (!$('p_set').classList.contains('hidden')) renderCfg();
+    if(S.restoring){ S.restoring=false; restoreOfficeNav(saved); }
+    syncPlatform();
+  });
+}
+// D-20 on Office load (W1-5): the Platform membership sync runs right after the screen is usable, never before it. A coach who left
+// the school on the Platform is disconnected here, announced, and the coach list is refreshed.
+function syncPlatform(){ call('off_syncPlatform', [S.token], function(r){ if (r && r.unlinked && r.unlinked.length) { msg('מדריכים שהתנתקו מבית הספר בפלטפורמת המאמנים נותקו גם בברבור: '+r.unlinked.join(', '), true); reboot(function(){ if (!$('p_co').classList.contains('hidden')) renderCoaches(); }); } }); }
+// --- home ---
+function home(){
+  if (!S.homeLoaded) ['homeExc','homeAtt','homeUp'].forEach(function(id){ $(id).innerHTML = '<div class="empty">טוען…</div>'; });
+  call('off_home', [S.token], function(d){
+    S.homeLoaded = true;
+    var todo = d.leads_todo || []; $('todoCount').textContent = todo.length || '';
+    $('homeTodo').innerHTML = todo.length ? todo.map(function(x){ return '<div class="row"><a class="link" href="#" onclick="openLead(\''+esc(x.lead_id)+'\');return false">'+esc(x.name)+'</a><span class="muted">'+esc(dmy(x.created_date))+' · '+esc(x.lead_id)+'</span><span class="badge '+(x.why==='ליד חדש'?'':'warn')+'">'+esc(x.why)+'</span></div>'; }).join('') : '<div class="empty">אין לידים לטיפול</div>';
+    $('excCount').textContent = d.exceptions.length || '';
+    $('homeExc').innerHTML = d.exceptions.length ? d.exceptions.slice(0,6).map(excRow).join('') : '<div class="empty">אין חריגות פתוחות</div>';
+    $('homeAtt').innerHTML = d.attention.length ? d.attention.map(function(a){ return '<div class="row"><a class="link" href="#" onclick="openHH(\''+a.household_id+'\');return false">'+esc(a.display_name)+'</a><span class="badge warn">'+esc(a.why)+'</span></div>'; }).join('') : '<div class="empty">הכל בסדר</div>';
+    $('homeUp').innerHTML = d.upcoming.length ? d.upcoming.map(function(b){ return '<div class="row"><div class="grow"><b>'+esc(fmtDay(b.ymd))+' '+esc(b.hm)+'</b> · '+esc(b.student)+' · <a class="link" href="#" onclick="openHH(\''+b.household_id+'\');return false">'+esc(b.household)+'</a></div>'+badge(b.needs_review ? 'REVIEW' : b.status)+'</div>'; }).join('') : '<div class="empty">אין שיעורים בשבוע הקרוב</div>';
+  });
+}
+function badge(st){ if (st==='REVIEW') return '<span class="badge warn">לבדיקה</span>'; var s = STATUS[st] || [st,'gray']; return '<span class="badge '+s[1]+'">'+s[0]+'</span>'; }
+// --- households ---
+function search(){ call('off_search', [S.token, $('q').value], function(list){ $('hh').classList.add('hidden'); $('results').innerHTML = list.length ? list.map(function(h){ return '<div class="row"><a class="link" href="#" onclick="openHH(\''+h.household_id+'\');return false">'+esc(h.display_name)+'</a><span class="muted">יתרה '+h.balance+(h.status!=='ACTIVE'?' · לא פעיל':'')+'</span></div>'; }).join('') : '<div class="empty">לא נמצא</div>'; }); }
+// New family in one step: family + contact (name, email, phone) + at least one swimmer (name + customer number), then credit entry.
+function newHousehold(){ S.famCoaches = (S.B.coaches||[]).filter(function(c){ return !c.archived && c.status!=='INACTIVE'; });
+  $('shTitle').textContent = 'משפחה חדשה';
+  $('shBody').innerHTML = '<label>שם המשפחה</label><input id="nf_name"><h3 style="margin:12px 0 4px">איש קשר</h3><label>שם מלא</label><input id="nf_cname"><label>אימייל (משמש לכניסה)</label><input id="nf_email" type="email"><label>טלפון</label><input id="nf_phone" type="tel">' +
+    '<h3 style="margin:12px 0 4px">שחיינים</h3><div id="nf_sw"></div><button class="btn sm sec" type="button" onclick="addSwimmerRow()">+ הוספת שחיין/ית נוסף/ת</button>';
+  addSwimmerRow(); $('shErr').textContent = ''; $('sheet').classList.remove('hidden'); $('nf_name').focus();
+  $('shOk').onclick = createFamily; }
+function addSwimmerRow(){ var n = $('nf_sw').children.length + 1, d = document.createElement('div'); d.className = 'card'; d.style.margin = '6px 0'; d.style.padding = '8px';
+  d.innerHTML = '<b>שחיין/ית ' + n + '</b>' + (n > 1 ? ' <a href="#" class="muted" onclick="this.parentNode.remove();return false">הסרה</a>' : '') +
+    '<label>שם פרטי</label><input class="sw_f"><div class="muted">שם המשפחה נלקח מהמשפחה</div><label>מס לקוח (5 ספרות)</label><input class="sw_n" inputmode="numeric" maxlength="5"><label>מאמן/ת משויך/ת</label><select class="sw_c">' + S.famCoaches.map(function(c){ return '<option value="'+esc(c.coach_id)+'">'+esc(c.display_name)+'</option>'; }).join('') + '<option value="">ללא מאמן כרגע</option></select>';
+  $('nf_sw').appendChild(d); if (n > 1) d.querySelector('.sw_f').focus(); }
+function createFamily(){ var v = function(id){ return String(($(id)||{}).value||'').trim(); };
+  var sw = Array.prototype.map.call($('nf_sw').children, function(r){ var q = function(c){ return String(r.querySelector('.'+c).value||'').trim(); }; return { first_name:q('sw_f'), legacy_customer_no:q('sw_n'), coach_id:q('sw_c') }; });
+  var miss = !v('nf_name') ? 'שם המשפחה' : !v('nf_cname') ? 'שם איש הקשר' : !v('nf_email') ? 'אימייל' : !v('nf_phone') ? 'טלפון' : '';
+  sw.forEach(function(x, i){ if (!miss && !x.first_name) miss = 'שם פרטי של שחיין/ית ' + (i+1); if (!miss && !/^\d{5}$/.test(x.legacy_customer_no)) miss = 'שחיין/ית ' + (i+1) + ': ' + custNoMsg(x.legacy_customer_no); });
+  if (miss) { $('shErr').textContent = /מס לקוח/.test(miss) ? miss : 'חסר: ' + miss; return; }
+  $('shErr').textContent = ''; $('shOk').disabled = true;
+  rpc('off_createFamily', [S.token, { display_name:v('nf_name'), contact:{ full_name:v('nf_cname'), email:v('nf_email'), phone:v('nf_phone') }, students: sw }], function(res){ $('shOk').disabled = false;
+    if (!res.ok) { if (res.code==='AUTH') { onAuthLost(res); msg(res.message); } $('shErr').textContent = res.message; return; }
+    closeSheet(); msg('המשפחה נוצרה — רשמו עכשיו רכישה / יתרת פתיחה', true);
+    openHH(res.data.household_id, function(){ addGrant(res.data.students[0].student_id); });
+  }, function(){ $('shOk').disabled = false; $('shErr').textContent = 'שגיאת תקשורת — נסו שוב'; }); }
+function openHH(id, after){
+  tab('hh', true); $('results').innerHTML = '';
+  if (S.hid !== id) { $('hh').innerHTML = '<div class="card"><div class="empty">טוען…</div></div>'; $('hh').classList.remove('hidden'); }
+  call('off_household', [S.token, id], function(d){
+    S.H = d; S.hid = id; saveOfficeNav(); var h = d.household, b = d.balance;
+    var html = '<div class="card"><h2>'+esc(h.display_name)+' <span class="inline"><button class="btn sm ghost" onclick="editHH()">עריכה</button></span></h2>' +
+      '<div class="stat"><div class="card"><div class="n">'+b.usable+'</div><div class="l">שיעורים ביתרה</div></div><div class="card"><div class="n">'+(b.earliestExpiry ? b.earliestExpiry.split('-').reverse().join('/') : '—')+'</div><div class="l">תוקף קרוב</div></div><div class="card"><div class="n">'+(b.expired||0)+'</div><div class="l">פג תוקף ולא נוצל</div></div></div>' +
+      (h.notes ? '<div class="muted" style="margin-top:8px">'+esc(h.notes)+'</div>' : '') + (d.leads && d.leads.length ? '<div class="muted" style="margin-top:6px">' + d.leads.map(function(x){ return 'נרשם/ה דרך טופס ההרשמה: <a class="link" href="#" onclick="openLead(\''+esc(x.lead_id)+'\');return false">'+esc(x.lead_id)+'</a>' + (x.policy_version ? ' · אישר/ה מדיניות גרסה '+esc(x.policy_version)+' ב-'+esc(dmy(x.policy_accepted_date)) : ''); }).join('<br>') + '</div>' : '') + (h.status!=='ACTIVE' ? '<div class="msg warn" style="margin-top:8px">המשפחה לא פעילה</div>' : '') + '</div>';
+    html += '<div class="grid2"><div class="card"><h2>אנשי קשר <button class="btn sm sec" onclick="addContact()">הוספה</button></h2>' + (d.contacts.length ? d.contacts.map(function(c){ return '<div class="row"><div class="grow"><b>'+esc(c.full_name)+'</b>'+(c.is_primary==='TRUE'?' <span class="badge">ראשי</span>':'')+(c.status!=='ACTIVE'?' <span class="badge gray">לא פעיל</span>':'')+'<div class="muted">'+esc(c.email)+' · '+esc(c.phone)+'</div></div><button class="btn sm ghost" onclick="editContact(\''+c.contact_id+'\')">עריכה</button></div>'; }).join('') : '<div class="empty">אין אנשי קשר — בלי איש קשר אי אפשר להזמין</div>') + '</div>';
+    html += '<div class="card"><h2>שחיינים <button class="btn sm sec" onclick="addStudent()">הוספת שחיין/ית</button></h2>' + (d.students.length ? d.students.map(function(s){ var a=(s.assignments||[]).filter(function(x){return x.status==='ACTIVE';})[0]; return '<div class="row"><div class="grow"><b>'+esc(s.first_name)+' '+esc(s.last_name)+'</b>'+(s.status!=='ACTIVE'?' <span class="badge gray">לא פעיל</span>':'')+'<div class="muted">'+(a ? 'מדריך: '+esc(a.coach_name)+(a.reason_label?' <span class="badge gray">'+esc(a.reason_label)+'</span>':'') : '<span style="color:var(--warn)">ללא מאמן משויך — לא יכול/ה להזמין</span>')+' · יתרה '+(s.balance ? s.balance.usable : 0)+(s.birth_year?' · שנת לידה '+esc(s.birth_year):'')+(s.legacy_customer_no?' · מס לקוח '+esc(s.legacy_customer_no):'')+'</div></div><div class="inline"><button class="btn sm sec" onclick="addGrant(\''+s.student_id+'\')">רכישה / יתרה</button><button class="btn sm ghost" onclick="editStudent(\''+s.student_id+'\')">עריכה ושיוך מאמן</button></div></div>'; }).join('') : '<div class="empty">אין שחיינים — בלי שחיין/ית אי אפשר להזמין</div>') + '</div></div>';
+    html += '<div class="card"><h2>זיכויים <button class="btn sm" onclick="addGrant()">רישום רכישה / יתרת פתיחה</button></h2>' + (d.grants.length ? d.grants.map(function(g){ return '<div class="row"><div class="grow"><b>'+esc(GT[g.type]||g.type)+' · '+g.qty+'</b> '+(g.student_name ? '<span class="badge">'+esc(g.student_name)+'</span>' : '<span class="badge gray">משותף למשפחה</span>')+' <span class="muted">נותרו '+g.remaining+' · תוקף עד '+g.expires_at.split('-').reverse().join('/')+'</span>'+(g.voided_at?' <span class="badge bad">בוטל</span>':'')+'<div class="muted">'+esc(g.receipt_ref ? 'אסמכתא '+g.receipt_ref : g.source_note)+(g.expiry_override_reason?' · תוקף שונה: '+esc(g.expiry_override_reason):'')+' · '+fmtTs(g.created_at)+'</div></div>'+(!g.voided_at && !g.used ? '<button class="btn sm ghost" onclick="voidGrant(\''+g.grant_id+'\')">ביטול רישום</button>' : '')+'</div>'; }).join('') : '<div class="empty">אין זיכויים — המשפחה לא יכולה להזמין</div>') + '</div>';
+    var act = d.students.filter(function(s){ return s.status==='ACTIVE' && (s.assignments||[]).some(function(x){return x.status==='ACTIVE';}); });
+    if (d.history && d.history.length) html += '<div class="card"><h2>היסטוריית מדריכים (מהייבוא)</h2>' + d.history.map(function(x){ var st = d.students.filter(function(k){ return k.student_id===x.student_id; })[0]; return '<div class="row" style="padding:5px 0"><div class="grow"><b>'+esc(x.coach_name || x.source_instructor)+'</b>'+(st?' · '+esc(st.first_name):'')+'<div class="muted">שיעור אחרון '+esc((x.last_lesson_date||'').split('-').reverse().join('/'))+(x.sessions?' · '+esc(x.sessions)+' מפגשים':'')+(x.first_lesson_date?' · מ-'+esc(x.first_lesson_date.split('-').reverse().join('/')):'')+'</div></div></div>'; }).join('') + '</div>';
+    html += '<div class="card"><details><summary>פעולות מנהל — הזמנה בשם המשפחה (חריג)</summary><div class="muted">ההזמנה הרגילה נעשית על ידי הלקוח באפליקציה. כאן רק למקרים חריגים / תיקון בדיעבד.</div>' + (act.length ? '<div class="inline" style="margin-top:8px"><select id="b_s" style="width:auto">'+act.map(function(s){ return '<option value="'+s.student_id+'">'+esc(s.first_name)+'</option>'; }).join('')+'</select><input id="b_d" type="date"><button class="btn sm sec" onclick="loadSlots()">משבצות לפי שעות הזמינות</button></div><div id="b_slots" class="chips" style="margin-top:8px"></div>' +
+      '<div class="muted" style="margin-top:8px">מועד חריג (מחוץ לשעות הקבועות) או שיעור שכבר התקיים — מחייב סיבה.</div><div class="inline"><input id="b_t" type="time" step="900"><select id="b_mode" style="width:auto"><option value="EXCEPTION">מועד חריג</option><option value="PAST">שיעור שכבר התקיים (רישום בדיעבד)</option></select></div><input id="b_reason" placeholder="סיבה"><button class="btn sm" onclick="bookFree()">רישום</button>' : '<div class="empty">אין שחיין/ית פעיל/ה עם מאמן</div>') + '</details></div>';
+    html += '<div class="card"><h2>הזמנות</h2>' + (d.bookings.length ? d.bookings.map(bookingRow).join('') : '<div class="empty">אין הזמנות</div>') + '</div>';
+    html += '<details class="card" ontoggle="if(this.open && !this.dataset.loaded){this.dataset.loaded=1;loadAudit(S.hid)}"><summary>היסטוריית פעולות</summary><div id="hhAudit">' + (d.audit ? auditHtml(d.audit) : '<div class="empty">טוען…</div>') + '</div></details>';
+    $('hh').innerHTML = html; $('hh').classList.remove('hidden'); window.scrollTo(0,0);
+    if (after) after();
+  });
+}
+function auditHtml(list){ return list.length ? list.map(function(a){ return '<div class="row" style="padding:5px 0"><div class="grow"><span class="muted">'+fmtTs(a.ts)+'</span> · '+esc(auditLabel(a.action))+(a.note?' <span class="muted">'+esc(noteLabel(a.note))+'</span>':'')+'</div><span class="muted">'+esc(a.actor)+'</span></div>'; }).join('') : '<div class="empty">אין פעולות</div>'; }
+function loadAudit(id){ call('off_householdAudit', [S.token, id], function(list){ if (S.hid !== id || !$('hhAudit')) return; $('hhAudit').innerHTML = auditHtml(list); }); }
+function noteLabel(n){ return String(n).replace(/^CUSTOMER\b/,'לפי שעות הזמינות').replace(/^OFFICE\b/,'מועד חריג').replace(/^PAST\b/,'רישום בדיעבד').replace(/^(ONTIME|LATE|WAIVED|RESTORE)$/, function(m){ return {ONTIME:'ביטול בזמן',LATE:'ביטול מאוחר',WAIVED:'ויתור',RESTORE:'הוחזר ליומן'}[m]; }); }
+function auditLabel(a){ return ({ COACH_ADD:'מדריך נוסף', COACH_UPDATE:'מדריך עודכן', CLOSURE_ADD:'סגירה נוספה', CLOSURE_UPDATE:'סגירה עודכנה', CLOSURE_REMOVE:'סגירה הוסרה', AVAIL_CHANGE:'שעות זמינות עודכנו', AVAIL_OVERRIDE_ADD:'שינוי זמינות לתאריך', AVAIL_OVERRIDE_REMOVE:'שינוי זמינות בוטל', LOGIN_TEST_BYPASS:'כניסת TEST', STAFF_LOGIN_GOOGLE:'כניסת צוות (Google)', IMPORT:'ייבוא לקוחות', TEST_RESET:'איפוס סביבת בדיקה', BOOKING_PENDING:'הזמנה נפתחה', BOOKING_CONFIRMED:'הזמנה אושרה', BOOKING_CANCEL:'הזמנה בוטלה', BOOKING_LATE:'ביטול מאוחר (חויב)', BOOKING_NOSHOW:'אי-הגעה', BOOKING_RESCHEDULE:'שינוי מועד', BOOKING_FAILED:'הזמנה נכשלה', BOOKING_ADOPT:'אירוע שויך', GRANT_ADD:'זיכוי נרשם', GRANT_VOID:'זיכוי בוטל', CONTACT_ADD:'איש קשר נוסף', CONTACT_UPDATE:'איש קשר עודכן', STUDENT_ADD:'שחיין/ית נוסף/ה', STUDENT_UPDATE:'שחיין/ית עודכן/ה', ASSIGN:'שיוך מאמן', HOUSEHOLD_ADD:'משפחה נוצרה', HOUSEHOLD_UPDATE:'משפחה עודכנה', LOGIN:'כניסת לקוח', OTP_SENT:'קוד נשלח', RECONCILE_MOVED:'אירוע הוזז ביומן', RECONCILE_MOVE_REJECTED:'הזזה ביומן נדחתה', RECONCILE_MISSING:'אירוע נעלם מהיומן', RECONCILE_CONFIRMED:'אושר בבדיקת יומן', RESOLVE_MISSING:'חריגה טופלה', NOTIFY_FAIL:'שליחת מייל נכשלה' })[a] || a; }
+function bookingRow(x){
+  var acts = '';
+  if (x.status==='CONFIRMED' && !x.started) acts = (x.late ? '<button class="btn sm" onclick="cx(\''+x.booking_id+'\',\'LATE\')">ביטול מאוחר (חיוב)</button><button class="btn sm sec" onclick="cx(\''+x.booking_id+'\',\'WAIVED\')">ביטול בלי חיוב (ויתור)</button>' : '<button class="btn sm" onclick="cx(\''+x.booking_id+'\',\'ONTIME\')">ביטול</button>') + '<button class="btn sm ghost" onclick="cx(\''+x.booking_id+'\',\'COACH\')">ביטול מדריך</button><button class="btn sm ghost" onclick="cx(\''+x.booking_id+'\',\'SCHOOL\')">ביטול בי"ס</button><button class="btn sm ghost" onclick="resch(\''+x.booking_id+'\')">שינוי מועד</button>';
+  if (x.status==='CONFIRMED' && x.started) acts = '<button class="btn sm sec" onclick="noShow(\''+x.booking_id+'\')">לא הגיע/ה</button>';
+  return '<div class="row"><div class="grow"><b>'+esc(fmtDay(x.ymd))+' '+esc(x.hm)+'</b> · '+esc(x.student)+' '+badge(x.needs_review ? 'REVIEW' : x.status)+(x.cancel_kind?' <span class="muted">'+esc(KIND[x.cancel_kind]||x.cancel_kind)+'</span>':'')+(x.cancel_reason?' <span class="muted">— '+esc(x.cancel_reason)+'</span>':'')+(x.needs_review?' <span class="muted">'+esc(x.review_reason)+'</span>':'')+'<div class="muted">'+esc(x.coach)+' · הוזמן ע"י '+esc(x.booked_by)+'</div></div><div class="inline">'+acts+'</div></div>';
+}
+function editHH(){ var h = S.H.household; ask('עריכת משפחה', [{k:'display_name',label:'שם',value:h.display_name,req:1},{k:'status',label:'סטטוס',type:'select',options:[['ACTIVE','פעיל'],['INACTIVE','לא פעיל']]},{k:'notes',label:'הערות',value:h.notes}], function(v){ v.household_id = h.household_id; call('off_saveHousehold', [S.token, v], function(){ msg('נשמר', true); openHH(h.household_id); }); }); }
+function contactFields(c){ c = c || {}; return [{k:'full_name',label:'שם מלא',value:c.full_name,req:1},{k:'email',label:'אימייל (משמש לכניסה)',type:'email',value:c.email,req:1},{k:'phone',label:'טלפון',type:'tel',value:c.phone,req:1},{k:'is_primary',label:'איש קשר ראשי?',type:'select',options:c.is_primary==='TRUE'?[['TRUE','כן'],['FALSE','לא']]:[['FALSE','לא'],['TRUE','כן']]},{k:'status',label:'סטטוס',type:'select',options:c.status==='INACTIVE'?[['INACTIVE','לא פעיל'],['ACTIVE','פעיל']]:[['ACTIVE','פעיל'],['INACTIVE','לא פעיל']]}]; }
+function addContact(){ ask('הוספת איש קשר', contactFields(), function(v){ v.household_id = S.hid; call('off_saveContact', [S.token, v], function(){ msg('נשמר', true); openHH(S.hid); }); }); }
+function editContact(id){ var c = S.H.contacts.filter(function(x){return x.contact_id===id;})[0]; ask('עריכת איש קשר', contactFields(c), function(v){ v.household_id = S.hid; v.contact_id = id; call('off_saveContact', [S.token, v], function(){ msg('נשמר', true); openHH(S.hid); }); }); }
+function studentFields(s, isNew){ s = s || {}; var cur = (s.assignments||[]).filter(function(x){return x.status==='ACTIVE';})[0], co = S.H.coaches.map(function(c){ return [c.coach_id, c.display_name]; }); if (cur) co.sort(function(a){ return a[0]===cur.coach_id ? -1 : 0; }); return [{k:'first_name',label:'שם פרטי',value:s.first_name,req:1}].concat(isNew ? [] : [{k:'last_name',label:'שם משפחה (רק אם שונה משם המשפחה)',value:s.last_name}]).concat([{k:'birth_year',label:'שנת לידה',value:s.birth_year},{k:'legacy_customer_no',label:'מס לקוח (5 ספרות)',value:s.legacy_customer_no,req:1},{k:'coach_id',label:'מאמן/ת משויך/ת — הלקוח יכול להזמין רק אצלו/ה',type:'select',options:co.concat([['','ללא מאמן']])},{k:'status',label:'סטטוס',type:'select',options:s.status==='INACTIVE'?[['INACTIVE','לא פעיל'],['ACTIVE','פעיל']]:[['ACTIVE','פעיל'],['INACTIVE','לא פעיל']]}]).filter(function(f){ return !isNew || f.k!=='status'; }); }
+// Part 2 (owner 2026-10-23): a swimmer added inside a family takes the family name (server side); no last-name field here.
+function addStudent(){ ask('הוספת שחיין/ית', studentFields(null, true), function(v){ v.household_id = S.hid; if (!/^\d{5}$/.test(String(v.legacy_customer_no||'').trim())) { msg(custNoMsg(v.legacy_customer_no)); return; } call('off_saveStudent', [S.token, v], function(){ msg('נשמר', true); openHH(S.hid); }); }); }
+function editStudent(id){ var s = S.H.students.filter(function(x){return x.student_id===id;})[0]; var cur = (s.assignments||[]).filter(function(x){return x.status==='ACTIVE';})[0];
+  ask('עריכת שחיין/ית ושיוך מאמן', studentFields(s), function(v){ v.household_id = S.hid; v.student_id = id; var coach = v.coach_id; delete v.coach_id;
+    call('off_saveStudent', [S.token, v], function(){ if ((cur ? cur.coach_id : '') !== coach) call('off_assign', [S.token, id, coach], function(){ msg('נשמר', true); openHH(S.hid); }); else { msg('נשמר', true); openHH(S.hid); } }); }); }
+function addGrant(studentId){
+  var B = S.B, sw = S.H.students.filter(function(x){ return x.status==='ACTIVE'; });
+  if (!sw.length) { msg('קודם מוסיפים שחיין/ית — הרכישה נרשמת על שם שחיין/ית'); return; }
+  if (studentId) sw.sort(function(a){ return a.student_id===studentId ? -1 : 0; });
+  // Defaults so the secretary normally types the receipt number and saves: today, today + default validity, default pack size.
+  var today = B.today || new Date().toISOString().slice(0,10), exp = addMonths(today, Number(B.defaultValidity) || 12);
+  ask('רישום רכישה / זיכוי', [{k:'student_id',label:'על שם השחיין/ית',type:'select',options:sw.map(function(x){ return [x.student_id, x.first_name+' '+(x.last_name||'')]; })},{k:'ref',label:'מספר קבלה (לרכישה) / מקור (לפתיחה או תיקון)',req:1,autofocus:1},{k:'qty',label:'כמות שיעורים בכרטיסייה (ברירת מחדל '+B.defaultPackQty+'; מהיר: '+B.presets.join(', ')+')',type:'number',value:B.defaultPackQty,req:1},{k:'type',label:'סוג',type:'select',options:[['PURCHASE','רכישה (שולם)'],['OPENING','יתרת פתיחה'],['ADJUSTMENT','תיקון ידני (+ / −)']]},{k:'valid_from',label:'תחילת תוקף',type:'date',value:today},{k:'expires_at',label:'תוקף עד ('+B.defaultValidity+' חודשים)',type:'date',value:exp},{k:'expiry_override_reason',label:'סיבה לשינוי תוקף (חובה רק אם שונה מברירת המחדל)'}],
+    function(v){ var p = { household_id:S.hid, student_id:v.student_id, type:v.type, qty:v.qty, receipt_ref:v.type==='PURCHASE'?v.ref:'', source_note:v.type!=='PURCHASE'?v.ref:'', valid_from:v.valid_from, expires_at:v.expires_at, expiry_override_reason:v.expiry_override_reason };
+      call('off_addGrant', [S.token, p], function(g){ msg('נרשם: '+g.qty+' · תוקף עד '+g.expires_at.split('-').reverse().join('/'), true); openHH(S.hid); }); });
+}
+function voidGrant(id){ ask('ביטול רישום זיכוי', [{k:'reason',label:'סיבה',req:1}], function(v){ call('off_voidGrant', [S.token, id, v.reason], function(){ msg('בוטל', true); openHH(S.hid); }); }); }
+function coachOf(sid){ var s = S.H.students.filter(function(x){return x.student_id===sid;})[0]; var a=(s.assignments||[]).filter(function(x){return x.status==='ACTIVE';})[0]; return a?a.coach_id:''; }
+function loadSlots(){ var d=$('b_d').value; if(!d){msg('בחרו תאריך');return;} call('off_slots', [S.token, coachOf($('b_s').value), d, d], function(list){ $('b_slots').innerHTML = list.map(function(s){ return '<button class="chip" onclick="bookAt(\''+s.start+'\')">'+s.hm+'</button>'; }).join('') || '<span class="muted">אין משבצות לפי שעות הזמינות ביום זה (אפשר מועד חריג)</span>'; }); }
+function bookAt(start){ ask('קביעת שיעור', [{type:'note', label:'לקבוע שיעור ב-' + start.slice(0,16).replace('T',' ') + '?'}], function(){ call('off_book', [S.token, {request_id:uuid(), household_id:S.hid, student_id:$('b_s').value, coach_id:coachOf($('b_s').value), start:start, mode:'NORMAL'}], function(b){ msg('נקבע: '+fmtDay(b.ymd)+' '+b.hm, true); openHH(S.hid); }); }); }
+function bookFree(){ var d=$('b_d').value, t=$('b_t').value, mode=$('b_mode').value, reason=$('b_reason').value; if(!d||!t){msg('חסרים תאריך ושעה');return;} if(!reason.trim()){msg('חובה סיבה');return;}
+  call('off_book', [S.token, {request_id:uuid(), household_id:S.hid, student_id:$('b_s').value, coach_id:coachOf($('b_s').value), start:isoOf(d,t), mode:mode, reason:reason}], function(b){ msg('נרשם: '+fmtDay(b.ymd)+' '+b.hm, true); openHH(S.hid); }); }
+function cx(id, kind){
+  var names = { ONTIME:'ביטול (היתרה חוזרת)', LATE:'ביטול מאוחר — השיעור יחויב', WAIVED:'ויתור על החיוב — היתרה חוזרת', COACH:'ביטול מדריך — היתרה חוזרת', SCHOOL:'ביטול בי"ס — היתרה חוזרת' };
+  ask(names[kind], [{k:'reason',label:'סיבה'+(kind==='WAIVED'?' (חובה)':''),req:kind==='WAIVED'?1:0}], function(v){ call('off_cancel', [S.token, id, kind, v.reason||''], function(){ msg('בוצע', true); openHH(S.hid); }); });
+}
+function noShow(id){ ask('אי-הגעה', [{type:'note', label:'לסמן אי-הגעה? השיעור יחויב.'}], function(){ call('off_noShow', [S.token, id], function(){ msg('סומן', true); openHH(S.hid); }); }); }
+function resch(id){ ask('שינוי מועד', [{k:'d',label:'תאריך חדש',type:'date',req:1},{k:'t',label:'שעה חדשה',type:'time',step:900,req:1}], function(v){ call('off_reschedule', [S.token, id, isoOf(v.d, v.t)], function(){ msg('המועד שונה והאירוע ביומן עודכן', true); openHH(S.hid); }); }); }
+// --- exceptions ---
+var EXK = { REVIEW:'לבדיקה', UNMANAGED:'אירוע ידני ביומן', DUPLICATE:'אירוע כפול', PERMISSION:'אין הרשאת כתיבה ליומן' };
+function excRow(x){
+  var a = '';
+  if (x.kind==='REVIEW' && /MISSING/.test(x.detail)) a = '<button class="btn sm" onclick="resolve(\''+x.booking_id+'\',\'ONTIME\')">ביטול בזמן (יתרה חוזרת)</button><button class="btn sm sec" onclick="resolve(\''+x.booking_id+'\',\'LATE\')">ביטול מאוחר (חיוב)</button><button class="btn sm ghost" onclick="resolve(\''+x.booking_id+'\',\'WAIVED\')">ויתור</button><button class="btn sm ghost" onclick="resolve(\''+x.booking_id+'\',\'RESTORE\')">להחזיר ליומן</button>';
+  else if (x.kind==='REVIEW') a = '<button class="btn sm ghost" onclick="resolve(\''+x.booking_id+'\',\'RESTORE\')">אישור המצב הנוכחי</button>';
+  if (x.kind==='UNMANAGED') a = '<button class="btn sm sec" onclick="adopt(\''+x.event_id+'\',\''+x.coach_id+'\')">שיוך למשפחה</button><button class="btn sm ghost" onclick="ign(\''+x.event_id+'\')">התעלמות</button>';
+  var what = x.kind==='REVIEW' ? (/MISSING/.test(x.detail) ? 'האירוע נמחק מהיומן' : /MOVE_REJECTED/.test(x.detail) ? 'הזזה ביומן נדחתה — האירוע הוחזר למועד שבברבור: ' + x.detail.replace('MOVE_REJECTED:','').replace('duration','משך שונה').replace('hours','מחוץ לשעות הבריכה').replace('grant_expiry','אחרי תוקף הזיכוי').replace('closure','סגירת בית הספר').replace('collision','התנגשות בשיעור אחר').replace('calendar_busy','אירוע אחר ביומן').replace('busy_unknown','יומן חוסם לא נקרא').replace('busy','תפוס ביומן חוסם').replace('all_day','אירוע יום שלם') : /MOVED/.test(x.detail) ? 'הוזז ביומן: ' + x.detail.replace('MOVED:','').replace('outside_rules','מחוץ לשעות').replace('duration','משך שונה').replace('grant_expiry','אחרי תוקף הזיכוי') : x.detail) : x.kind==='UNMANAGED' ? esc(x.detail) : esc(x.detail);
+  return '<div class="row"><div class="grow"><b>'+(EXK[x.kind]||x.kind)+'</b>'+(x.local?' · '+esc(x.local):'')+(x.student?' · '+esc(x.student):'')+(x.household?' · <a class="link" href="#" onclick="openHH(\''+x.household_id+'\');return false">'+esc(x.household)+'</a>':'')+'<div class="muted">'+what+'</div></div><div class="inline">'+a+'</div></div>';
+}
+function loadExc(runNow){ if(runNow){ maintenancePrompt(function(password){ loadExcAuthorized(true,password); }); return; } loadExcAuthorized(false); }
+function loadExcAuthorized(runNow,password){ loadGrReviews(); $('exc').innerHTML = '<div class="muted">'+(runNow?'בודק מול היומן…':'טוען…')+'</div>'; call(runNow ? 'off_exceptions' : 'off_readExceptions', [S.token, password], function(list){ $('exc').innerHTML = list.length ? list.map(excRow).join('') : '<div class="msg ok">אין חריגות</div>'; }); }
+function resolve(id,k){ if (k==='WAIVED') ask('ויתור על חיוב', [{k:'r',label:'סיבה',req:1}], function(v){ doResolve(id,k,v.r); }); else doResolve(id,k,''); }
+function doResolve(id,k,r){ call('off_resolveMissing',[S.token,id,k,r],function(){ msg('טופל', true); loadExc(false); }); }
+function adopt(ev, coach){ ask('שיוך אירוע ידני למשפחה', [{k:'q',label:'חיפוש משפחה (שם/טלפון)',req:1}], function(v){ call('off_search',[S.token,v.q],function(list){ if(!list.length){msg('לא נמצאה משפחה');return;} call('off_household',[S.token,list[0].household_id],function(d){ var kids=d.students.filter(function(s){return s.status==='ACTIVE';}); if(!kids.length){msg('אין שחיינים במשפחה');return;} ask('שיוך ל-'+d.household.display_name,[{k:'sid',label:'שחיין/ית',type:'select',options:kids.map(function(s){return [s.student_id,s.first_name];})}],function(w){ call('off_adopt',[S.token,ev,d.household.household_id,w.sid,coach],function(){ msg('שויך — נוצל שיעור מהיתרה', true); loadExc(false); }); }); }); }); }); }
+function ign(ev){ ask('התעלמות מאירוע', [{k:'r',label:'סיבה',req:1}], function(v){ call('off_ignore',[S.token,ev,v.r],function(){ msg('סומן', true); loadExc(false); }); }); }
+// --- coaches (master + management mode) ---
+var MODE = { SELF_MANAGED:'מנהל את עצמו', OFFICE_MANAGED:'בניהול המשרד' }, CST = { PILOT:'פיילוט', ACTIVE:'פעיל', LEGACY_ONLY:'ללא הזמנות באפליקציה', INACTIVE:'לא פעיל' };
+function renderCoaches(){
+  if (!S.B) { $('coachList').innerHTML = '<div class="empty">טוען…</div>'; return; }
+  $('coachList').innerHTML = S.B.coaches.filter(function(c){ return !c.archived && (S.showInactive || c.status!=='INACTIVE'); }).map(function(c){ return '<div class="row"><div class="grow"><b>'+esc(c.display_name)+'</b> <span class="badge '+(c.status==='INACTIVE'||c.status==='LEGACY_ONLY'?'gray':'ok')+'">'+esc(CST[c.status]||c.status)+'</span>'+(modeRelevant(c) ? ' <span class="badge '+(c.management_mode==='OFFICE_MANAGED'?'warn':'')+'">'+esc(MODE[c.management_mode]||c.management_mode)+'</span>' : '')+'<div class="muted">'+((c.contact_email||c.login_email) ? 'אימייל: '+esc(c.contact_email||c.login_email) : 'ללא אימייל')+' · '+(c.booking_calendar.id ? 'יומן הזמנות: '+esc(c.booking_calendar.name) : 'ללא יומן הזמנות — לא פתוח להזמנות באפליקציה')+(c.location ? ' · '+esc(c.location) : '')+'</div>'+onbBadges(c)+'</div><div class="inline">'+(c.booking_calendar.id ? '<button class="btn sm" onclick="openAvail(\''+c.coach_id+'\', \'sch\')">לו"ז שבועי</button><button class="btn sm sec" onclick="openAvail(\''+c.coach_id+'\', \'av\')">ניהול זמינות</button>' : '')+'<button class="btn sm sec" onclick="reportOpen(\''+c.coach_id+'\')">דוח חודשי</button><button class="btn sm ghost" onclick="editCoach(\''+c.coach_id+'\')">עריכה</button>'+onbButtons(c)+(c.onboarding && c.onboarding.platform === 'LINKED' ? '' : '<button class="btn sm ghost" onclick="deleteCoach(\''+c.coach_id+'\')">מחיקה</button>')+'</div></div>'; }).join('') + (S.B.coaches.some(function(c){ return c.status==='INACTIVE' && !c.archived; }) ? '<div class="muted" style="margin-top:8px"><a href="#" onclick="S.showInactive=!S.showInactive;renderCoaches();return false">'+(S.showInactive?'הסתרת מדריכים לא פעילים':'הצגת מדריכים לא פעילים')+'</a></div>' : '') || '<div class="empty">אין מדריכים</div>';
+}
+var ONB_P = { LINKED:['מחובר לברבור','ok'], INVITED:['הוזמן — ממתין להתחברות','warn'], NOT_INVITED:['לא מחובר לברבור','gray'] };
+var ONB_C = { CONNECTED:['יומן הזמנות מחובר','ok'], INACTIVE:['יומן הזמנות מחובר — לא פעיל','gray'], MISSING:['אין יומן הזמנות','gray'] };
+// Management mode only matters for a coach who is connected (or for a coach who needs no Platform connection).
+function modeRelevant(c){ var o = c.onboarding; return !o || !o.link_required || o.platform === 'LINKED'; }
+var ONB_R = { STATUS:'סטטוס לא פעיל', NO_CALENDAR:'אין יומן הזמנות', NOT_LINKED:'לא מחובר לברבור', NO_AVAILABILITY:'אין זמינות', NO_COACH:'' };
+function onbBadges(c){ var o = c.onboarding; if (!o) return ''; var p = ONB_P[o.platform] || [o.platform,'gray'];
+  return '<div class="inline" style="flex-wrap:wrap;gap:4px;margin-top:4px"><span class="badge '+p[1]+'">'+esc(p[0])+'</span><span class="badge '+(ONB_C[o.calendar]||ONB_C.MISSING)[1]+'">'+esc((ONB_C[o.calendar]||[o.calendar])[0])+'</span><span class="badge '+(o.bookable?'ok':'bad')+'">'+(o.bookable?'פתוח להזמנות':'לא פתוח להזמנות — '+esc(ONB_R[o.bookable_reason]||o.bookable_reason))+'</span></div>'; }
+function calButtons(c){ var o = c.onboarding; if (!o || c.status === 'INACTIVE' || c.status === 'LEGACY_ONLY') return '';
+  if (S.B && S.B.env === 'TEST' && o.platform !== 'LINKED' && o.calendar === 'MISSING') return '<button class="btn sm sec" onclick="calBeforeLink(CID)">יצירת יומן הזמנות</button>'.replace('CID', "'"+c.coach_id+"'");
+  return o.calendar === 'MISSING' ? '<button class="btn sm sec" onclick="createCal(\''+c.coach_id+'\', false)">יצירת יומן הזמנות</button>'
+    : '<button class="btn sm ghost" onclick="shareCal(\''+c.coach_id+'\')">שיתוף יומן</button><button class="btn sm ghost" onclick="createCal(\''+c.coach_id+'\', true)">יצירה מחדש</button>'; }
+function createCal(id, recreate){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
+  ask(recreate ? 'יצירה מחדש של יומן הזמנות' : 'יצירת יומן הזמנות', [{type:'note', label:(recreate ? 'נוצר יומן חדש בבעלות חשבון המערכת והמדריך עובר אליו. היומן הקודם נשאר ולא נמחק. ' : 'נוצר יומן בשם "BARBUR — '+c.display_name+'" בבעלות חשבון המערכת. ')+'המדריך מקבל הרשאת עריכת אירועים בלבד (לא ניהול שיתוף).'},{k:'email', label:'כתובת Google לשיתוף עם המדריך (לשיתוף בלבד, לא לזיהוי)', type:'email', value:c.contact_email||c.login_email||'', req:1}],
+    function(v){ call('off_createBookingCalendar', [S.token, id, v.email, recreate], function(d){ msg('היומן נוצר ושותף עם '+d.shared_with, true); reboot(function(){ tab('co', true); }); }); }); }
+function shareCal(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
+  ask('שיתוף יומן ההזמנות', [{k:'email', label:'כתובת Google לשיתוף (הרשאת עריכת אירועים)', type:'email', value:c.contact_email||c.login_email||'', req:1}], function(v){ call('off_shareBookingCalendar', [S.token, id, v.email], function(){ msg('היומן שותף', true); }); }); }
+// Coach onboarding buttons wherever the Platform is configured (o != null): TEST and LIVE alike since round 1 (the LIVE pilot needs
+// the invitation from the Office; the server rules — inviteCoach_, unlinkPlatformCoach_ — are identical in both environments).
+function onbButtons(c){ var cb = calButtons(c), o = c.onboarding; if (o && o.platform === 'LINKED' && S.B) return cb + '<button class="btn sm ghost" onclick="unlinkCoach(\''+c.coach_id+'\')">נתק מברבור</button>'; if (!o || !S.B || c.status === 'INACTIVE' || o.platform === 'LINKED') return cb;
+  return cb+'<button class="btn sm sec" onclick="inviteCoach(\''+c.coach_id+'\')">'+(o.platform==='INVITED'?'שליחת הזמנה מחדש':'חבר לברבור')+'</button>'+(o.platform==='INVITED'?'<button class="btn sm ghost" onclick="revokeInvite(\''+c.coach_id+'\')">ביטול הזמנה</button>':''); }
+function inviteCoach(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
+  var send = function(){ call('off_inviteCoach', [S.token, id], function(d){ var em = d.email || {};
+    reboot(function(){ tab('co', true); });
+    if (em.status === 'SENT') { msg('ההזמנה נשלחה במייל אל '+em.to, true); return; }
+    var why = em.status === 'BLOCKED_TEST' ? 'בסביבת הבדיקה לא נשלח מייל אל '+em.to+' (כתובת לא מורשית ב-TEST).' : 'שליחת המייל אל '+(em.to||'')+' נכשלה.';
+    ask('ההזמנה לא נשלחה', [{type:'note', label:why+' אפשר לשלוח את הקישור ידנית (מוצג פעם אחת, תקף עד '+String(d.expires_at).slice(0,10)+').'},{k:'link', label:'קישור הזמנה', value:d.link}], function(){}); }); };
+  if (c.contact_email) { send(); return; }
+  ask('צריך אימייל של המדריך', [{type:'note', label:'כדי לשלוח הזמנה צריך את האימייל של המדריך. הוא נשמר בכרטיס המדריך ומשמש רק להזמנה ולשיתוף יומן.'},{k:'contact_email', label:'אימייל המדריך', type:'email', value:'', req:1}],
+    function(v){ call('off_saveCoach', [S.token, { coach_id:id, display_name:c.display_name, management_mode:c.management_mode, status:c.status, contact_email:v.contact_email }], function(){ c.contact_email = v.contact_email; send(); }); }); }
+function calBeforeLink(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
+  ask('המדריך עדיין לא מחובר לבית הספר', [{type:'note', label:c.display_name+' עדיין לא מחובר. קודם מחברים את המדריך לבית הספר, ורק אז נוצר יומן ההזמנות — הוא ייווצר וישותף איתו אוטומטית ברגע שיתחבר. לשלוח לו עכשיו הזמנת התחברות?'}], function(){ inviteCoach(id); }); }
+function deleteCoach(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
+  ask('מחיקת המדריך '+c.display_name, [{type:'note', label:'אזהרה: מדריך בלי היסטוריה נמחק לצמיתות. מדריך עם שיעורים או תלמידים עובר לארכיון: הוא נעלם מהמסכים, והתיעוד נשמר. לאישור הזינו את סיסמת המשרד.'},{k:'pw', label:'סיסמת המשרד', type:'password', value:'', req:1}],
+    function(v){ call('off_deleteCoach', [S.token, id, v.pw], function(d){ msg(d.result==='DELETED' ? 'המדריך נמחק' : 'המדריך הועבר לארכיון', true); reboot(function(){ tab('co', true); }); }); }); }
+function unlinkCoach(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
+  ask('ניתוק '+c.display_name+' מברבור', [{type:'note', label:'אזהרה: המדריך לא יוכל להיכנס לברבור, והוא ייסגר להזמנות לקוחות עד שיתחבר מחדש. החיבור שלו לבית הספר מסתיים גם בפלטפורמת המאמנים; החשבון האישי שלו שם נשאר. חיבור מחדש מחייב הזמנה חדשה מהמשרד. היומן לא נמחק: יסומן "(לא פעיל)" וגישת המדריך אליו תוסר. המדריך יקבל במייל קובץ עם תיעוד השיעורים שלו, בלי פרטי לקוחות.'}], function(){ call('off_unlinkPlatformCoach', [S.token, id], function(d){ var a = d.after || {}, h = a.history || {}; msg('המדריך נותק מברבור.' + (a.calendar && a.calendar.status==='DEACTIVATED' ? ' היומן סומן "לא פעיל" וגישת המדריך הוסרה.' : '') + (h.status==='SENT' ? ' תיעוד השיעורים נשלח אל '+h.to+'.' : h.status ? ' תיעוד השיעורים לא נשלח ('+h.status+').' : ''), true); reboot(function(){ tab('co', true); }); }); }); }
+function revokeInvite(id){ call('off_revokeInvitation', [S.token, id], function(){ msg('ההזמנה בוטלה', true); reboot(function(){ tab('co', true); }); }); }
+function coachFields(c){ c = c || {}; return [{k:'display_name',label:'שם',value:c.display_name,req:1},{k:'contact_email',label:'אימייל המדריך — לשליחת הזמנה ושיתוף יומן (לא משמש לזיהוי)',type:'email',value:c.contact_email||''},{k:'management_mode',label:'מצב ניהול',type:'select',options:(c.management_mode==='OFFICE_MANAGED'?[['OFFICE_MANAGED',MODE.OFFICE_MANAGED],['SELF_MANAGED',MODE.SELF_MANAGED]]:[['SELF_MANAGED',MODE.SELF_MANAGED],['OFFICE_MANAGED',MODE.OFFICE_MANAGED]])},{k:'status',label:'סטטוס',type:'select',options:[[c.status||'PILOT',CST[c.status||'PILOT']]].concat(Object.keys(CST).filter(function(k){ return k!==(c.status||'PILOT'); }).map(function(k){ return [k,CST[k]]; }))},{k:'booking_calendar_id',label:'מזהה יומן ההזמנות של בית הספר (Calendar ID; ריק = ללא יומן / ללא שינוי — אפשר לחבר מאוחר יותר). היומן חייב להיות משותף עם חשבון המערכת בהרשאת "Make changes to events"',value:''}]; }
+function newCoach(){ ask('מדריך חדש', coachFields(), function(v){ call('off_saveCoach', [S.token, v], function(){ msg('המדריך נוצר', true); reboot(function(){ tab('co', true); }); }); }); }
+function editCoach(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0]; ask('עריכת מדריך', coachFields(c), function(v){ v.coach_id = id; call('off_saveCoach', [S.token, v], function(){ msg('נשמר', true); reboot(function(){ tab('co', true); }); }); }); }
+function reboot(cb){ call('off_bootstrap', [S.token], function(d){ S.B = d; if (cb) cb(); }); }
+function openAvail(id, startTab){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0]; $('coachAvailBox').classList.remove('hidden'); $('coachAvailTitle').textContent = (startTab==='av' ? 'זמינות והגדרות — ' : 'לו"ז שבועי — ') + c.display_name; S.availCoach=id; Avail.init({ token:S.token, coachId:id, call:call, mount:$('avail'), isOffice:true, startTab:startTab||'sch', navigation:S.restoreAvail, onNavigate:function(n){S.availNav=n;saveOfficeNav();} }); S.restoreAvail=null; saveOfficeNav(); $('coachAvailBox').scrollIntoView({behavior:'smooth'}); }
+// --- school closures ---
+// ---- groups (G1): Office manages; sessions are generated from the schedule ----
+var GD_DAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי'];
+var GR_ST = { PLANNED:'ok', HELD:'gray', CANCELLED:'gray', CLOSED_BY_SCHOOL:'bad' };
+// a group session: 45 minutes or one hour; it starts on :00 / :15 / :30 / :45 (owner decision 2026-10-13)
+function grTimeOpts(){ var o = []; for (var m = 6*60; m + 45 <= 22*60; m += 15) { var h = ('0'+Math.floor(m/60)).slice(-2)+':'+('0'+(m%60)).slice(-2); o.push([h, h]); } return o; }
+var GR_DUR = [['45','45 דקות'],['60','שעה']];
+function grDays(a){ return (a||[]).map(function(d){ return GD_DAYS[d]; }).join(', '); }
+function loadGroups(){
+  var f = { type: $('gr_type').value, coach_id: $('gr_coach').value, status: $('gr_status').value };
+  $('groups').innerHTML = '<div class="muted">טוען…</div>';
+  call('off_groups', [S.token, f], function(r){
+    S.GR = r; var sel = $('gr_coach'), cur = sel.value; sel.innerHTML = '<option value="">כל המדריכים</option>' + r.coaches.map(function(c){ return '<option value="'+esc(c.coach_id)+'">'+esc(c.display_name)+'</option>'; }).join(''); sel.value = cur;
+    $('groups').innerHTML = r.groups.length ? r.groups.map(function(g){
+      var q = g.quota ? ' · נותרו ' + g.quota.remaining + ' מתוך ' + g.quota.total + ' מפגשים' : '';
+      return '<div class="row"><div class="grow" style="cursor:pointer" onclick="openGroup(\''+g.group_id+'\')"><b>'+esc(g.name)+'</b> <span class="badge">'+(g.type==='COURSE'?'קורס':'חוג שנתי')+'</span>'+(g.status==='ARCHIVED'?' <span class="badge gray">בארכיון</span>':'')+
+        '<div class="muted">'+esc(g.coach_name)+' · '+esc(grDays(g.weekdays))+' '+esc(g.start_time)+' ('+g.duration_min+' דק׳)'+(g.current_level?' · רמה: '+esc(g.current_level):'')+(g.age_cohort?' · '+esc(g.age_cohort):'')+q+(g.next_session?' · הבא: '+esc(g.next_session):'')+'</div></div></div>';
+    }).join('') : '<div class="empty">אין קבוצות</div>';
+  });
+}
+function openGroup(id){
+  call('off_groupDetail', [S.token, id], function(d){
+    S.GD = d; saveOfficeNav(); var g = d.group, q = g.quota ? '<div class="muted">מכסת קורס: נספרו '+g.quota.counted+' מתוך '+g.quota.total+' (מפגש שהתקיים או מתוכנן) · נותרו '+g.quota.remaining+'</div>' : '';
+    var dates = g.type==='ANNUAL' ? esc(fmtDay(g.start_date))+' – '+esc(fmtDay(g.end_date)) : 'מ-'+esc(fmtDay(g.start_date))+' · '+g.sessions_total+' מפגשים';
+    $('gr_detail').innerHTML = '<div class="card"><h2>'+esc(g.name)+' <span class="badge">'+(g.type==='COURSE'?'קורס':'חוג שנתי')+'</span> '+(g.status==='ARCHIVED'?'<span class="badge gray">בארכיון</span>':'')+'</h2>'+
+      '<div class="muted">מדריך/ה קבוע/ה: '+esc(g.coach_name)+' · '+esc(grDays(g.weekdays))+' '+esc(g.start_time)+' ('+g.duration_min+' דק׳) · '+dates+'</div>'+
+      '<div class="muted">רמת פתיחה: '+esc(g.start_level||'—')+' · רמה נוכחית: '+esc(g.current_level||'—')+' · מחזור/גיל: '+esc(g.age_cohort||'—')+'</div>'+q+
+      (g.upcoming ? '<div class="muted">החל מ-'+esc(fmtDay(g.upcoming.valid_from))+': '+esc(grDays(g.upcoming.weekdays))+' '+esc(g.upcoming.start_time)+' ('+g.upcoming.duration_min+' דק׳)</div>' : '')+
+      (g.reviews ? '<div class="msg warn">'+g.reviews+' מפגשים מסומנים לבדיקה (הקבוצה שונתה אחרי שנקבעו)</div>' : '')+
+      (g.status==='ACTIVE' ? '<div class="inline" style="margin:8px 0"><button class="btn sm" onclick="editSchedGroup()">עריכת קבוצה (החל מתאריך)</button><button class="btn sm ghost" onclick="editGroup(\''+g.group_id+'\')">עריכת פרטים</button><button class="btn sm ghost" onclick="archiveGroup(\''+g.group_id+'\')">העברה לארכיון</button><button class="btn sm ghost" onclick="$(\'gr_detail\').innerHTML=\'\'">סגירה</button></div>' : '')+
+      '<h3>מפגשים</h3><div class="muted">שינוי במפגש בודד חל רק על התאריך שלו ומסומן "חריג".</div>'+d.sessions.map(function(s){
+        var acts = g.status!=='ACTIVE' ? '' : (s.needs_review ? '<button class="btn sm" onclick="reviewGS(\''+s.session_id+'\')">אישור</button>' : '') + (s.can_change ? '<button class="btn sm ghost" onclick="timeGS(\''+s.session_id+'\')">שעה</button>' + (s.time_override ? '<button class="btn sm ghost" onclick="resetTimeGS(\''+s.session_id+'\')">החזר לשעת הקבוצה</button>' : '') + '<button class="btn sm ghost" onclick="cancelGS(\''+s.session_id+'\')">ביטול</button><button class="btn sm ghost" onclick="subGS(\''+s.session_id+'\')">מחליף</button>' : '') + (s.can_makeup ? '<button class="btn sm ghost" onclick="makeupGS(\''+s.session_id+'\')">קבע השלמה</button>' : '') + '<button class="btn sm ghost" onclick="noteGS(\''+s.session_id+'\')">הערה</button>';
+        return '<div class="row"><div class="grow"><b>'+esc(fmtDay(s.ymd))+'</b> '+esc(s.hm)+'–'+esc(s.end_hm)+' <span class="badge '+(GR_ST[s.status]||'gray')+'">'+esc(s.status_label)+'</span>'+(s.makeup_for?' <span class="badge gray">השלמה</span>':'')+(s.time_override||s.substitute_name?' <span class="badge warn">חריג</span>':'')+(s.needs_review?' <span class="badge bad">לבדיקה</span>':'')+
+          (s.needs_review?'<div class="muted">'+esc(s.review_reason)+'</div>':'')+(s.coach_id!==g.coach_id?'<div class="muted">מדריך/ה קבוע/ה במפגש: '+esc(s.coach_name)+'</div>':'')+(s.substitute_name?'<div class="muted">מחליף/ה: '+esc(s.substitute_name)+'</div>':'')+(s.note?'<div class="muted">'+esc(s.note)+'</div>':'')+'</div><div class="inline">'+acts+'</div></div>';
+      }).join('')+'</div>';
+    $('gr_detail').scrollIntoView();
+  });
+}
+function grCoachOpts(sel, withEmpty){ return (withEmpty ? [['', '— המדריך/ה הקבוע/ה —']] : []).concat(S.GR.coaches.map(function(c){ return [c.coach_id, c.display_name]; })); }
+function newGroup(){
+  var coaches = S.GR ? S.GR.coaches : [];
+  if (!coaches.length) { msg('אין מדריכים מחוברים לשיוך קבוצה'); return; }
+  ask('קבוצה חדשה', [{k:'type',label:'סוג',type:'select',options:[['ANNUAL','חוג שנתי (טווח תאריכים, 2–3 אימונים בשבוע)'],['COURSE','קורס (מספר מפגשים)']]},{k:'name',label:'שם הקבוצה',req:1},{k:'coach_id',label:'מדריך/ה קבוע/ה',type:'select',options:grCoachOpts()},
+    {k:'start_level',label:'רמת פתיחה'},{k:'current_level',label:'רמה נוכחית'},{k:'age_cohort',label:'מחזור / קבוצת גיל'},{k:'weekdays',label:'ימים בשבוע (אין קבוצות בשבת)',type:'days',value:[]},
+    {k:'start_time',label:'שעת התחלה (אותה שעה בכל הימים)',type:'select',options:grTimeOpts(),value:'17:00'},{k:'duration_min',label:'משך',type:'select',options:GR_DUR,value:'45'},{k:'start_date',label:'תאריך התחלה',type:'date',req:1},
+    {k:'end_date',label:'תאריך סיום (לחוג שנתי)',type:'date'},{k:'sessions_total',label:'מספר מפגשים (לקורס)',type:'number',value:'8'}], function(v){
+    v.duration_min = Number(v.duration_min); v.sessions_total = Number(v.sessions_total);
+    call('off_saveGroup', [S.token, v], function(g){ msg('הקבוצה נוצרה והמפגשים שובצו', true); loadGroups(); openGroup(g.group_id); });
+  });
+}
+function editGroup(id){
+  var g = S.GD.group;
+  ask('עריכת קבוצה', [{k:'name',label:'שם הקבוצה',value:g.name,req:1},{k:'coach_id',label:'מדריך/ה קבוע/ה',type:'select',options:grCoachOpts().sort(function(a,b){ return a[0]===g.coach_id ? -1 : b[0]===g.coach_id ? 1 : 0; })},{k:'start_level',label:'רמת פתיחה',value:g.start_level},{k:'current_level',label:'רמה נוכחית',value:g.current_level},{k:'age_cohort',label:'מחזור / קבוצת גיל',value:g.age_cohort},{k:'n',type:'note',label:'ימים, שעה, משך, מדריך/ה קבוע/ה ותאריך סיום משתנים ב"עריכת קבוצה (החל מתאריך)". החלפת מדריך/ה כאן חלה מהמפגש הבא.'}], function(v){
+    v.group_id = id; call('off_saveGroup', [S.token, v], function(){ msg('נשמר', true); loadGroups(); openGroup(id); });
+  });
+}
+function archiveGroup(id){ ask('העברה לארכיון', [{k:'n',type:'note',label:'הקבוצה תוסתר מרשימת הקבוצות ומהלו"ז. המפגשים נשמרים. להעביר לארכיון?'}], function(){ call('off_archiveGroup', [S.token, id], function(){ msg('הועברה לארכיון', true); $('gr_detail').innerHTML = ''; loadGroups(); }); }); }
+function cancelGS(sid){ ask('ביטול מפגש', [{k:'reason',label:'סיבה (אופציונלי)'}], function(v){ call('off_cancelGroupSession', [S.token, sid, v.reason], function(){ msg('המפגש בוטל. אפשר לקבוע השלמה.', true); openGroup(S.GD.group.group_id); loadGroups(); }); }); }
+function makeupGS(sid){ ask('קבע השלמה', [{k:'date',label:'תאריך ההשלמה (באותה שעה; לא בשבת)',type:'date',req:1}], function(v){ call('off_setGroupMakeup', [S.token, sid, v.date], function(){ msg('נקבעה השלמה', true); openGroup(S.GD.group.group_id); loadGroups(); }); }); }
+function subGS(sid){ var s = S.GD.sessions.filter(function(x){ return x.session_id===sid; })[0]; ask('מחליף/ה למפגש זה', [{k:'coach_id',label:'מדריך/ה מחליף/ה (המדריך/ה הקבוע/ה לא משתנה)',type:'select',options:grCoachOpts(null, true).sort(function(a,b){ return a[0]===s.substitute_coach_id ? -1 : b[0]===s.substitute_coach_id ? 1 : 0; })}], function(v){ call('off_setGroupSubstitute', [S.token, sid, v.coach_id], function(){ msg('נשמר', true); openGroup(S.GD.group.group_id); }); }); }
+// G1b (spec v0.3): group edit "החל מ" with a preview; occurrence edit "רק בתאריך הזה"; review flags
+function editSchedGroup(){
+  var d = S.GD, g = d.group, f = [{k:'from_date',label:'החל מתאריך (מפגשים שעברו ומפגשים לפני התאריך לא משתנים)',type:'date',value:d.edit_from,req:1},{k:'weekdays',label:'ימים בשבוע (אין קבוצות בשבת)',type:'days',value:g.weekdays},
+    {k:'start_time',label:'שעת התחלה',type:'select',options:grTimeOpts(),value:g.start_time},{k:'duration_min',label:'משך',type:'select',options:GR_DUR,value:String(g.duration_min)},
+    {k:'coach_id',label:'מדריך/ה קבוע/ה (מפגש עם מחליף/ה נשאר עם המחליף/ה)',type:'select',options:grCoachOpts().sort(function(a,b){ return a[0]===g.coach_id ? -1 : b[0]===g.coach_id ? 1 : 0; })}];
+  if (g.type==='ANNUAL') f.push({k:'end_date',label:'תאריך סיום',type:'date',value:g.end_date,req:1});
+  ask('עריכת קבוצה — החל מתאריך', f, function(v){
+    v.group_id = g.group_id; v.duration_min = Number(v.duration_min);
+    call('off_previewGroupEdit', [S.token, v], function(p){
+      var lines = ['החל מ-'+fmtDay(p.from)+': ישתנו '+p.changed+' מפגשים עתידיים ('+p.moved+' יוזזו, '+p.created+' חדשים, '+p.removed+' יוסרו).',
+        p.kept_exceptions ? p.kept_exceptions+' מפגשים עם שינוי חריג יישארו כמו שהם.' : '', p.makeups_kept ? p.makeups_kept+' השלמות יישארו במקומן.' : '',
+        p.flagged ? p.flagged+' מפגשים יסומנו "לבדיקה" (מתוכם '+p.flagged_makeups+' השלמות).' : '', p.coach_changed ? 'מדריך/ה קבוע/ה חדש/ה ל-'+p.coach_sessions+' מפגשים.' : '',
+        p.quota ? 'מכסת הקורס: '+p.quota.counted+' מתוך '+p.quota.total+'.' : '', p.first_dates.length ? 'המפגשים הבאים: '+p.first_dates.join(' · ') : ''].filter(String);
+      ask('אישור השינוי', lines.map(function(l){ return {k:'n',type:'note',label:l}; }), function(){
+        call('off_editGroupFrom', [S.token, v], function(){ msg('הקבוצה עודכנה', true); loadGroups(); openGroup(g.group_id); });
+      });
+    });
+  });
+}
+function grSess(sid){ return S.GD.sessions.filter(function(x){ return x.session_id===sid; })[0]; }
+function timeGS(sid){ var s = grSess(sid); ask('שעה למפגש זה בלבד ('+fmtDay(s.ymd)+')', [{k:'start_time',label:'שעת התחלה',type:'select',options:grTimeOpts(),value:s.hm},{k:'duration_min',label:'משך',type:'select',options:GR_DUR,value:String((new Date('2000-01-01T'+s.end_hm)-new Date('2000-01-01T'+s.hm))/60000)},{k:'n',type:'note',label:'שאר המפגשים לא משתנים. המפגש יסומן "חריג".'}], function(v){ call('off_setGroupSessionTime', [S.token, sid, v.start_time, Number(v.duration_min)], function(){ msg('נשמר', true); openGroup(S.GD.group.group_id); }); }); }
+function resetTimeGS(sid){ call('off_setGroupSessionTime', [S.token, sid, '', ''], function(){ msg('הוחזר לשעת הקבוצה', true); openGroup(S.GD.group.group_id); }); }
+function reviewGS(sid, fromExc){ call('off_clearGroupReview', [S.token, sid], function(){ msg('אושר', true); if (fromExc) loadGrReviews(); else { openGroup(S.GD.group.group_id); loadGroups(); } }); }
+function loadGrReviews(){ call('off_groupReviews', [S.token], function(list){ $('grRev').innerHTML = list.length ? '<h3>קבוצות — מפגשים לבדיקה</h3>' + list.map(function(s){ return '<div class="row"><div class="grow"><b>'+esc(s.group_name)+'</b> · '+esc(fmtDay(s.ymd))+' '+esc(s.hm)+'–'+esc(s.end_hm)+(s.makeup_for?' <span class="badge gray">השלמה</span>':'')+'<div class="muted">'+esc(s.review_reason)+'</div></div><div class="inline"><button class="btn sm" onclick="reviewGS(\''+s.session_id+'\', true)">אישור</button><button class="btn sm ghost" onclick="tab(\'gr\'); openGroup(\''+s.group_id+'\')">לקבוצה</button></div></div>'; }).join('') : ''; }); }
+function noteGS(sid){ var s = S.GD.sessions.filter(function(x){ return x.session_id===sid; })[0]; ask('הערה למפגש', [{k:'note',label:'הערה',value:s.note}], function(v){ call('off_setGroupSessionNote', [S.token, sid, v.note], function(){ msg('נשמר', true); openGroup(S.GD.group.group_id); }); }); }
+function loadClosures(){ $('closures').innerHTML = '<div class="muted">טוען…</div>'; call('off_closures', [S.token], function(list){ S.CL = list; $('closures').innerHTML = list.length ? list.map(function(c){ return '<div class="row"><div class="grow"><b>'+esc(fmtDay(c.date))+(c.end_date!==c.date && !(c.all_day==='TRUE' && c.end_date===addDays(c.date,1)) ? ' – '+esc(fmtDay(c.all_day==='TRUE'?addDays(c.end_date,-1):c.end_date)) : '')+'</b> '+(c.all_day==='TRUE' ? '<span class="badge bad">כל היום</span>' : '<span class="badge warn">'+esc(c.start_time)+'–'+esc(c.end_time)+'</span>')+'<div class="muted">'+esc(c.reason)+'</div></div><div class="inline"><button class="btn sm ghost" onclick="editClosure(\''+c.closure_id+'\')">עריכה</button><button class="btn sm ghost" onclick="removeClosure(\''+c.closure_id+'\')">הסרה</button></div></div>'; }).join('') : '<div class="empty">אין סגירות עתידיות</div>'; }); }
+function addDays(ymd, n){ var d = new Date(ymd+'T12:00:00'); d.setDate(d.getDate()+n); return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2); }
+function closureFields(c){ c = c || {}; var allDay = c.all_day !== 'FALSE'; return [{k:'date',label:'תאריך התחלה',type:'date',value:c.date||'',req:1},{k:'end_date',label:'תאריך סיום (ריק = יום אחד)',type:'date',value:c.all_day==='TRUE' && c.end_date ? addDays(c.end_date,-1) : (c.end_date||'')},{k:'all_day',label:'סוג',type:'select',options:allDay?[['TRUE','כל היום'],['FALSE','שעות מסוימות']]:[['FALSE','שעות מסוימות'],['TRUE','כל היום']]},{k:'start_time',label:'משעה (לסגירה חלקית, ב-:00/:15/:30/:45)',type:'time',step:900,value:c.all_day==='FALSE'?c.start_time:'08:00'},{k:'end_time',label:'עד שעה',type:'time',step:900,value:c.all_day==='FALSE'?c.end_time:'12:00'},{k:'reason',label:'סיבה (מוצגת ללקוחות ולמדריכים)',value:c.reason||'',req:1}]; }
+function newClosure(){ ask('סגירת בית הספר', closureFields(), function(v){ call('off_saveClosure', [S.token, v], function(){ msg('הסגירה נשמרה — חלה על כל המדריכים', true); loadClosures(); }); }); }
+function editClosure(id){ var c = S.CL.filter(function(x){ return x.closure_id===id; })[0]; ask('עריכת סגירה', closureFields(c), function(v){ v.closure_id = id; call('off_saveClosure', [S.token, v], function(){ msg('נשמר', true); loadClosures(); }); }); }
+function removeClosure(id){ ask('הסרת סגירה', [{type:'note', label:'להסיר את הסגירה? לקוחות יוכלו שוב להזמין בזמן הזה.'}], function(){ call('off_removeClosure', [S.token, id], function(){ msg('הוסר', true); loadClosures(); }); }); }
+// --- leads (owner 2026-10-23): public registration form → "לידים" → "צור כרטיסייה" (then the existing add-card flow) ---
+var LDST = { NEW:['חדש',''], UNPAID:['לא שולם','warn'], PAID:['שולם','ok'], PAID_SINGLE:['שולם יחידני','ok'], CONVERTED:['בוצע המרה','ok'] };
+function ldBadge(st){ var x = LDST[st] || [st,'gray']; return '<span class="badge '+x[1]+'">'+esc(x[0])+'</span>'; }
+function loadLeads(){
+  var u = S.B && S.B.leads_url || ''; $('ldFormLink').textContent = u || 'לא מוגדר (כתובת אפליקציית הלקוח בהגדרות)'; if (u) $('ldFormLink').href = u; else $('ldFormLink').removeAttribute('href');
+  $('leads').innerHTML = '<div class="muted">טוען…</div>';
+  call('off_leads', [S.token, { status: $('ld_status').value, q: $('ld_q').value }], function(list){
+    $('leads').innerHTML = list.length ? list.map(function(l){ return '<div class="row"><div class="grow"><a class="link" href="#" onclick="openLead(\''+esc(l.lead_id)+'\');return false"><b>'+esc(l.name)+'</b></a> '+ldBadge(l.status)+' <span class="muted">'+esc(l.audience_label)+'</span><div class="muted">'+esc(l.lead_id)+' · נרשם/ה '+esc(dmy(l.created_date))+(l.contact && l.audience!=='adult' ? ' · איש קשר: '+esc(l.contact) : '')+(l.phone ? ' · '+esc(l.phone) : '')+(l.paid_date ? ' · שולם '+esc(dmy(l.paid_date)) : '')+(l.family_id ? ' · משפחה '+esc(l.family_id) : '')+'</div></div></div>'; }).join('') : '<div class="empty">אין לידים</div>';
+  });
+}
+function openLead(id){
+  if (S.activeTab !== 'ld') { tab('ld', true); }
+  S.leadId = id; saveOfficeNav(); $('ld_detail').innerHTML = '<div class="card"><div class="empty">טוען…</div></div>';
+  call('off_lead', [S.token, id], function(l){ S.LD = l; renderLead(l); });
+}
+function kvRows(rows){ return '<div class="kv">' + rows.filter(function(r){ return r[1] !== '' && r[1] != null; }).map(function(r){ return '<b>'+esc(r[0])+'</b><span style="white-space:pre-wrap">'+esc(r[1])+'</span>'; }).join('') + '</div>'; }
+// Lead card: every field read-only (escaped); the Office edits the status and its own notes. The ID number is shown here only.
+function renderLead(l){
+  var adult = l.audience === 'adult', yn = function(v){ return v || '—'; };
+  var html = '<div class="card"><h2>'+esc(l.first_name+' '+l.last_name)+' '+ldBadge(l.status)+' <span class="muted" style="font-size:14px">'+esc(l.lead_id)+'</span></h2>' +
+    '<div class="muted">נרשם/ה '+esc(dmy(l.created_date))+(l.paid_date ? ' · תאריך תשלום '+esc(dmy(l.paid_date))+(l.paid_kind_label ? ' ('+esc(l.paid_kind_label)+')' : '') : '')+' · '+esc(l.policy_line)+'</div>' +
+    (l.family_id ? '<div class="msg ok" style="margin-top:8px">הומר למשפחה <a class="link" href="#" onclick="openHH(\''+esc(l.family_id)+'\');return false">'+esc(l.family_name||l.family_id)+'</a>'+(l.converted_date ? ' ב-'+esc(dmy(l.converted_date)) : '')+'</div>' : '') + '</div>';
+  html += '<div class="grid2"><div class="card"><h3>פרטי הרישום</h3>' + kvRows([['למי השיעורים', l.audience_label], ['נרשמים חוזרים', yn(l.returning)], ['חזרה למדריך/ה הקיים/ת', l.returning==='כן' ? yn(l.return_to_coach) : ''], ['מדריך/ה מבוקש/ת', l.preferred_coach_text ? l.preferred_coach_text + ' (טקסט בלבד — לא שויך)' : '']]) +
+    '<h3>פרטי השחיין/ית</h3>' + kvRows([['שם פרטי', l.first_name], ['שם משפחה', l.last_name], ['תאריך לידה', dmy(l.birth_date)], ['ת"ז', l.id_number], ['מגדר', l.gender], ['עיר מגורים', l.city], ['מנוי/ה בקאנטרי', l.country_member]]) + '</div>';
+  html += '<div class="card"><h3>'+(adult ? 'פרטי קשר (השחיין/ית)' : 'איש קשר 1')+'</h3>' + kvRows([['שם מלא', l.contact1_name], ['טלפון', l.contact1_phone], ['אימייל', l.contact1_email]]) +
+    (!adult && (l.contact2_name || l.contact2_phone || l.contact2_email) ? '<h3>איש קשר 2</h3>' + kvRows([['שם מלא', l.contact2_name], ['טלפון', l.contact2_phone], ['אימייל', l.contact2_email]]) : '') +
+    '<h3>העדפות</h3>' + kvRows([['ימים מועדפים', l.preferred_days || '—'], ['שעות נוחות', l.preferred_day_parts || '—']]) + (l.remarks ? '<h3>הערות מהטופס</h3><div style="white-space:pre-wrap">'+esc(l.remarks)+'</div>' : '') + '</div></div>';
+  var cur = l.status === 'CONVERTED' ? l.paid_kind : l.status;
+  html += '<div class="card"><h3>טיפול המשרד</h3><label for="ld_st">סטטוס</label><select id="ld_st" style="width:auto">' + l.statuses.map(function(o){ return '<option value="'+esc(o[0])+'"'+(o[0]===cur?' selected':'')+'>'+esc(o[1])+'</option>'; }).join('') + '</select>' +
+    (l.status === 'CONVERTED' ? ' <span class="muted">(בוצע המרה)</span>' : '') +
+    '<div class="muted">שולם / שולם יחידני רושמים את תאריך התשלום (היום).</div><label for="ld_notes">הערות המשרד</label><textarea id="ld_notes" rows="3"></textarea>' +
+    '<div class="inline" style="margin-top:8px"><button class="btn sm" onclick="saveLead()">שמירה</button>' + (l.family_id ? '' : '<button class="btn sm sec" id="ld_convert" onclick="convertLead()">צור כרטיסייה</button>') + '</div></div>';
+  $('ld_detail').innerHTML = html; $('ld_notes').value = l.notes || ''; $('ld_detail').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+/** Server call that hands every answer (errors too) to cb — for flows that react to a specific error code. */
+function callRaw(fn, args, cb){ var t0 = Date.now(); rpc(fn, args, function(res){ perfLog(fn, t0, res); if (!res.ok && res.code==='AUTH') { onAuthLost(res); msg(res.message); return; } cb(res); }, function(e){ cb({ ok:false, code:'NET', message:'תקלה בחיבור: ' + e }); }); }
+// D1 (2026-10-23): the session ended (idle timeout, password change, sign-out elsewhere). The sign-in screen replaces the app, but
+// an open form is only hidden, never cleared: after the next sign-in it comes back as it was and the user presses אישור again.
+function onAuthLost(res){ store('bbOffice',null); S.token=null; if (!$('sheet').classList.contains('hidden')) { S.resumeSheet = true; $('sheet').classList.add('hidden'); } show('login'); }
+function resumeSheet(){ if (!S.resumeSheet) return; S.resumeSheet = false; $('sheet').classList.remove('hidden'); msg('הטופס נשמר — בדקו את הפרטים ולחצו אישור שוב', true); }
+// Changing a paid lead back to unpaid: the server answers CONFIRM_UNPAY and the Office confirms before the payment date is cleared.
+function saveLead(confirmed){ var id = S.LD.lead_id, p = { status: $('ld_st').value, notes: $('ld_notes').value, confirm_clear_paid: confirmed === true };
+  callRaw('off_setLead', [S.token, id, p], function(res){
+    if (res.ok) { msg('נשמר', true); openLead(id); return; }
+    if (res.code === 'CONFIRM_UNPAY') { ask('ביטול סימון תשלום', [{type:'note', label: res.message}], function(){ saveLead(true); }); return; }
+    msg(res.message);
+  }); }
+// "צור כרטיסייה": 1) new family or an existing family (suggested by phone / ID); 2) pre-filled forms, the Office enters the customer
+// number and assigns the coach; 3) save links the lead; 4) the existing add-card flow opens for the swimmer (no credit before that).
+function convertLead(){ var l = S.LD, m = l.matches || [], adult = l.audience === 'adult';
+  var opt = function(v, label, checked){ return '<label style="display:flex;gap:6px;align-items:center;font-weight:400"><input type="radio" name="cv_mode" value="'+esc(v)+'"'+(checked?' checked':'')+' onchange="cvMode()"> '+label+'</label>'; };
+  $('shTitle').textContent = 'צור כרטיסייה — ' + l.first_name + ' ' + l.last_name;
+  $('shBody').innerHTML = '<h3 style="margin:4px 0">1. משפחה</h3>' + (m.length ? '<div class="muted">נמצאו משפחות קיימות שמתאימות לטלפון / לת"ז:</div>' : '<div class="muted">לא נמצאה משפחה קיימת עם אותו טלפון או ת"ז.</div>') +
+    opt('NEW', 'משפחה חדשה', !m.length) + m.map(function(x, i){ return opt('H:'+x.household_id, 'הוספה למשפחה קיימת: <b>'+esc(x.display_name)+'</b> ('+esc(x.household_id)+') <span class="muted">'+esc(x.why)+'</span>', i===0); }).join('') +
+    opt('ID', 'משפחה קיימת אחרת, לפי מזהה: <input id="cv_hid" placeholder="H-0000" style="width:110px" onfocus="document.querySelector(\'input[name=cv_mode][value=ID]\').checked=true;cvMode()">', false) +
+    '<div id="cv_new"><label>שם המשפחה</label><input id="cv_name"><h3 style="margin:10px 0 4px">'+(adult?'איש קשר (השחיין/ית)':'איש קשר 1')+'</h3><label>שם מלא</label><input id="cv_c1n"><label>אימייל (משמש לכניסה)</label><input id="cv_c1e" type="email"><label>טלפון</label><input id="cv_c1p" type="tel">' +
+    (adult ? '' : '<h3 style="margin:10px 0 4px">איש קשר 2 (לא חובה)</h3><div class="muted">נוסף למשפחה רק עם שם, אימייל וטלפון (האימייל משמש לכניסה לאפליקציה). אפשר לרוקן את השדות.</div><label>שם מלא</label><input id="cv_c2n"><label>אימייל</label><input id="cv_c2e" type="email"><label>טלפון</label><input id="cv_c2p" type="tel">') + '</div>' +
+    '<h3 style="margin:12px 0 4px">2. שחיין/ית</h3><label>שם פרטי</label><input id="cv_first"><div class="muted">שם המשפחה נלקח מהמשפחה</div><label>שנת לידה</label><input id="cv_by" inputmode="numeric" maxlength="4"><label>מס לקוח (5 ספרות)</label><input id="cv_no" inputmode="numeric" maxlength="5">' +
+    '<label>מאמן/ת משויך/ת'+(l.preferred_coach_text ? ' — מבוקש בטופס: '+esc(l.preferred_coach_text) : '')+'</label><select id="cv_coach"><option value="">בחרו מאמן/ת</option>' + (l.coaches||[]).map(function(c){ return '<option value="'+esc(c.coach_id)+'">'+esc(c.display_name)+'</option>'; }).join('') + '</select>' +
+    '<div class="muted" style="margin-top:8px">שמירה יוצרת את המשפחה / השחיין/ית ופותחת את רישום הכרטיסייה. לא נוצרת יתרה בלי רישום כרטיסייה.</div>';
+  var set = function(id, v){ if ($(id)) $(id).value = v || ''; };
+  set('cv_name', l.last_name); set('cv_c1n', l.contact1_name); set('cv_c1e', l.contact1_email); set('cv_c1p', l.contact1_phone);
+  set('cv_c2n', l.contact2_name); set('cv_c2e', l.contact2_email); set('cv_c2p', l.contact2_phone); set('cv_first', l.first_name); set('cv_by', (l.birth_date||'').slice(0,4));
+  cvMode(); $('shErr').textContent = ''; $('sheet').classList.remove('hidden'); $('shOk').onclick = doConvert; $('cv_no').focus(); }
+function cvMode(){ var v = (document.querySelector('input[name=cv_mode]:checked')||{}).value || 'NEW'; $('cv_new').classList.toggle('hidden', v !== 'NEW'); }
+function doConvert(){ var g = function(id){ return String(($(id)||{}).value||'').trim(); }, mode = (document.querySelector('input[name=cv_mode]:checked')||{}).value || 'NEW';
+  var p = { student: { first_name:g('cv_first'), birth_year:g('cv_by'), legacy_customer_no:g('cv_no'), coach_id:g('cv_coach') } };
+  if (mode === 'NEW') { p.mode = 'NEW'; p.family = { display_name:g('cv_name'), contact:{ full_name:g('cv_c1n'), email:g('cv_c1e'), phone:g('cv_c1p') }, contact2: (g('cv_c2n')||g('cv_c2e')||g('cv_c2p')) ? { full_name:g('cv_c2n'), email:g('cv_c2e'), phone:g('cv_c2p') } : null }; }
+  else { p.mode = 'EXISTING'; p.household_id = mode === 'ID' ? g('cv_hid').toUpperCase() : mode.slice(2); }
+  var miss = !p.student.first_name ? 'חסר שם פרטי' : !/^\d{5}$/.test(p.student.legacy_customer_no) ? custNoMsg(p.student.legacy_customer_no) : !p.student.coach_id ? 'בחרו מאמן/ת' : p.mode === 'EXISTING' && !/^H-\d+$/.test(p.household_id) ? 'מזהה משפחה לא תקין (H-0000)' : '';
+  if (miss) { $('shErr').textContent = miss; return; }
+  $('shErr').textContent = ''; $('shOk').disabled = true;
+  callRaw('off_convertLead', [S.token, S.LD.lead_id, p], function(res){ $('shOk').disabled = false;
+    if (!res.ok) { $('shErr').textContent = res.message; return; }
+    closeSheet(); msg('הליד הומר — רשמו עכשיו את הכרטיסייה', true);
+    openHH(res.data.household_id, function(){ addGrant(res.data.student_id); });
+  }); }
+// --- registration-form policy (settings card "מדיניות לטופס ההרשמה"): every save is a new version; older versions read-only ---
+function loadPolicies(){ call('off_policies', [S.token], function(list){ var cur = list[0];
+  $('policyState').textContent = cur ? 'גרסה נוכחית: ' + cur.version + ' · ' + dmy(cur.saved_date) + ' · ' + cur.saved_by : 'אין מדיניות — הסעיף מוסתר בטופס';
+  if (!$('policyText').dataset.dirty) $('policyText').value = cur ? cur.text : '';
+  $('policyVersions').innerHTML = list.length ? list.map(function(p){ return '<div class="card" style="margin:6px 0"><b>גרסה '+esc(p.version)+'</b> <span class="muted">'+esc(dmy(p.saved_date))+' · '+esc(p.saved_by)+'</span><div class="muted" style="white-space:pre-wrap;max-height:160px;overflow:auto;margin-top:4px">'+esc(p.text)+'</div></div>'; }).join('') : '<div class="empty">אין גרסאות</div>'; }); }
+function savePolicy(){ call('off_savePolicy', [S.token, $('policyText').value], function(r){ delete $('policyText').dataset.dirty; msg('נשמרה גרסה ' + r.version + ' של המדיניות', true); loadPolicies(); }); }
+// --- settings ---
+function renderCfg(){ if (!S.B) { $('cfg').innerHTML = '<div class="empty">טוען…</div>'; return; } renderMail(); $('adminCard').classList.remove('hidden'); $('adminCard').querySelectorAll('button').forEach(function(b){b.classList.toggle('hidden', !ENV_IS_TEST && b.getAttribute('onclick') !== "adminRun('diagnostics')");}); $('pwCard').classList.toggle('hidden', !ENV_IS_TEST); $('pwState').textContent = S.B.test_pw_set ? 'מצב: מוגדרת.' : 'מצב: לא מוגדרת.'; $('cfg').innerHTML = S.B.config.map(function(c){ return '<div class="row"><div class="grow"><b>'+esc(c.label)+'</b>'+(c.help?'<div class="muted">'+esc(c.help)+'</div>':'')+'</div><div class="inline"><input id="cfg_'+c.key+'" value="'+esc(c.value)+'" style="width:240px"><button class="btn sm sec" onclick="setCfg(\''+c.key+'\')">עדכון</button></div></div>'; }).join(''); }
+function addMonths(ymd, n){ var a = ymd.split('-').map(Number), y = a[0], m = a[1]-1+n, d = a[2]; y += Math.floor(m/12); m = ((m%12)+12)%12; var last = new Date(y, m+1, 0).getDate(); return y+'-'+('0'+(m+1)).slice(-2)+'-'+('0'+Math.min(d,last)).slice(-2); }
+function renderMail(){ var m = S.B && S.B.mail; if (!m || !$('mailId')) return; $('mailId').innerHTML = '<div class="row"><div class="grow"><b>כניסת משרד</b><div class="muted">' + esc(S.B.office_email) + ' מורשה לכניסה למשרד' + '</div></div>' + (S.B.email ? '<span class="badge ok">מחובר/ת: ' + esc(S.B.email) + '</span>' : '') + '</div>' +
+  '<div class="row"><div class="grow"><b>From</b><div class="muted">' + (m.from_alias ? esc(m.name) + ' &lt;' + esc(m.from) + '&gt; (כתובת שליחה מאומתת)' : 'נשלח מחשבון המערכת בשם "' + esc(m.name) + '" — כדי לשלוח מ-' + esc(m.office) + ' יש להגדיר אותה כ-Send mail as מאומת בחשבון המערכת') + '</div></div><span class="badge ' + (m.from_alias ? 'ok' : 'warn') + '">' + (m.from_alias ? 'פעיל' : 'נדרשת פעולת בעלים') + '</span></div>' +
+  '<div class="row"><div class="grow"><b>Reply-To</b><div class="muted">' + esc(m.reply_to) + '</div></div><span class="badge ok">פעיל</span></div>'; }
+// --- monthly coach report (lazy: nothing here runs on bootstrap) ---
+var HEB_M = ['ינו׳','פבר׳','מרץ','אפר׳','מאי','יוני','יולי','אוג׳','ספט׳','אוק׳','נוב׳','דצמ׳'];
+function reportOpen(coachId, ym){
+  S.rep = S.rep || {}; if (coachId) S.rep.coach = coachId; if (!S.rep.coach && S.B) S.rep.coach = (S.B.coaches.filter(function(c){ return c.booking_calendar.id; })[0] || S.B.coaches[0] || {}).coach_id;
+  S.rep.ym = ym || S.rep.ym || (S.B && S.B.today ? S.B.today.slice(0,7) : new Date().toISOString().slice(0,7));
+  $('t_rep').classList.remove('hidden'); if ($('p_rep').classList.contains('hidden')) tab('rep', true);
+  if (S.B) { $('repCoach').innerHTML = S.B.coaches.map(function(c){ return '<option value="'+c.coach_id+'"'+(c.coach_id===S.rep.coach?' selected':'')+'>'+esc(c.display_name)+'</option>'; }).join(''); }
+  var y = Number(S.rep.ym.slice(0,4)), m = Number(S.rep.ym.slice(5,7));
+  $('repM').innerHTML = HEB_M.map(function(n,i){ return '<option value="'+(i+1)+'"'+(i+1===m?' selected':'')+'>'+n+'</option>'; }).join('');
+  $('repY').innerHTML = [y-2,y-1,y,y+1].map(function(v){ return '<option value="'+v+'"'+(v===y?' selected':'')+'>'+v+'</option>'; }).join('');
+  saveOfficeNav(); reportLoad();
+}
+function reportPick(){ S.rep.coach = $('repCoach').value; S.rep.annual = null; reportLoad(); }
+function reportPickMonth(){ S.rep.ym = $('repY').value + '-' + ('0'+$('repM').value).slice(-2); reportOpen(); }
+function reportMove(n){ var y = Number(S.rep.ym.slice(0,4)), m = Number(S.rep.ym.slice(5,7)) + n; if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } reportOpen(null, y + '-' + ('0'+m).slice(-2)); }
+function reportLoad(){
+  saveOfficeNav();
+  var coach = S.rep.coach, ym = S.rep.ym, t0 = Date.now();
+  var c = S.B && S.B.coaches.filter(function(x){ return x.coach_id===coach; })[0];
+  $('repTitle').textContent = 'דוח חודשי — ' + (c ? c.display_name : ''); $('repMonthLbl').textContent = HEB_M[Number(ym.slice(5,7))-1] + ' ' + ym.slice(0,4);
+  if (!S.rep.data || S.rep.data.coach_id !== coach || S.rep.data.ym !== ym) { $('repStats').innerHTML = '<div class="card"><div class="n">…</div><div class="l">טוען</div></div>'; $('repTable').innerHTML = '<tr><td class="muted">טוען…</td></tr>'; }
+  call('off_coachReport', [S.token, coach, ym], function(d){ if (S.rep.coach !== coach || S.rep.ym !== ym) return; S.rep.data = d; S.rep.ms = Date.now() - t0; renderReport(d); });
+  if (!S.rep.annual || S.rep.annual.coach_id !== coach || S.rep.annual.season_start !== seasonStartOf(ym)) { $('repSeason').innerHTML = '<span class="muted">טוען…</span>'; call('off_coachAnnual', [S.token, coach, ym], function(a){ if (S.rep.coach !== coach) return; S.rep.annual = a; renderSeason(a); }); } else renderSeason(S.rep.annual);
+}
+function seasonStartOf(ym){ var y = Number(ym.slice(0,4)), m = Number(ym.slice(5,7)); return (m >= 6 ? y : y-1) + '-06'; }
+function renderSeason(a){
+  $('repSeasonLbl').textContent = a.season_start.slice(0,4) + '/' + (Number(a.season_start.slice(0,4))+1) + ' · סה"כ לדיווח: ' + a.total;
+  $('repSeason').innerHTML = a.months.map(function(m){ return '<button class="chip'+(m.ym===S.rep.ym?' sel':'')+'" onclick="reportOpen(null,\''+m.ym+'\')" title="'+m.ym+'">'+HEB_M[Number(m.ym.slice(5,7))-1]+' <b>'+m.reportable+'</b>'+(m.future?' <span class="muted">(+'+m.future+' עתידיים)</span>':'')+'</button>'; }).join('') + '<span class="chip" style="cursor:default;font-weight:700">סה"כ '+a.total+'</span>';
+}
+function renderReport(d){
+  var c = d.counts, tiles = [[c.reportable,'לדיווח / לחיוב','ok'],[c.done,'התקיימו'],[c.future,'עתידיים'],[c.cancel_ontime,'ביטולים בזמן'],[c.late,'ביטולים מאוחרים (חויבו)'],[c.noshow,'אי-הגעה'],[c.coach_cancel,'ביטול מדריך'],[c.school_cancel,'ביטול בית ספר']];
+  $('repStats').innerHTML = tiles.map(function(t){ return '<div class="card'+(t[2]?' hl':'')+'"><div class="n">'+t[0]+'</div><div class="l">'+t[1]+'</div></div>'; }).join('') + (c.legacy ? '<div class="card"><div class="n">'+c.legacy+'</div><div class="l">מהיסטוריה (ייבוא)</div></div>' : '');
+  var badge = function(r){ var k = { DONE:'ok', FUTURE:'', LATE:'warn', NOSHOW:'warn', CANCEL:'gray', WAIVED:'gray', COACH_CANCEL:'gray', SCHOOL_CANCEL:'gray', FAILED:'bad' }[r.status_key] || 'gray'; return '<span class="badge '+k+'">'+esc(r.status)+'</span>'; };
+  var receipt = function(r){ if (!r.receipt) return '<span class="muted">—</span>'; if (r.source==='MVP') return 'קבלה: <b>'+esc(r.receipt)+'</b>'+(r.pack_capacity!==''?'<div class="muted">כרטיסייה: '+esc(r.pack_capacity)+(r.pack_used!==''?' · ניצול '+esc(r.pack_used)+' / '+esc(r.pack_capacity):'')+'</div>':''); return 'קבלה: <b>'+esc(r.receipt)+'</b>'+(r.receipt_observed!==''?'<div class="muted">נצפו '+esc(r.receipt_observed)+' שיעורים היסטוריים</div>':''); };
+  $('repTable').innerHTML = '<tr><th>תאריך</th><th>התחלה</th><th>סיום</th><th>שחיין/ית</th><th>משפחה / איש קשר</th><th>מס לקוח</th><th>סטטוס</th><th>קבלה / כרטיסייה</th><th>מזהה</th><th>מקור</th></tr>' +
+    (d.rows.length ? d.rows.map(function(r){ return '<tr class="'+(r.reportable?'rep':'')+'"><td>'+esc(r.ymd.split('-').reverse().join('/'))+'</td><td>'+esc(r.start_hm)+'</td><td>'+esc(r.end_hm)+'</td><td><b>'+esc(r.student)+'</b>'+(r.couple?' <span class="badge">'+esc(r.couple)+'</span>':'')+'</td><td>'+(r.household_id?'<a class="link" href="#" onclick="openHH(\''+esc(r.household_id)+'\');return false">'+esc(r.household)+'</a>':esc(r.household))+'<div class="muted">'+esc(r.contact)+(r.phone?' · '+esc(r.phone):'')+'</div></td><td>'+esc(r.customer_no||'')+'</td><td>'+badge(r)+(r.cancel_reason?'<div class="muted">'+esc(r.cancel_reason)+'</div>':'')+'</td><td>'+receipt(r)+'</td><td class="muted">'+esc(r.booking_id)+'</td><td><span class="badge '+(r.source==='LEGACY'?'gray':'')+'">'+(r.source==='LEGACY'?'היסטוריה':'MVP')+'</span></td></tr>'; }).join('') : '<tr><td colspan="10" class="empty">אין שיעורים בחודש זה</td></tr>');
+}
+function reportCsv(){ call('off_coachReportCsv', [S.token, S.rep.coach, S.rep.ym], function(d){ var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(d.csv); a.download = d.filename; document.body.appendChild(a); a.click(); a.remove(); msg('הקובץ ירד: ' + d.filename, true); }); }
+function adminRun(name){ if (!ENV_IS_TEST && name !== 'diagnostics') return; maintenancePrompt(function(password){ adminRunAuthorized(name, password); }); }
+function adminRunAuthorized(name,password){ var lbl = { runHistoryImport:'ייבוא היסטוריה', migrateIteration23:'מיגרציה 2.3', reconcileTrigger:'סנכרון יומנים', runIteration2E2E:'בדיקת E2E', cleanTestLessonEvents:'ניקוי אירועי TEST', installDbChangeTrigger:'התקנת עדכון אוטומטי מהגיליון' }[name] || name; $('adminOut').textContent = lbl + ' — רץ…'; call('off_adminRun', [S.token, name, password], function(d){ $('adminOut').textContent = lbl + ' (' + Math.round(d.ms/1000) + ' שניות)\n' + d.result; msg(lbl + ' הסתיים', true); call('off_bootstrap',[S.token],function(b){ S.B=b; }); }); }
+function refreshCache(){ call('off_refreshCache', [S.token], function(){ msg('הנתונים רועננו מהגיליון ומהיומנים', true); call('off_bootstrap',[S.token],function(d){ S.B=d; renderCfg(); }); }); }
+function setCfg(k){ call('off_setConfig',[S.token,k,$('cfg_'+k).value],function(){ msg('עודכן', true); call('off_bootstrap',[S.token],function(d){ S.B=d; renderCfg(); }); }); }
+
+function saveOfficeNav(){ writeNav({tab:S.activeTab||'home',household:S.activeTab==='hh'?S.hid:null,lead:S.activeTab==='ld'?S.leadId||null:null,group:S.activeTab==='gr'&&S.GD?S.GD.group.group_id:null,coach:S.rep&&S.rep.coach,month:S.rep&&S.rep.ym,availability:S.activeTab==='co'?{coach:S.availCoach,state:S.availNav}:null}); }
+function restoreOfficeNav(r){
+  var tabs=['home','hh','ld','co','gr','cl','exc','rep','set']; if(tabs.indexOf(r.tab)<0){tab('home');return;}
+  if(r.tab==='rep'){ var coach=S.B.coaches.some(function(c){return c.coach_id===r.coach})?r.coach:null; reportOpen(coach,/^\d{4}-(0[1-9]|1[0-2])$/.test(r.month||'')?r.month:null); return; }
+  if(r.tab==='hh'){tab('hh'); if(/^H-[A-Za-z0-9-]+$/.test(r.household||''))openHH(r.household);return;}
+  if(r.tab==='ld'){tab('ld'); if(/^L-\d+$/.test(r.lead||''))openLead(r.lead);return;}
+  if(r.tab==='gr' && /^G-[A-Za-z0-9-]+$/.test(r.group||'')){ S.restoring=true;tab('gr');S.restoring=false;openGroup(r.group);return; }
+  tab(r.tab);
+  if(r.tab==='co' && r.availability && S.B.coaches.some(function(c){return c.coach_id===r.availability.coach&&c.booking_calendar.id})){ S.restoreAvail=r.availability.state; openAvail(r.availability.coach); }
+}
+
+(function init(){ $('testbar').classList.toggle('hidden', !ENV_IS_TEST); /* TEST marker before sign-in too (acceptance 2026-10-22) */ S.token = load('bbOffice'); if (S.token) boot(); else { show('login'); } })();
+</script>
+</body>
+</html>

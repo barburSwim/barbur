@@ -101,7 +101,7 @@ details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0
 </style>
 </head>
 <body>
-<header class="top"><div class="brand">ברבור — שיעורים פרטיים</div><button id="logoutBtn" class="hidden" onclick="logout()">יציאה</button></header>
+<header class="top"><div class="brand">ברבור — שיעורים פרטיים</div><button id="logoutBtn" class="hidden" onclick="logout()">התנתק</button></header>
 <div class="testbar hidden" id="testbar">סביבת בדיקה (TEST)</div>
 <main>
   <div id="msg"></div>
@@ -208,7 +208,7 @@ function sendCode(){
 function verify(){
   call('api_verifyOtp', [S.email, $('code').value.trim()], function(res){
     if (!res.ok) { msg(res.message); return; }
-    S.token = res.data.token; store('bbTok', S.token); msg(''); refresh();
+    S.token = res.data.token; store('bbTok', S.token); msg(''); refresh(null, true); // restore the screen the parent was on (e.g. after an idle sign-out mid-booking)
   });
 }
 function logout(){ clearNav(); var t=S.token; store('bbTok',null); store('bbBypass',null); S.token=null; show('login'); if (t) call('api_logout',[t],function(){}); }
