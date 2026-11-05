@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
+<meta name="barbur-build" content="TEST 9d6d051fbda6929028eaab16a6f61ac93657ff16 2026-11-05T09:44:56.613Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -116,6 +117,18 @@ a.ux-pending { pointer-events:none; opacity:.7; }
 .linksbar .btn { flex:0 0 auto; }
 .linksbar .btn.copied { background:#1a7f37; border-color:#1a7f37; color:#fff; }
 
+.rs-att { display:inline-flex; gap:2px; direction:ltr; font-family:ui-monospace,Consolas,monospace; }
+.rs-c { display:inline-block; min-width:30px; min-height:30px; text-align:center; border:0; border-radius:5px; padding:1px 4px; font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.rs-c:disabled { cursor:default; opacity:.55; }
+.rs-d { display:inline-block; min-width:30px; text-align:center; font-size:11px; color:var(--muted); }
+.rs-name { font-weight:700; text-align:start; }
+.rs-note { font-size:13px; color:#6b5200; }
+/* run 6: an open dialog sits above the sticky message line (#msg z-index 30), so a lingering "נשמר" never covers the dialog's buttons */
+.sheet { z-index:35; }
+.rs-paused .rs-name, .rs-paused b { opacity:.7; }
+#rs_plus { font-size:28px; line-height:1; min-width:64px; min-height:56px; }
+.rs-v { background:var(--ok-bg); color:var(--ok); } .rs-x { background:var(--bad-bg); color:var(--bad); } .rs-n { background:#eef1f4; color:var(--muted); }
+label.note { font-size:16px; color:var(--ink); margin:10px 0; }
 </style>
 </head>
 <body>
@@ -179,7 +192,7 @@ a.ux-pending { pointer-events:none; opacity:.7; }
     <div id="p_set" class="hidden"><div class="card"><h2>הגדרות</h2><div class="muted">שינוי תוקף ברירת המחדל לא משנה זיכויים קיימים.</div><div id="cfg"></div></div><div class="card" id="policyCard"><h2>מדיניות לטופס ההרשמה</h2><div class="muted">מדביקים כאן את טקסט המדיניות (טקסט רגיל; מעברי שורה נשמרים). כל שמירה יוצרת גרסה חדשה; הטופס מציג תמיד את הגרסה האחרונה, וכל ליד שומר את הגרסה שאישר. בלי מדיניות — הסעיף לא מוצג בטופס.</div><textarea id="policyText" rows="10" style="width:100%;margin-top:8px" oninput="this.dataset.dirty=1"></textarea><div class="inline" style="margin-top:8px"><button class="btn sm" onclick="savePolicy()">שמירת גרסה חדשה</button><span class="muted" id="policyState"></span></div><details style="margin-top:8px"><summary>כל הגרסאות (לקריאה בלבד)</summary><div id="policyVersions"></div></details></div><div class="card"><h2>זהות המשרד ודואר יוצא</h2><div class="muted">המשרד = Barbur Swim. חשבון המערכת (Apps Script, יומנים, DB) אינו המשרד ואינו מוצג ללקוחות.</div><div id="mailId"></div></div><div class="card"><h2>רענון נתונים</h2><div class="muted">אם מישהו שינה משהו ישירות בגיליון או ביומן ולא דרך המסך הזה — לוחצים כאן והמערכת קוראת הכול מחדש. לא נדרשת סיסמה נוספת.</div><button class="btn sm sec" onclick="refreshCache()">רענון נתונים</button></div><div class="card hidden" id="pwCard"><h2>סיסמת כניסה למשרד <span class="badge warn">TEST</span></h2><div class="muted">כניסה לחשבון המשרד המחובר עם אימייל וסיסמה. נשמר רק גיבוב (hash); הסיסמה עצמה לא נשמרת ולא מוצגת. <span id="pwState"></span></div><div class="inline" style="margin-top:8px"><input id="newPw" type="password" autocomplete="new-password" maxlength="200" placeholder="8 תווים לפחות" style="width:240px"><button class="btn sm sec" onclick="setTestPw()">שמירת סיסמה</button></div></div><div class="card" id="adminCard"><h2>כלי תחזוקה <span class="badge warn">TEST</span></h2><div class="muted">משימות חד-פעמיות של המערכת (רצות בחשבון המערכת, מתועדות ביומן הביקורת). עשויות לקחת עד כמה דקות.</div><div class="inline" style="margin-top:8px;flex-wrap:wrap"><button class="btn sm sec" onclick="adminRun('runHistoryImport')">ייבוא היסטוריית שיעורים</button><button class="btn sm sec" onclick="adminRun('migrateIteration23')">מיגרציה 2.3</button><button class="btn sm sec" onclick="adminRun('reconcileTrigger')">סנכרון יומנים</button><button class="btn sm ghost" onclick="adminRun('runIteration2E2E')">בדיקת E2E</button><button class="btn sm ghost" onclick="adminRun('cleanTestLessonEvents')">ניקוי אירועי TEST</button><button class="btn sm ghost" onclick="adminRun('installDbChangeTrigger')">התקנת עדכון אוטומטי מהגיליון</button></div><button class="btn sm sec" onclick="adminRun('diagnostics')">בדיקת מערכת</button><pre id="adminOut" class="muted" style="white-space:pre-wrap;word-break:break-all;margin-top:8px"></pre></div></div>
   </section>
 </main>
-<div id="sheet" class="sheet hidden"><div class="card"><h2 id="shTitle"></h2><div id="shBody"></div><div id="shErr" class="muted" style="color:var(--bad)"></div><div class="inline" style="margin-top:12px"><button class="btn" id="shOk">אישור</button><button class="btn ghost" onclick="closeSheet()">ביטול</button></div></div></div>
+<div id="sheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="shTitle"><div class="card"><h2 id="shTitle"></h2><div id="shBody"></div><div id="shErr" class="muted" style="color:var(--bad)" role="alert"></div><div class="inline" style="margin-top:12px;flex-direction:row-reverse;justify-content:flex-end"><button class="btn ghost" onclick="closeSheet()">ביטול</button><button class="btn" id="shOk">אישור</button></div></div></div>
 <!-- Coach scheduling component: ONE implementation, two authorized callers (the coach for themselves; Office for any coach).
      Host supplies Avail.init({token, coachId, call, mount, isOffice}). Grid is fixed at 15 minutes; lesson length comes from the server. -->
 <script>
@@ -212,7 +225,7 @@ var Avail = (function(){
   function shell(){
     S.mount.innerHTML = '<div id="av_msg"></div>' +
       '<div class="tabs" id="av_tabs"><button class="on" onclick="Avail.tab(\'sch\')">לוח שיעורים</button><button onclick="Avail.tab(\'av\')">זמינות</button><button onclick="Avail.tab(\'set\')">הגדרות</button><button onclick="Avail.tab(\'up\')">שיעורים קרובים</button></div>' +
-      '<div id="av_p_sch"><div class="card"><h2>לוח שיעורים <a class="btn sm sec" id="av_calbtn2" target="_blank">פתיחת היומן</a></h2>' +
+      '<div id="av_p_sch"><div id="av_gd" class="hidden"></div><div class="card" id="av_schCard"><h2>לוח שיעורים <a class="btn sm sec" id="av_calbtn2" target="_blank">פתיחת היומן</a></h2>' +
         '<div class="nav"><button class="btn sm ghost" onclick="Avail.schWeek(-1)">→ שבוע קודם</button><button class="btn sm ghost" onclick="Avail.schWeek(0)">השבוע</button><button class="btn sm ghost" onclick="Avail.schWeek(1)">שבוע הבא ←</button></div>' +
         '<div class="muted" id="av_schLbl" style="text-align:center;margin-bottom:6px"></div><div id="av_sch"><div class="empty">טוען…</div></div>' +
         '<div class="muted" style="margin-top:8px">שעות הבריכה 06:00–22:00. <span class="badge">שיעור</span> הזמנה אמיתית · <span class="badge ok">זמין</span> חלון זמינות · <span class="badge gray">תפוס</span> יומן חוסם / אירוע אחר · <span class="badge bad">סגור</span> סגירת בית הספר.<br>אפשר להזיז שיעור גם ביומן Google (רק השעה): ההזמנה מתעדכנת בבדיקת היומן הבאה (עד כרבע שעה). מחיקה ביומן אינה ביטול — בטלו כאן.</div></div></div>' +
@@ -445,6 +458,8 @@ var Avail = (function(){
   function schWeek(n){ if (!S.d) return; S.schWeek = n ? addDays(S.schWeek || weekOf(S.d.today), 7*n) : weekOf(S.d.today); S.open = null; notifyNavigation(); loadWeek(); } // ignored until the first load (browser-found: early click threw)
   var LST = { CONFIRMED: ['מאושר','ok'], PENDING: ['ממתין','gray'], CANCELLED: ['בוטל','gray'], LATE_CANCEL: ['ביטול מאוחר','warn'], NO_SHOW: ['לא הגיע/ה','warn'] };
   var ATT = { COMPLETED: 'התקיים', IN_PROGRESS: 'מתקיים עכשיו', UPCOMING: 'עתידי', NO_SHOW: 'לא הגיע/ה' };
+  /** Run 6 L7: the two attendance states of a group swimmer (stored marks V / X). */
+  var ATT_LABEL = { V: 'נוכח/ת', X: 'לא נוכח/ת' };
   function clipHm(ymd, x, endSide){ var y = endSide ? x.end_ymd : x.ymd, hm = endSide ? x.end_hm : x.hm; if (y < ymd) return S.week.open; if (y > ymd) return S.week.close; return hm < S.week.open ? S.week.open : hm > S.week.close ? S.week.close : hm; }
   function renderWeekSched(){
     var w = S.week, out = '';
@@ -462,21 +477,143 @@ var Avail = (function(){
       var n = w.lessons.filter(function(l){ return l.ymd === d.ymd && (l.status === 'CONFIRMED' || l.status === 'PENDING' || l.status === 'NO_SHOW'); }).length;
       var ng = (w.groups || []).filter(function(g){ return g.ymd === d.ymd && g.mine && (g.status === 'PLANNED' || g.status === 'HELD'); }).length;
       var cnt = [n ? n + ' שיעורים' : '', ng ? (ng === 1 ? 'קבוצה' : ng + ' קבוצות') : ''].filter(String).join(' · ') || 'אין שיעורים';
-      out += '<div style="border-top:1px solid var(--line);padding:8px 0' + (d.ymd === w.today ? ';background:linear-gradient(var(--acc-soft),transparent 40px)' : '') + '"><h3 style="margin:2px 0 4px">' + esc(fmt(d.ymd)) + (d.ymd === w.today ? ' <span class="badge">היום</span>' : '') + ' <span class="muted">' + cnt + '</span></h3>' + (items.map(function(i){ return i.html; }).join('') || '<div class="empty">—</div>') + '</div>';
+      out += '<div data-ymd="' + esc(d.ymd) + '" style="border-top:1px solid var(--line);padding:8px 0' + (d.ymd === w.today ? ';background:linear-gradient(var(--acc-soft),transparent 40px)' : '') + '"><h3 style="margin:2px 0 4px">' + esc(fmt(d.ymd)) + (d.ymd === w.today ? ' <span class="badge">היום</span>' : '') + ' <span class="muted">' + cnt + '</span></h3>' + (items.map(function(i){ return i.html; }).join('') || '<div class="empty">—</div>') + '</div>';
     });
     $('av_sch').innerHTML = (w.warn ? '<div class="msg warn">' + esc(w.warn) + '</div>' : '') + out;
   }
-  /** Groups (G1): a separate, read-only layer of the schedule. A group session never blocks private lessons; no edit, no attendance here. */
+  /** Groups (G1): a separate layer of the schedule. A group session never blocks private lessons; the group is not edited here, only attendance is marked (below). */
   var GST = { PLANNED: 'ok', HELD: 'gray', CANCELLED: 'gray', CLOSED_BY_SCHOOL: 'bad' };
+  /** Run 6 C1: a group row in the day schedule; a tap opens that session's attendance screen (Avail.openGroup). */
   function groupRow(g){
-    var off = g.status === 'CANCELLED' || g.status === 'CLOSED_BY_SCHOOL', open = S.openG === g.session_id;
-    return '<div class="row" style="border:1px solid #7a5cc7;border-radius:8px;padding:8px;margin:4px 0;background:' + (off ? '#f6f7f9' : '#f3effc') + (off || !g.mine ? ';opacity:.75' : '') + '"><div class="grow" style="cursor:pointer" onclick="Avail.openGroup(\'' + g.session_id + '\')">' +
+    var off = g.status === 'CANCELLED' || g.status === 'CLOSED_BY_SCHOOL';
+    return '<div class="row" style="border:1px solid #7a5cc7;border-radius:8px;padding:8px;margin:4px 0;background:' + (off ? '#f6f7f9' : '#f3effc') + (off || !g.mine ? ';opacity:.75' : '') + '"><div class="grow" role="button" tabindex="0" aria-label="נוכחות: ' + esc(g.name) + ' ' + esc(g.hm) + '" style="cursor:pointer" onclick="Avail.openGroup(\'' + g.session_id + '\')" onkeydown="if(event.key===\'Enter\')Avail.openGroup(\'' + g.session_id + '\')">' +
       '<b>' + esc(g.hm) + '–' + esc(g.end_hm) + '</b> · <b>' + esc(g.name) + '</b> <span class="badge" style="background:#e4dbf7;color:#4a2f8f">קבוצה</span>' + (g.makeup ? ' <span class="badge gray">השלמה</span>' : '') + (g.exception ? ' <span class="badge warn">חריג</span>' : '') +
-      (g.mine ? '' : '<div class="muted">מחליף/ה: ' + esc(g.substitute_name) + '</div>') + (g.mine && g.substitute_name ? '' : '') + '</div><span class="badge ' + (GST[g.status] || 'gray') + '">' + esc(g.status_label) + '</span></div>' +
-      (open ? '<div class="card" style="margin:4px 0 8px;padding:10px"><div class="kv">' + [['קבוצה', g.name], ['סוג', g.type === 'COURSE' ? 'קורס' : 'חוג שנתי'], ['רמת פתיחה', g.start_level], ['רמה נוכחית', g.current_level], ['מחזור / גיל', g.age_cohort], ['מדריך/ה קבוע/ה', g.coach_name], ['מחליף/ה', g.substitute_name], ['הערה', g.note]]
-        .map(function(kv){ return kv[1] ? '<b>' + kv[0] + '</b><span>' + esc(kv[1]) + '</span>' : ''; }).join('') + '</div><div class="muted" style="margin-top:6px">תצוגה בלבד — הקבוצות מנוהלות במשרד.</div></div>' : '');
+      (g.mine ? '' : '<div class="muted">מחליף/ה: ' + esc(g.substitute_name) + '</div>') + '</div><span class="badge ' + (GST[g.status] || 'gray') + '">' + esc(g.status_label) + '</span></div>';
   }
-  function openGroup(id){ S.openG = S.openG === id ? null : id; renderWeekSched(); }
+  /** Run 6 C1-C3: the attendance screen of one group session, in place of the schedule. S.av = {sid, g (the schedule's group row)}.
+   *  Back arrow -> the day schedule (C2); each tap saves at once, there is no save button (C3); the group details stay one tap away (L8). */
+  function avRender(){
+    var av = S.av; if (!av) return; var g = av.g;
+    var kv = [['סוג', g.type === 'COURSE' ? 'קורס' : 'חוג שנתי'], ['רמת פתיחה', g.start_level], ['רמה נוכחית', g.current_level], ['מחזור / גיל', g.age_cohort], ['מדריך/ה קבוע/ה', g.coach_name], ['מחליף/ה', g.substitute_name], ['הערה', g.note]]
+      .map(function(x){ return x[1] ? '<b>' + x[0] + '</b><span>' + esc(x[1]) + '</span>' : ''; }).join('');
+    $('av_gd').innerHTML = '<div class="card" id="av_attView"><div style="display:flex;align-items:center;gap:8px"><button type="button" id="av_back" class="btn sm ghost" aria-label="חזרה ללוח היומי" title="חזרה ללוח היומי" style="font-size:20px;line-height:1;min-width:44px;min-height:40px" onclick="Avail.closeGroup()">&#8594;</button>' +
+      '<div><h2 style="margin:0">' + esc(g.name) + '</h2><div class="muted">' + esc(fmt(g.ymd)) + ' · ' + esc(g.hm) + '–' + esc(g.end_hm) + (g.mine ? '' : ' · מחליף/ה: ' + esc(g.substitute_name)) + '</div></div></div>' +
+      '<div id="av_att_' + esc(g.session_id) + '" style="margin-top:10px">' + attInner(g.session_id) + '</div>' +
+      '<details style="margin-top:10px"><summary>פרטי המפגש</summary><div class="kv">' + kv + '</div></details>' +
+      (g.group_id ? '<div style="margin-top:8px"><button type="button" class="btn sm sec" onclick="Avail.openGroupDetail(\'' + esc(g.group_id) + '\')">פרטי הקבוצה</button></div>' : '') + '<div class="muted" style="margin-top:6px">פרטי הקבוצה ושיבוץ השחיינים מנוהלים במשרד.</div></div>';
+  }
+  // --- attendance (spec 3): the server decides who may see and mark (co_groupAttendance: FORBIDDEN for the Office and for any coach other than the session's teaching coach) ---
+  /** Inner HTML of one session's attendance block, from S.att[session_id] = {state: loading|ok|forbidden|error, d: server reply}. */
+  function attInner(sid){
+    var a = (S.att || {})[sid];
+    if (!a || a.state === 'loading') return '<div class="muted">טוען…</div>';
+    if (a.state === 'forbidden') return '<div class="msg warn">רק המדריך/ה שמלמד/ת את המפגש מסמן/ת נוכחות</div>';
+    if (a.state === 'error') return '<div class="muted">הנוכחות לא נטענה — סגרו ופתחו את המפגש שוב.</div>';
+    var d = a.d, st = d.session.status, off = st === 'CANCELLED' || st === 'CLOSED_BY_SCHOOL', h = '<h3 style="margin:4px 0">נוכחות שחיינים</h3>';
+    if (!d.swimmers.length) return h + '<div class="empty">אין שחיינים רשומים בקבוצה</div>';
+    if (!d.can_mark && !off) h += '<div class="muted">סימון נוכחות יתאפשר מתחילת המפגש</div>';
+    if (d.can_mark) h += '<div class="muted" id="av_autosave">כל סימון נשמר מיד</div>'; // run 6 C3: no global save button
+    return h + d.swimmers.map(function(w, i){
+      var tail;
+      if (d.can_mark) {
+        // run 6 L7: two states, present (V) / absent (X)
+        tail = '<span style="display:flex;gap:8px">' + ['V', 'X'].map(function(m){
+          var on = w.mark === m, c = m === 'V' ? 'var(--ok)' : 'var(--bad)';
+          return '<button type="button" class="btn sm ' + (on ? '' : 'ghost') + '" data-mark="' + m + '" aria-pressed="' + (on ? 'true' : 'false') + '"' + (w.busy ? ' disabled' : '') + ' style="min-width:64px;min-height:40px;font-weight:700' + (on ? ';background:' + c + ';border-color:' + c + ';color:#fff' : '') + '" onclick="Avail.mark(\'' + esc(sid) + '\',' + i + ',\'' + m + '\')">' + ATT_LABEL[m] + '</button>';
+        }).join('') + '</span>';
+      } else tail = w.mark ? '<span class="badge ' + (w.mark === 'V' ? 'ok' : 'bad') + '">' + esc(ATT_LABEL[w.mark] || w.mark) + '</span>' : '<span class="muted">—</span>';
+      return '<div class="row" role="group" aria-label="' + esc(w.name) + '" style="padding:6px 0"><div class="grow">' + esc(w.name) + '</div>' + tail + '</div>';
+    }).join('');
+  }
+  function refreshAtt(sid, a){ var el = $('av_att_' + sid); if (el && (S.att || {})[sid] === a) el.innerHTML = attInner(sid); }
+  function loadAtt(sid){
+    var a = (S.att = S.att || {})[sid] = { state: 'loading' };
+    S.call('co_groupAttendance', [S.token, sid], function(d){
+      a.state = 'ok'; a.d = d; d.swimmers.forEach(function(w){ w.conf = w.mark; }); refreshAtt(sid, a);
+    }, { onErr: function(res){ a.state = res.code === 'FORBIDDEN' ? 'forbidden' : 'error'; refreshAtt(sid, a); return res.code === 'FORBIDDEN'; } });
+  }
+  /** One tap saves: the highlight moves at once and goes back to the last saved mark if the server refuses. */
+  function mark(sid, i, m){
+    var a = (S.att || {})[sid], w = a && a.state === 'ok' && a.d.can_mark ? a.d.swimmers[i] : null;
+    if (!w || w.busy || w.mark === m) return; // one request in flight per swimmer: the buttons are disabled until the reply (no queue)
+    w.busy = true; w.mark = m; refreshAtt(sid, a);
+    S.call('co_markAttendance', [S.token, { session_id: sid, student_id: w.student_id, mark: m }], function(r){
+      w.busy = false; w.conf = w.mark = r.mark; refreshAtt(sid, a);
+    }, { onErr: function(){ w.busy = false; w.mark = w.conf; refreshAtt(sid, a); return false; } }); // false: the host still shows its normal error line
+  }
+  // --- group detail (run 5, R1-R4): the coach's view of one group inside the schedule tab. S.gd = {gid, state: loading|ok|error, d: co_groupDetail reply, panel, mode: up|past, page}.
+  // Swimmers are plain text and there is no add or header control (Office only); a cell is enabled only on a session the caller teaches (server decides: can_mark).
+  function gdShow(on){ $('av_gd').classList.toggle('hidden', !on); $('av_schCard').classList.toggle('hidden', on); }
+  function openGroupDetail(gid){
+    var gd = S.gd = { gid: gid, state: 'loading', panel: false, mode: 'up', page: 0 };
+    gdShow(true); gdRender();
+    S.call('co_groupDetail', [S.token, gid], function(d){
+      if (S.gd !== gd) return;
+      gd.state = 'ok'; gd.d = d; d.active.forEach(function(a){ a.cells.forEach(function(c){ c.conf = c.mark; }); }); gdRender();
+    }, { onErr: function(){ if (S.gd === gd) { gd.state = 'error'; gdRender(); } return false; } }); // false: the host still shows its normal error line
+  }
+  function closeGroupDetail(){
+    S.gd = null;
+    if (S.av) { avRender(); loadAtt(S.av.sid); return; } // opened from an attendance screen: back to it, marks read again
+    gdShow(false);
+    if (S.week) renderWeekSched();
+  }
+  /** Run 6 C1: open the attendance screen of a group session from the schedule. */
+  function openGroup(id){
+    var g = ((S.week || {}).groups || []).filter(function(x){ return x.session_id === id; })[0]; if (!g) return;
+    S.av = { sid: id, g: g }; S.gd = null; if (S.att) delete S.att[id];
+    gdShow(true); avRender(); loadAtt(id);
+    var v = $('av_attView'); if (v && v.scrollIntoView) v.scrollIntoView({ block: 'start' });
+  }
+  /** Run 6 C2: back arrow -> the day schedule, scrolled to that session's day. */
+  function closeGroup(){
+    var av = S.av; S.av = null; S.gd = null; gdShow(false);
+    if (S.week) renderWeekSched();
+    var day = av && document.querySelector('#av_sch [data-ymd="' + av.g.ymd + '"]'); if (day && day.scrollIntoView) day.scrollIntoView({ block: 'start' });
+  }
+  var GDC = { V: 'background:var(--ok);border-color:var(--ok);color:#fff', X: 'background:var(--bad);border-color:var(--bad);color:#fff', '': 'background:#eceff3;border-color:#c9ced6;color:#555' };
+  function gdRender(){
+    var gd = S.gd, h = '<div class="card"><h2><button type="button" class="btn sm ghost" onclick="Avail.closeGroupDetail()">חזרה</button> ' + (gd.state === 'ok' ? esc(gd.d.group.name) : 'פרטי הקבוצה') + '</h2>';
+    if (gd.state === 'loading') h += '<div class="muted">טוען…</div>';
+    else if (gd.state === 'error') h += '<div class="muted">פרטי הקבוצה לא נטענו.</div>';
+    else {
+      var d = gd.d, ss = d.sessions, grid = 'display:grid;grid-template-columns:minmax(0,1fr) repeat(' + ss.length + ',44px);gap:4px;align-items:center;padding:4px 0';
+      if (!d.active.length) h += '<div class="empty">אין עדיין שחיינים בקבוצה.</div>';
+      else {
+        h += '<div class="muted" style="' + grid + '"><span></span>' + ss.map(function(s){ return '<span style="text-align:center;font-size:12px">' + esc(fmtDM(s.ymd)) + '</span>'; }).join('') + '</div>';
+        h += d.active.map(function(a, i){
+          return '<div style="' + grid + '"><b>' + esc(a.name) + '</b>' + ss.map(function(s, j){
+            var c = a.cells[j] || { mark: '' }, m = c.mark || '', can = s.can_mark && c.can !== false && !c.busy; // run 6: 'can' = the swimmer belongs to that session
+            return '<button type="button" class="rs-c" style="min-width:44px;min-height:40px;border:1px solid;border-radius:6px;font-weight:700;' + GDC[m] + (can ? ';cursor:pointer' : ';opacity:.6') + '"' + (can ? '' : ' disabled') + ' onclick="Avail.gdMark(' + i + ',' + j + ')">' + (m || '-') + '</button>';
+          }).join('') + '</div>';
+        }).join('');
+      }
+      h += '<div style="margin-top:8px"><button type="button" class="btn sm sec" onclick="Avail.gdPanel()">מפגשים</button></div>' + (gd.panel ? gdPanelHtml(d.panel, gd) : '');
+    }
+    $('av_gd').innerHTML = h + '</div>';
+  }
+  /** One tap saves: the cell changes at once (V, X, cleared) and returns to the last saved mark if the server refuses. One request per cell. */
+  function gdMark(i, j){
+    var gd = S.gd, a = gd && gd.state === 'ok' ? gd.d.active[i] : null, s = a ? gd.d.sessions[j] : null, c = s && s.can_mark && a.cells[j] && a.cells[j].can !== false ? a.cells[j] : null;
+    if (!c || c.busy) return;
+    var m = c.mark === 'V' ? 'X' : c.mark === 'X' ? '' : 'V';
+    c.busy = true; c.mark = m; gdRender();
+    S.call('co_markAttendance', [S.token, { session_id: s.session_id, student_id: a.student_id, mark: m }], function(r){
+      c.busy = false; c.conf = c.mark = r.mark || ''; if (S.gd === gd) gdRender();
+    }, { onErr: function(){ c.busy = false; c.mark = c.conf; if (S.gd === gd) gdRender(); return false; } });
+  }
+  function gdPanel(){ var gd = S.gd; if (!gd || gd.state !== 'ok') return; gd.panel = !gd.panel; gd.mode = 'up'; gd.page = 0; gdRender(); }
+  function gdPage(mode, page){ var gd = S.gd; if (!gd) return; gd.mode = mode; gd.page = page; gdRender(); }
+  /** Read-only sessions panel (same state model as the Office: mode up = upcoming, mode past = pages of 5 within the server's two-month window). */
+  function gdPanelHtml(p, gd){
+    var list = gd.mode === 'up' ? p.upcoming : p.past.slice(gd.page * 5, gd.page * 5 + 5), older = (gd.page + 1) * 5 < p.past.length;
+    var rows = list.map(function(s){
+      return '<div class="row" style="padding:6px 0"><div class="grow"><b>' + esc(fmtDM(s.ymd)) + ' ' + esc(s.hm) + '–' + esc(s.end_hm) + '</b>' + (s.substitute_name ? '<div class="muted">מחליף/ה: ' + esc(s.substitute_name) + '</div>' : '') + (s.note ? '<div class="muted">' + esc(s.note) + '</div>' : '') + '</div><span class="badge ' + (GST[s.status] || 'gray') + '">' + esc(s.status_label) + '</span></div>';
+    }).join('') || '<div class="empty">אין מפגשים</div>';
+    var nav = gd.mode === 'up' ? '<button type="button" class="btn sm ghost" onclick="Avail.gdPage(\'past\',0)">מפגשים קודמים</button>'
+      : '<button type="button" class="btn sm ghost"' + (older ? '' : ' disabled') + ' onclick="Avail.gdPage(\'past\',' + (gd.page + 1) + ')">מפגשים קודמים</button> <button type="button" class="btn sm ghost" onclick="Avail.gdPage(\'up\',0)">מפגשים הבאים</button>';
+    return '<div style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px">' + rows + '<div style="margin-top:6px">' + nav + '</div></div>';
+  }
   function openLesson(id){ S.open = S.open === id ? null : id; renderWeekSched(); }
   function lessonPanel(l){
     var kv = function(k, v){ return v ? '<b>' + k + '</b><span>' + v + '</span>' : ''; };
@@ -510,8 +647,8 @@ var Avail = (function(){
   function validNavDate(d){ return /^\d{4}-\d{2}-\d{2}$/.test(d||'') && !isNaN(Date.parse(d)) && new Date(d).toISOString().slice(0,10)===d; }
   function notifyNavigation(){ if(S.onNavigate)S.onNavigate({tab:S.activeTab||'sch',week:S.schWeek||null,previewWeek:S.weekStart||null}); }
   return {
-    init: function(o){ S = o; var n=o.navigation||{}; S.weekStart=validNavDate(n.previewWeek)?n.previewWeek:null; S.schWeek=validNavDate(n.week)?n.week:null; S.startTab=['sch','av','set','up'].indexOf(n.tab)>=0?n.tab:(o.startTab||'sch'); S.activeTab=S.startTab; S.open = null; S.openG = null; S.recentLoaded = false; S.prevLoaded = false; S.upStale = false; shell(); if (S.startTab === 'sch') loadWeek(); load(); },
-    tab: tab, pick: pick, overStart: function(){ overStart(); }, schWeek: schWeek, openLesson: openLesson, openGroup: openGroup, noShow: noShow, cancelLesson: cancelLesson, resched: resched, saveRules: saveRules, addRange: addRange, removeRange: removeRange, toggleDay: toggleDay, check: check, kindChanged: kindChanged, addOverride: addOverride, removeOverride: removeOverride,
+    init: function(o){ S = o; var n=o.navigation||{}; S.weekStart=validNavDate(n.previewWeek)?n.previewWeek:null; S.schWeek=validNavDate(n.week)?n.week:null; S.startTab=['sch','av','set','up'].indexOf(n.tab)>=0?n.tab:(o.startTab||'sch'); S.activeTab=S.startTab; S.open = null; S.openG = null; S.gd = null; S.att = {}; S.recentLoaded = false; S.prevLoaded = false; S.upStale = false; shell(); if (S.startTab === 'sch') loadWeek(); load(); },
+    tab: tab, pick: pick, overStart: function(){ overStart(); }, schWeek: schWeek, openLesson: openLesson, openGroup: openGroup, closeGroup: closeGroup, mark: mark, openGroupDetail: openGroupDetail, closeGroupDetail: closeGroupDetail, gdMark: gdMark, gdPanel: gdPanel, gdPage: gdPage, noShow: noShow, cancelLesson: cancelLesson, resched: resched, saveRules: saveRules, addRange: addRange, removeRange: removeRange, toggleDay: toggleDay, check: check, kindChanged: kindChanged, addOverride: addOverride, removeOverride: removeOverride,
     _opts: { startOpts: startOpts, endOpts: endOpts, minLen: minLen, defEnd: defEnd }, // pure option builders (logic tests)
     saveSettings: saveSettings, preview: preview, prevWeek: prevWeek, prevDay: prevDay, reload: function(){ load(); }
   };
@@ -553,7 +690,7 @@ function uuid(){ return 'o' + Date.now().toString(36) + Math.random().toString(3
 //   row; on any failure it is removed at once and the caller's red error is shown — never a row the server did not create.
 // - A write started by the user whose own code shows no message ends with a green "בוצע". opt.quiet = background call, no bar.
 var UX = { seq: 0, live: [], writes: {}, trig: null, trigAt: 0, trigWas: null, bar: null, timer: null, log: [] };
-var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit|syncPlatform)|co_(schedule|week|calendars|recentChanges|preview)|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
+var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit|syncPlatform)|off_groupRoster|off_searchSwimmers|co_(schedule|week|calendars|recentChanges|preview)|co_groupAttendance|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
 // Calls that carry a password or a one-time secret: de-duplicated by function name only, so the secret is never kept in a key.
 var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_platformLogin|st_redeemInvitation|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
 var UX_TEXT = { off_inviteCoach: 'שולח הזמנה…', off_coachReport: 'מכין דוח…', off_coachAnnual: 'מכין דוח…', off_coachReportCsv: 'מכין קובץ CSV…',
@@ -563,6 +700,7 @@ var UX_TEXT = { off_inviteCoach: 'שולח הזמנה…', off_coachReport: 'מ�
   off_revokeInvitation: 'מבטל הזמנה…', off_saveGroup: 'שומר ומשבץ מפגשים…', off_editGroupFrom: 'מעדכן מפגשים…', off_setConfig: 'מעדכן…',
   api_book: 'קובע שיעור…', api_reschedule: 'משנה מועד…', api_cancel: 'מבטל…', api_requestOtp: 'שולח קוד…', api_verifyOtp: 'מאמת…',
   api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_platformLogin: 'נכנס…', st_redeemInvitation: 'מחבר…',
+  off_addGroupMember: 'משבץ…', off_moveGroupMember: 'מעביר…', off_stopGroupMember: 'מפסיק…', co_markAttendance: 'שומר…',
   co_saveRules: 'שומר…', co_saveOverride: 'שומר…', co_saveSettings: 'שומר…', co_cancel: 'מבטל…', co_reschedule: 'משנה מועד…', co_noShow: 'מסמן…' };
 function uxMark(e){ var t = e.target, el = t && t.closest ? t.closest('button,a,input,select,textarea') : null; UX.trig = el; UX.trigAt = performance.now(); UX.trigWas = el && { disabled: el.disabled, html: el.innerHTML }; setTimeout(function(){ if (UX.trig === el) UX.trig = null; }, 0); }
 document.addEventListener('click', uxMark, true);
@@ -656,9 +794,9 @@ function call(fn, args, cb, opt){
   var t0 = Date.now(), h = uxStart(fn, args, opt), form = sheetOf(h); if (!h) return;
   rpc(fn, args, function(res){
     perfLog(fn, t0, res); uxEnd(h, res.ok);
-    if (!res.ok) { if(fn==='off_household'){S.hid=null;S.H=null;$('hh').classList.add('hidden');tab('hh',true);} if(fn==='off_groupDetail'){S.GD=null;$('gr_detail').innerHTML='';tab('gr',true);} if (res.code==='AUTH') { onAuthLost(res, form); form = null; } var m = res.message + (res.debug ? ' [' + res.debug + ']' : ''); msg(m); sheetBack(form, m); return; }
+    if (!res.ok) { if(fn==='off_household'&&!(opt&&opt.stay)){S.hid=null;S.H=null;$('hh').classList.add('hidden');tab('hh',true);} if(fn==='off_groupDetail'){S.GD=null;$('gr_detail').innerHTML='';tab('gr',true);} if (opt && opt.onErr && res.code!=='AUTH' && opt.onErr(res)) return; if (res.code==='AUTH') { onAuthLost(res, form); form = null; } var m = res.message + (res.debug ? ' [' + res.debug + ']' : ''); msg(m); sheetBack(form, m); return; }
     cb(res.data); uxDone(h);
-  }, function(e){ uxEnd(h, false); console.log('[barbur] ' + fn + ' transport: ' + e); msg(uxNetMsg(h)); sheetBack(form, uxNetMsg(h)); });
+  }, function(e){ uxEnd(h, false); console.log('[barbur] ' + fn + ' transport: ' + e); if (opt && opt.onNet) opt.onNet(); msg(uxNetMsg(h)); sheetBack(form, uxNetMsg(h)); });
 }
 /** The form whose אישור started this call (the sheet closes on אישור), so a refused save brings it back with the typed values. */
 function sheetOf(h){ return h && h.from && h.from.id === 'shOk' ? $('shBody').firstChild : null; }
@@ -668,11 +806,14 @@ function perfLog(fn, t0, res){ if (!ENV_IS_TEST) return; try { var p = res && re
 function show(id){ ['login','app'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('logoutBtn').classList.toggle('hidden', id==='login'); $('dbLink').classList.toggle('hidden', id==='login'); }
 function tab(t, keepMsg){ S.activeTab=t; if(!S.restoring) saveOfficeNav(); ['home','hh','ld','co','gr','cl','exc','rep','set'].forEach(function(x){ $('p_'+x).classList.toggle('hidden', x!==t); $('t_'+x).classList.toggle('on', x===t); }); if (!keepMsg) msg(''); if(S.restoring) return; if (t==='home') home(); if (t==='exc') loadExc(false); if (t==='co') renderCoaches(); if (t==='cl') loadClosures(); if (t==='gr') loadGroups(); if (t==='set') { renderCfg(); loadPolicies(); } if (t==='ld') loadLeads(); if (t==='rep') { $('t_rep').classList.remove('hidden'); if (!S.rep) reportOpen(); } }
 // --- bottom sheet form (replaces browser prompts) ---
-function ask(title, fields, cb){
-  $('shTitle').textContent = title;
-  $('shBody').innerHTML = fields.map(function(f){ return f.type==='note' ? '<p>' + esc(f.label) + '</p>' : '<label>' + esc(f.label) + '</label>' + (f.type==='days' ? '<div class="inline" id="f_'+f.k+'">' + GD_DAYS.map(function(n, i){ return '<label style="display:inline-flex;gap:4px;align-items:center"><input type="checkbox" data-d="'+i+'"'+((f.value||[]).indexOf(i)>=0?' checked':'')+'> '+n+'</label>'; }).join('') + '</div>' : f.type==='select' ? '<select id="f_'+f.k+'">' + f.options.map(function(o){ return '<option value="'+esc(o[0])+'"'+(f.value!=null && String(f.value)===String(o[0])?' selected':'')+'>'+esc(o[1])+'</option>'; }).join('') + '</select>' : f.type==='textarea' ? '<textarea id="f_'+f.k+'" rows="2"></textarea>' : '<input id="f_'+f.k+'" type="'+(f.type||'text')+'" value="'+esc(f.value||'')+'" placeholder="'+esc(f.ph||'')+'"'+(f.step?' step="'+f.step+'"':'')+'>') + (f.help ? '<div class="muted">'+esc(f.help)+'</div>' : ''); }).join('');
+/** The dialog (role="dialog"): every field has a <label for=>; a message-only dialog carries its text in a <label>; the confirm button (okText) is the LAST button.
+ *  validate(v) may return an error text: the dialog then stays open and shows it. */
+function ask(title, fields, cb, okText, validate){
+  $('shTitle').textContent = title; $('shOk').textContent = okText || 'אישור';
+  $('shBody').innerHTML = fields.map(function(f){ return f.type==='note' ? '<label class="note">' + esc(f.label) + '</label>' : (f.type==='days' ? '<label id="l_'+f.k+'">' : '<label for="f_'+f.k+'">') + esc(f.label) + '</label>' + (f.type==='days' ? '<div class="inline" id="f_'+f.k+'" role="group" aria-labelledby="l_'+f.k+'">' + GD_DAYS.map(function(n, i){ return '<label style="display:inline-flex;gap:4px;align-items:center"><input type="checkbox" data-d="'+i+'"'+((f.value||[]).indexOf(i)>=0?' checked':'')+'> '+n+'</label>'; }).join('') + '</div>' : f.type==='select' ? '<select id="f_'+f.k+'"'+(f.size?' size="'+f.size+'"':'')+'>' + f.options.map(function(o){ return '<option value="'+esc(o[0])+'"'+(f.value!=null && String(f.value)===String(o[0])?' selected':'')+'>'+esc(o[1])+'</option>'; }).join('') + '</select>' : f.type==='textarea' ? '<textarea id="f_'+f.k+'" rows="2"'+(f.max?' maxlength="'+f.max+'"':'')+'>'+esc(f.value||'')+'</textarea>' : '<input id="f_'+f.k+'" type="'+(f.type||'text')+'" value="'+esc(f.value||'')+'" placeholder="'+esc(f.ph||'')+'"'+(f.step?' step="'+f.step+'"':'')+(f.min?' min="'+esc(f.min)+'"':'')+(f.max?' maxlength="'+f.max+'"':'')+'>') + (f.help ? '<div class="muted">'+esc(f.help)+'</div>' : ''); }).join('');
   $('shErr').textContent=''; $('sheet').classList.remove('hidden');
-  $('shOk').onclick = function(){ var v = {}; fields.forEach(function(f){ if (f.type==='days') v[f.k] = [].map.call($('f_'+f.k).querySelectorAll('input:checked'), function(x){ return Number(x.getAttribute('data-d')); }); else if (f.type!=='note') v[f.k] = $('f_'+f.k).value; }); for (var i=0;i<fields.length;i++) if (fields[i].req && !String(v[fields[i].k]||'').trim()) { $('shErr').textContent = 'חסר: ' + fields[i].label; return; } $('shErr').textContent=''; closeSheet(); cb(v); };
+  $('shOk').onclick = function(){ var v = {}; fields.forEach(function(f){ if (f.type==='days') v[f.k] = [].map.call($('f_'+f.k).querySelectorAll('input:checked'), function(x){ return Number(x.getAttribute('data-d')); }); else if (f.type!=='note') v[f.k] = $('f_'+f.k).value; }); for (var i=0;i<fields.length;i++) if (fields[i].req && !String(v[fields[i].k]||'').trim()) { $('shErr').textContent = 'חסר: ' + fields[i].label; return; } var bad = validate && validate(v); if (bad) { $('shErr').textContent = bad; return; } $('shErr').textContent=''; closeSheet(); cb(v); };
+  fields.forEach(function(f){ if (f.oninput) $('f_'+f.k).addEventListener('input', function(e){ f.oninput(e.target); }); });
   var af = fields.filter(function(f){ return f.autofocus; })[0], first = af ? $('f_'+af.k) : $('shBody').querySelector('input,select,textarea'); if (first) first.focus();
 }
 function closeSheet(){ $('sheet').classList.add('hidden'); $('shBody').querySelectorAll('input[type=password]').forEach(function(el){ el.value=''; }); }
@@ -711,8 +852,10 @@ function home(){
   if (!S.homeLoaded) ['homeExc','homeAtt','homeUp'].forEach(function(id){ $(id).innerHTML = '<div class="empty">טוען…</div>'; });
   call('off_home', [S.token], function(d){
     S.homeLoaded = true;
-    var todo = d.leads_todo || []; $('todoCount').textContent = todo.length || '';
-    $('homeTodo').innerHTML = todo.length ? todo.map(function(x){ return '<div class="row"><a class="link" href="#" onclick="openLead(\''+esc(x.lead_id)+'\');return false">'+esc(x.name)+'</a><span class="muted">'+esc(dmy(x.created_date))+' · '+esc(x.lead_id)+'</span><span class="badge '+(x.why==='ליד חדש'?'':'warn')+'">'+esc(x.why)+'</span></div>'; }).join('') : '<div class="empty">אין לידים לטיפול</div>';
+    // run 6 O3: paused swimmers whose reminder date came are listed with the leads; the link opens their group on the swimmers view
+    var todo = d.leads_todo || [], rtodo = d.roster_todo || []; $('todoCount').textContent = (todo.length + rtodo.length) || '';
+    $('homeTodo').innerHTML = (todo.length || rtodo.length) ? rtodo.map(function(x){ return '<div class="row rs-todo"><a class="link" href="#" onclick="tab(\'gr\');openGroup(\''+esc(x.group_id)+'\');return false">'+esc(x.name)+'</a><span class="muted">'+esc(x.group_name)+' · תזכורת '+esc(dmy(x.remind_date))+(x.pause_note ? ' · '+esc(x.pause_note) : '')+'</span><span class="badge warn">שחיין/ית מושהה</span></div>'; }).join('') +
+      todo.map(function(x){ return '<div class="row"><a class="link" href="#" onclick="openLead(\''+esc(x.lead_id)+'\');return false">'+esc(x.name)+'</a><span class="muted">'+esc(dmy(x.created_date))+' · '+esc(x.lead_id)+'</span><span class="badge '+(x.why==='ליד חדש'?'':'warn')+'">'+esc(x.why)+'</span></div>'; }).join('') : '<div class="empty">אין פריטים לטיפול</div>';
     $('excCount').textContent = d.exceptions.length || '';
     $('homeExc').innerHTML = d.exceptions.length ? d.exceptions.slice(0,6).map(excRow).join('') : '<div class="empty">אין חריגות פתוחות</div>';
     $('homeAtt').innerHTML = d.attention.length ? d.attention.map(function(a){ return '<div class="row"><a class="link" href="#" onclick="openHH(\''+a.household_id+'\');return false">'+esc(a.display_name)+'</a><span class="badge warn">'+esc(a.why)+'</span></div>'; }).join('') : '<div class="empty">הכל בסדר</div>';
@@ -782,9 +925,9 @@ function editContact(id){ var c = S.H.contacts.filter(function(x){return x.conta
 function studentFields(s, isNew){ s = s || {}; var cur = (s.assignments||[]).filter(function(x){return x.status==='ACTIVE';})[0], co = S.H.coaches.map(function(c){ return [c.coach_id, c.display_name]; }); if (cur) co.sort(function(a){ return a[0]===cur.coach_id ? -1 : 0; }); return [{k:'first_name',label:'שם פרטי',value:s.first_name,req:1}].concat(isNew ? [] : [{k:'last_name',label:'שם משפחה (רק אם שונה משם המשפחה)',value:s.last_name}]).concat([{k:'birth_year',label:'שנת לידה',value:s.birth_year},{k:'legacy_customer_no',label:'מס לקוח (5 ספרות)',value:s.legacy_customer_no,req:1},{k:'coach_id',label:'מאמן/ת משויך/ת — הלקוח יכול להזמין רק אצלו/ה',type:'select',options:co.concat([['','ללא מאמן']])},{k:'status',label:'סטטוס',type:'select',options:s.status==='INACTIVE'?[['INACTIVE','לא פעיל'],['ACTIVE','פעיל']]:[['ACTIVE','פעיל'],['INACTIVE','לא פעיל']]}]).filter(function(f){ return !isNew || f.k!=='status'; }); }
 // Part 2 (owner 2026-10-23): a swimmer added inside a family takes the family name (server side); no last-name field here.
 function addStudent(){ ask('הוספת שחיין/ית', studentFields(null, true), function(v){ v.household_id = S.hid; if (!/^\d{5}$/.test(String(v.legacy_customer_no||'').trim())) { msg(custNoMsg(v.legacy_customer_no)); return; } call('off_saveStudent', [S.token, v], function(){ msg('נשמר', true); openHH(S.hid); }, { ghost: { into: 'hhStudents', after: 'h2', label: v.first_name } }); }); }
-function editStudent(id){ var s = S.H.students.filter(function(x){return x.student_id===id;})[0]; var cur = (s.assignments||[]).filter(function(x){return x.status==='ACTIVE';})[0];
+function editStudent(id, after){ var s = S.H.students.filter(function(x){return x.student_id===id;})[0]; var cur = (s.assignments||[]).filter(function(x){return x.status==='ACTIVE';})[0];
   ask('עריכת שחיין/ית ושיוך מאמן', studentFields(s), function(v){ v.household_id = S.hid; v.student_id = id; var coach = v.coach_id; delete v.coach_id;
-    call('off_saveStudent', [S.token, v], function(){ if ((cur ? cur.coach_id : '') !== coach) call('off_assign', [S.token, id, coach], function(){ msg('נשמר', true); openHH(S.hid); }); else { msg('נשמר', true); openHH(S.hid); } }); }); }
+    call('off_saveStudent', [S.token, v], function(){ if ((cur ? cur.coach_id : '') !== coach) call('off_assign', [S.token, id, coach], function(){ msg('נשמר', true); (after || function(){ openHH(S.hid); })(); }); else { msg('נשמר', true); (after || function(){ openHH(S.hid); })(); } }); }); }
 function addGrant(studentId){
   var B = S.B, sw = S.H.students.filter(function(x){ return x.status==='ACTIVE'; });
   if (!sw.length) { msg('קודם מוסיפים שחיין/ית — הרכישה נרשמת על שם שחיין/ית'); return; }
@@ -891,32 +1034,247 @@ function loadGroups(){
     }).join('') : '<div class="empty">אין קבוצות</div>';
   });
 }
-function openGroup(id){
-  call('off_groupDetail', [S.token, id], function(d){
-    S.GD = d; saveOfficeNav(); var g = d.group, q = g.quota ? '<div class="muted">מכסת קורס: נספרו '+g.quota.counted+' מתוך '+g.quota.total+' (מפגש שהתקיים או מתוכנן) · נותרו '+g.quota.remaining+'</div>' : '';
+/** Opens a group card on its swimmers (tabName 'se' = the sessions view). The header data and the roster are read in parallel; the card renders once both answered. */
+function openGroup(id, tabName){
+  var st = { n: 2, d: null, r: null, err: '' };
+  S.grWant = id; S.grTab = grTabName(tabName);
+  if (!(tabName === 'se' && S.GP && S.GP.gid === id)) S.GP = { gid: id, mode: 'up', page: 0 }; // a session action re-opens the 'se' view and keeps the panel's mode/page
+  var done = function(){
+    if (--st.n || S.grWant !== id || !st.d) return;
+    S.GD = st.d; S.RO = st.r; S.ROerr = st.err;
+    if (!S.RS || S.RS.gid !== id) S.RS = { gid: id, open: false, q: '', res: null, n: 0 };
+    saveOfficeNav(); grRender(); $('gr_detail').scrollIntoView();
+  };
+  call('off_groupDetail', [S.token, id], function(d){ st.d = d; done(); });
+  call('off_groupRoster', [S.token, id], function(r){ st.r = r; done(); }, { onErr: function(res){ st.err = res.message; done(); return false; } });
+}
+/** The group card's views (run 6 L5): sw = swimmers (default), se = sessions, hi = swimmer history. */
+function grTabName(t){ return t === 'se' || t === 'hi' ? t : 'sw'; }
+function grTab(t){ S.grTab = grTabName(t); grRender(); }
+function grTabBtn(t, label){ var on = S.grTab === t; return '<button class="btn sm'+(on?'':' ghost')+'" aria-pressed="'+on+'" onclick="grTab(\''+t+'\')">'+label+'</button>'; }
+function grRender(){
+    var d = S.GD, sw = S.grTab === 'sw', g = d.group, q = g.quota ? '<div class="muted">מכסת קורס: נספרו '+g.quota.counted+' מתוך '+g.quota.total+' (מפגש שהתקיים או מתוכנן) · נותרו '+g.quota.remaining+'</div>' : '';
     var dates = g.type==='ANNUAL' ? esc(fmtDay(g.start_date))+' – '+esc(fmtDay(g.end_date)) : 'מ-'+esc(fmtDay(g.start_date))+' · '+g.sessions_total+' מפגשים';
     $('gr_detail').innerHTML = '<div class="card"><h2>'+esc(g.name)+' <span class="badge">'+(g.type==='COURSE'?'קורס':'חוג שנתי')+'</span> '+(g.status==='ARCHIVED'?'<span class="badge gray">בארכיון</span>':'')+'</h2>'+
       '<div class="muted">מדריך/ה קבוע/ה: '+esc(g.coach_name)+' · '+esc(grDays(g.weekdays))+' '+esc(g.start_time)+' ('+g.duration_min+' דק׳) · '+dates+'</div>'+
       '<div class="muted">רמת פתיחה: '+esc(g.start_level||'—')+' · רמה נוכחית: '+esc(g.current_level||'—')+' · מחזור/גיל: '+esc(g.age_cohort||'—')+'</div>'+q+
       (g.upcoming ? '<div class="muted">החל מ-'+esc(fmtDay(g.upcoming.valid_from))+': '+esc(grDays(g.upcoming.weekdays))+' '+esc(g.upcoming.start_time)+' ('+g.upcoming.duration_min+' דק׳)</div>' : '')+
       (g.reviews ? '<div class="msg warn">'+g.reviews+' מפגשים מסומנים לבדיקה (הקבוצה שונתה אחרי שנקבעו)</div>' : '')+
-      (g.status==='ACTIVE' ? '<div class="inline" style="margin:8px 0"><button class="btn sm" onclick="editSchedGroup()">עריכת קבוצה (החל מתאריך)</button><button class="btn sm ghost" onclick="editGroup(\''+g.group_id+'\')">עריכת פרטים</button><button class="btn sm ghost" onclick="archiveGroup(\''+g.group_id+'\')">העברה לארכיון</button><button class="btn sm ghost" onclick="$(\'gr_detail\').innerHTML=\'\'">סגירה</button></div>' : '')+
-      '<h3>מפגשים</h3><div class="muted">שינוי במפגש בודד חל רק על התאריך שלו ומסומן "חריג".</div>'+d.sessions.map(function(s){
+      '<div class="inline" role="group" aria-label="תצוגת הקבוצה" style="margin:10px 0">'+grTabBtn('sw', 'שחיינים')+grTabBtn('se', 'מפגשים')+grTabBtn('hi', 'היסטוריית שחיינים')+'</div><div id="gr_pane"></div></div>';
+    $('gr_pane').innerHTML = sw ? '<div id="rs_head" class="inline" style="justify-content:space-between;margin:8px 0"></div><div id="rs_panel"></div><div id="rs_list"></div>' + grActionsHtml()
+      : S.grTab === 'hi' ? '<div id="rs_hist"></div>' + grActionsHtml() : grActionsHtml() + grSessionsHtml();
+    if (sw) { rsRender(); rsPanelRender(); } else if (S.grTab === 'hi') rsHistRender();
+}
+/** Group-level actions (an ACTIVE group only). Below the swimmers list; above the sessions. */
+function grActionsHtml(){ var g = S.GD.group; return g.status==='ACTIVE' ? '<div class="inline" style="margin:8px 0"><button class="btn sm" onclick="editSchedGroup()">עריכת קבוצה (החל מתאריך)</button><button class="btn sm ghost" onclick="editGroup(\''+g.group_id+'\')">עריכת פרטים</button><button class="btn sm ghost" onclick="archiveGroup(\''+g.group_id+'\')">העברה לארכיון</button><button class="btn sm ghost" onclick="$(\'gr_detail\').innerHTML=\'\'">סגירה</button></div>' : ''; }
+/** The sessions panel (C12): S.GP = {mode:'up'|'past', page}. 'up' = the next 5; 'past' = 5 per page, newest first, up to two months back. */
+function gsPanelHtml(){
+  var d = S.GD, g = d.group, p = d.panel || { upcoming: [], past: [] }, gp = S.GP, past = p.past || [], rows, nav;
+  if (gp.mode === 'past') {
+    gp.page = Math.max(0, Math.min(gp.page, Math.ceil(past.length / 5) - 1));
+    rows = past.slice(gp.page * 5, gp.page * 5 + 5);
+    nav = '<button id="gs_prev" class="btn sm ghost" onclick="gsGo(\'past\','+(gp.page+1)+')"'+((gp.page+1)*5 >= past.length ? ' disabled' : '')+'>מפגשים קודמים</button><button id="gs_next" class="btn sm ghost" onclick="gsGo(\'up\',0)">מפגשים הבאים</button>';
+  } else {
+    rows = p.upcoming || [];
+    nav = '<button id="gs_prev" class="btn sm ghost" onclick="gsGo(\'past\',0)">מפגשים קודמים</button>';
+  }
+  return '<div class="inline" style="margin:8px 0">'+nav+'</div>'+(rows.length ? rows.map(function(s){ return grSessionRow(s, g); }).join('') : '<div class="empty">'+(gp.mode === 'past' ? 'אין מפגשים קודמים' : 'אין מפגשים קרובים')+'</div>');
+}
+function gsGo(mode, page){
+  S.GP.mode = mode; S.GP.page = page; var b = $('gs_panel'); if (!b) return;
+  b.innerHTML = gsPanelHtml(); var f = $('gs_prev'); if (f && f.disabled) f = $('gs_next'); if (f) f.focus();
+}
+function grSessionsHtml(){
+  return '<h3>מפגשים</h3><div class="muted">שינוי במפגש בודד חל רק על התאריך שלו ומסומן "חריג".</div><div id="gs_panel">'+gsPanelHtml()+'</div>';
+}
+/** One session row with its Office actions. */
+function grSessionRow(s, g){
         var acts = g.status!=='ACTIVE' ? '' : (s.needs_review ? '<button class="btn sm" onclick="reviewGS(\''+s.session_id+'\')">אישור</button>' : '') + (s.can_change ? '<button class="btn sm ghost" onclick="timeGS(\''+s.session_id+'\')">שעה</button>' + (s.time_override ? '<button class="btn sm ghost" onclick="resetTimeGS(\''+s.session_id+'\')">החזר לשעת הקבוצה</button>' : '') + '<button class="btn sm ghost" onclick="cancelGS(\''+s.session_id+'\')">ביטול</button><button class="btn sm ghost" onclick="subGS(\''+s.session_id+'\')">מחליף</button>' : '') + (s.can_makeup ? '<button class="btn sm ghost" onclick="makeupGS(\''+s.session_id+'\')">קבע השלמה</button>' : '') + '<button class="btn sm ghost" onclick="noteGS(\''+s.session_id+'\')">הערה</button>';
-        return '<div class="row"><div class="grow"><b>'+esc(fmtDay(s.ymd))+'</b> '+esc(s.hm)+'–'+esc(s.end_hm)+' <span class="badge '+(GR_ST[s.status]||'gray')+'">'+esc(s.status_label)+'</span>'+(s.makeup_for?' <span class="badge gray">השלמה</span>':'')+(s.time_override||s.substitute_name?' <span class="badge warn">חריג</span>':'')+(s.needs_review?' <span class="badge bad">לבדיקה</span>':'')+
+        return '<div class="gs-row row" data-sid="'+esc(s.session_id)+'" data-ymd="'+esc(s.ymd)+'"><div class="grow"><b>'+esc(fmtDay(s.ymd))+'</b> '+esc(s.hm)+'–'+esc(s.end_hm)+' <span class="badge '+(GR_ST[s.status]||'gray')+'">'+esc(s.status_label)+'</span>'+(s.makeup_for?' <span class="badge gray">השלמה</span>':'')+(s.time_override||s.substitute_name?' <span class="badge warn">חריג</span>':'')+(s.needs_review?' <span class="badge bad">לבדיקה</span>':'')+
           (s.needs_review?'<div class="muted">'+esc(s.review_reason)+'</div>':'')+(s.coach_id!==g.coach_id?'<div class="muted">מדריך/ה קבוע/ה במפגש: '+esc(s.coach_name)+'</div>':'')+(s.substitute_name?'<div class="muted">מחליף/ה: '+esc(s.substitute_name)+'</div>':'')+(s.note?'<div class="muted">'+esc(s.note)+'</div>':'')+'</div><div class="inline">'+acts+'</div></div>';
-      }).join('')+'</div>';
-    $('gr_detail').scrollIntoView();
+}
+// ---- group swimmers (roster): assign from the pool, move, stop, past list (spec barbur-groups-roster-spec-v0.1) ----
+var RS_KIND = { MOVED:'הועבר/ה', STOPPED:'הפסיק/ה' };
+function dmy2(ymd){ var p = String(ymd||'').split('-'); return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0].slice(2) : ''; }
+function rsWho(x){ return [x.customer_no ? '<span dir="ltr">'+esc(x.customer_no)+'</span>' : '', esc(x.household_name||'')].filter(String).join(' · '); }
+function rsNames(a){ return (a||[]).map(function(x){ return x.name; }).join(', '); }
+function rsMark(a){ return a.length ? ' <span class="badge warn" title="פעיל/ה גם ב: '+esc(rsNames(a))+'">בקבוצה נוספת: '+esc(rsNames(a))+'</span>' : ''; }
+/** The last-N attendance cells: one button per counted session, oldest on the left (LTR). A tap cycles '' -> V -> X -> ''. V green, X red, - grey; tooltip = the session date. */
+var RS_NEXT = { '': 'V', V: 'X', X: '' };
+function rsCellCls(m){ return 'rs-c rs-' + (m === 'V' ? 'v' : m === 'X' ? 'x' : 'n'); }
+function rsAtt(x, i, sessions){
+  return '<span class="rs-att" dir="ltr">' + sessions.map(function(se, j){ var c = (x.cells || [])[j] || { mark: '' }, m = c.pend != null ? c.pend : c.mark;
+    return '<button class="'+rsCellCls(m)+'" data-sid="'+esc(se.session_id)+'" data-stu="'+esc(x.student_id)+'" data-mark="'+esc(m)+'" title="'+esc(dmy(se.ymd))+(rsCan(se, c) ? '' : ' · לא במועד הזה')+'" onclick="rsCell('+i+','+j+')"'+(rsCan(se, c) && c.pend == null ? '' : ' disabled')+'>'+(m || '-')+'</button>'; }).join('') + '</span>';
+}
+/** A cell is tappable when the session is markable for the viewer and the swimmer belongs to it (run 6 L9 / L3: 'can' from the server; older replies have no 'can'). */
+function rsCan(se, c){ return !!se.can_mark && c.can !== false; }
+function rsPaint(x, se, c){
+  var b = document.querySelector('#rs_list .rs-c[data-sid="'+se.session_id+'"][data-stu="'+x.student_id+'"]'); if (!b) return;
+  var m = c.pend != null ? c.pend : c.mark;
+  b.className = rsCellCls(m); b.setAttribute('data-mark', m); b.textContent = m || '-'; b.disabled = !rsCan(se, c) || c.pend != null;
+}
+/** One tap: the cell shows the next mark at once and stays locked until the reply; a refusal puts the saved mark back and shows the error. */
+function rsCell(i, j){
+  var ro = S.RO, x = ro && ro.active[i], se = ro && ro.sessions[j], c = x && x.cells && x.cells[j]; if (!c || !rsCan(se, c) || c.pend != null) return;
+  c.pend = RS_NEXT[c.mark || '']; rsPaint(x, se, c);
+  var back = function(){ delete c.pend; rsPaint(x, se, c); };
+  call('off_markAttendance', [S.token, { session_id: se.session_id, student_id: x.student_id, mark: c.pend }], function(r){
+    c.mark = r.mark; delete c.pend; x.attendance = x.cells.map(function(k){ return k.mark || '-'; }).join(''); rsPaint(x, se, c);
+  }, { onErr: function(res){ back(); msg(res.message); return true; }, onNet: back });
+}
+/** The name opens the Families swimmer card (the same dialog) without leaving the group; save or cancel returns to this group. */
+function rsName(i){
+  var x = S.RO && S.RO.active[i], gid = S.GD.group.group_id; if (!x || !x.household_id) return;
+  call('off_household', [S.token, x.household_id], function(d){
+    S.H = d; S.hid = x.household_id;
+    editStudent(x.student_id, function(){ openGroup(gid); });
+  }, { stay: true });
+}
+/** The date header above the rows (dd/mm). The actions sit under the name (run 6), so the header lines up with the cells directly. */
+function rsDates(r){
+  return '<div class="row rs-hd" aria-hidden="true"><div class="grow"></div><div class="inline"><span class="rs-att" dir="ltr">' + r.sessions.map(function(se){ return '<span class="rs-d">'+esc(dmy(se.ymd).slice(0, 5))+'</span>'; }).join('') + '</span></div></div>';
+}
+/** Office actions on one current swimmer (run 6 O3-O6): move, stop (inactive), pause / resume, note, edit the swimmer card. */
+function rsActs(x, i){
+  return '<div class="inline rs-acts" style="margin-top:4px;gap:4px">'+
+    '<button class="btn sm ghost" onclick="rsMove('+i+')">העברה</button><button class="btn sm ghost" onclick="rsStop('+i+')">הפסקה</button>'+
+    (x.paused ? '<button class="btn sm ghost" onclick="rsResume('+i+')">חידוש</button>' : '<button class="btn sm ghost" onclick="rsPause('+i+')">השהיה</button>')+
+    '<button class="btn sm ghost" onclick="rsNote('+i+')">הערה</button>'+(x.household_id ? '<button class="btn sm ghost" onclick="rsName('+i+')">עריכה</button>' : '')+'</div>';
+}
+function rsPauseLine(x){
+  if (!x.paused) return '';
+  return '<div class="rs-pause"><span class="badge warn">מושהה מ-'+esc(dmy2(x.paused_from))+'</span>'+(x.remind_date ? ' <span class="muted">תזכורת: '+esc(dmy2(x.remind_date))+'</span>' : '')+(x.pause_note ? ' <span class="muted">· '+esc(x.pause_note)+'</span>' : '')+'</div>';
+}
+function rsRender(){
+  var r = S.RO, h = $('rs_head'), l = $('rs_list'); if (!h || !l) return;
+  if (!r) { h.innerHTML = '<h3 style="margin:0">שחיינים פעילים</h3>'; l.innerHTML = '<div class="msg err">' + esc(S.ROerr || 'לא ניתן לטעון את השחיינים') + '</div>'; return; }
+  var ed = r.editable;
+  h.innerHTML = '<h3 style="margin:0">שחיינים פעילים ('+r.active.length+')</h3>' + (!ed ? '<span class="badge gray">בארכיון — לצפייה בלבד</span>' : r.active.length ? '<button class="btn sm" onclick="rsOpen()">הוספת שחיין/ית</button>' : '');
+  var act = r.active.length ? (r.sessions.length ? rsDates(r) : '<div class="muted">אין עדיין מפגשים שהתקיימו</div>') + r.active.map(function(x, i){
+    return '<div class="row'+(x.paused ? ' rs-paused' : '')+'"><div class="grow">'+(x.household_id ? '<button class="rs-name link" data-stu="'+esc(x.student_id)+'" onclick="rsName('+i+')">'+esc(x.name)+'</button>' : '<b>'+esc(x.name)+'</b>')+' <span class="muted">'+rsWho(x)+'</span>'+rsMark(x.other_groups)+
+      '<div class="muted">הצטרף/ה '+esc(dmy2(x.joined_date))+'</div>'+rsPauseLine(x)+(x.member_note ? '<div class="rs-note">הערה: '+esc(x.member_note)+'</div>' : '')+(ed ? rsActs(x, i) : '')+'</div>' +
+      '<div class="inline">'+(r.sessions.length ? rsAtt(x, i, r.sessions) : '')+'</div></div>';
+  }).join('') : '<div class="empty">אין שחיינים בקבוצה.' + (ed ? ' הוסיפו מהמאגר.' : '') + '</div>' + (ed ? '<div style="text-align:center;margin:12px 0"><button id="rs_plus" class="btn" aria-label="הוספת שחיין/ית" onclick="rsOpen()">+</button></div>' : '');
+  l.innerHTML = act + ((r.history || r.past).length > r.active.length ? '<div class="muted" style="margin-top:8px">שחיינים שעזבו והעברות — בלשונית <button class="link" onclick="grTab(\'hi\')">היסטוריית שחיינים</button></div>' : '');
+}
+/** Run 6 L5: every swimmer who was in the group (one row per membership period), newest first. */
+function rsHistRender(){
+  var b = $('rs_hist'), r = S.RO; if (!b) return;
+  if (!r) { b.innerHTML = '<div class="msg err">' + esc(S.ROerr || 'לא ניתן לטעון את השחיינים') + '</div>'; return; }
+  var rows = r.history || [];
+  b.innerHTML = '<h3>היסטוריית שחיינים ('+rows.length+')</h3>' + (rows.length ? rows.map(function(p, i){
+    var why = [p.leave_reason_label, p.leave_note].filter(String).join(' — ');
+    var st = p.status === 'ACTIVE' ? (p.paused ? '<span class="badge warn">מושהה</span>' : '<span class="badge ok">פעיל/ה</span>') : '<span class="badge gray">'+esc(RS_KIND[p.leave_kind]||'עזב/ה')+'</span>';
+    return '<div class="row rs-h"><div class="grow"><b>'+esc(p.name)+'</b> '+st+
+      '<div class="muted">שובץ/ה '+esc(dmy2(p.joined_date))+(p.arrived_from ? ' (הועבר/ה מקבוצה '+esc(p.arrived_from.name)+')' : '')+(p.left_date ? ' · '+(p.leave_kind === 'MOVED' ? 'הועבר/ה' : 'עזב/ה')+' '+esc(dmy2(p.left_date)) : '')+'</div>'+
+      (why ? '<div class="muted">סיבה: '+esc(why)+'</div>' : '')+(p.member_note ? '<div class="muted">הערה: '+esc(p.member_note)+'</div>' : '')+'</div>' +
+      (p.moved_to ? '<button class="link" onclick="rsGoto('+i+')">לקבוצה '+esc(p.moved_to.name)+'</button>' : '')+'</div>';
+  }).join('') : '<div class="empty">עוד לא היו שחיינים בקבוצה</div>');
+}
+/** The server answered with the RosterView of a group: show it when that group is still the open one. */
+function rsApply(r){ if (!S.GD || !r || !r.group || S.GD.group.group_id !== r.group.group_id) return; S.RO = r; S.ROerr = ''; if (S.grTab === 'sw') rsRender(); else if (S.grTab === 'hi') rsHistRender(); }
+function rsGoto(i){ var p = S.RO && (S.RO.history || [])[i]; if (p && p.moved_to) openGroup(p.moved_to.group_id); }
+// -- search panel --
+function rsOpen(){ S.RS.open = true; rsPanelRender(); var q = $('rs_q'); if (q) q.focus(); }
+function rsClose(){ S.RS.open = false; rsPanelRender(); }
+function rsPanelRender(){
+  var p = $('rs_panel'); if (!p) return;
+  if (!S.RS.open) { p.innerHTML = ''; return; }
+  p.innerHTML = '<div class="card" style="margin:8px 0"><label for="rs_q">חיפוש שחיין/ית במאגר (שם, מס׳ לקוח או מזהה)</label><div class="inline"><input id="rs_q" aria-label="חיפוש" maxlength="80" placeholder="שם, מס׳ לקוח או מזהה" value="'+esc(S.RS.q)+'" oninput="S.RS.q=this.value" onkeydown="if(event.key===\'Enter\')rsSearch()" style="flex:1 1 160px;width:auto"><button class="btn" onclick="rsSearch()">חיפוש</button><button class="btn ghost" onclick="rsClose()">סגירת החיפוש</button></div><div id="rs_res"></div></div>';
+  rsResults();
+}
+function rsSearch(){
+  var box = $('rs_q'), text = box ? box.value.trim() : ''; S.RS.q = box ? box.value : '';
+  if (!text) { S.RS.res = null; rsResults(); return; } // an empty query sends nothing
+  var rs = S.RS, n = ++rs.n;
+  call('off_searchSwimmers', [S.token, text, S.GD.group.group_id], function(list){ if (S.RS !== rs || rs.n !== n) return; rs.res = list; rsResults(); });
+}
+function rsResults(){
+  var b = $('rs_res'), res = S.RS.res; if (!b) return;
+  if (!res) { b.innerHTML = ''; return; }
+  b.innerHTML = res.length ? res.map(function(x, i){
+    return '<div class="row"><div class="grow"><b>'+esc(x.name)+'</b> <span class="muted">'+rsWho(x)+'</span>'+rsMark(x.other_groups)+'</div>' +
+      (x.in_group ? '<button class="btn sm" disabled>כבר בקבוצה</button>' : '<button class="btn sm" onclick="rsAdd('+i+')">הוספה</button>')+'</div>';
+  }).join('') : '<div class="empty">לא נמצאו שחיינים</div>';
+}
+/** Several groups: the Office confirms first (spec 9). go(true) resends with confirm_multi: true. */
+function rsMulti(text, go){ ask('שיבוץ ביותר מקבוצה אחת', [{k:'n',type:'note',label:text}], function(){ go(true); }, 'אישור שיבוץ'); }
+/** onErr for a roster write: MULTI_GROUP from the server (a stale list) shows the same confirmation. */
+function rsMultiErr(go){ return function(res){ if (res.code !== 'MULTI_GROUP') return false; rsMulti(res.message + '. לשבץ בכל זאת?', go); return true; }; }
+function rsAdd(i){
+  var x = S.RS.res[i], gid = S.GD.group.group_id;
+  var go = function(confirm){
+    call('off_addGroupMember', [S.token, { group_id: gid, student_id: x.student_id, confirm_multi: confirm === true }], function(r){ x.in_group = true; rsApply(r); rsResults(); msg('נשמר', true); }, { onErr: rsMultiErr(go) });
+  };
+  if (x.other_groups.length) rsMulti(x.name + ' כבר פעיל/ה ב: ' + rsNames(x.other_groups) + '. שיבוץ ביותר מקבוצה אחת הוא חריג. לשבץ בכל זאת?', go); else go(false);
+}
+// -- move and stop --
+function rsOpt(o){ return '<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>'; }
+function rsNoteCheck(v){ return v.reason === 'OTHER' && !String(v.note||'').trim() ? 'בסיבה "אחר" חובה לכתוב הערה' : ''; }
+function rsMove(i){
+  var m = S.RO.active[i], gid = S.GD.group.group_id;
+  call('off_groups', [S.token, { type: '', coach_id: '', status: 'ACTIVE' }], function(r){
+    var labels = r.groups.filter(function(g){ return g.group_id !== gid; }).map(function(g){ return [g.group_id, g.name + ' · ' + g.coach_name]; });
+    if (!labels.length) { msg('אין קבוצה פעילה אחרת להעברה'); return; }
+    var need = S.RO.move_needs_reason !== false;
+    ask('העברת ' + m.name + ' לקבוצה אחרת', [
+      {k:'filter',label:'חיפוש קבוצת יעד',ph:'הקלידו חלק משם הקבוצה',oninput:function(box){ // the first text box narrows the target list; the first match is selected
+        var t = box.value.trim().toLowerCase(), hit = t ? labels.filter(function(o){ return o[1].toLowerCase().indexOf(t) >= 0; }) : null, sel = $('shBody').querySelector('select');
+        sel.innerHTML = (hit ? (hit.length ? hit : [['', 'אין קבוצה מתאימה']]) : labels).map(rsOpt).join('');
+        sel.selectedIndex = hit && hit.length ? 0 : -1; // an open list selects nothing by itself: the first match is selected explicitly
+      }},
+      // run 6 L6: the target groups show at once as an open list (size), not behind a closed dropdown
+      {k:'to',label:'קבוצת יעד',type:'select',options:labels,req:1,size:Math.max(2, Math.min(8, labels.length))},
+      // run 6 L1: the reason is required for a move (the server checks too: NO_REASON)
+      {k:'reason',label:need ? 'סיבת ההעברה' : 'סיבה (לא חובה)',type:'select',req:need ? 1 : 0,options:[['', need ? '— בחר/י סיבה —' : 'ללא סיבה']].concat(S.RO.reasons.map(function(x){ return [x.code, x.label]; }))},
+      {k:'note',label:'הערה (חובה כשהסיבה "אחר")',type:'textarea',max:200}
+    ], function(v){
+      var go = function(confirm){
+        call('off_moveGroupMember', [S.token, { member_id: m.member_id, to_group_id: v.to, reason: v.reason, note: v.note.trim(), confirm_multi: confirm === true }], function(res){ rsApply(res); msg('נשמר', true); }, { onErr: rsMultiErr(go) });
+      };
+      go(false);
+    }, 'שמירה', rsNoteCheck);
   });
+}
+function rsStop(i){
+  var m = S.RO.active[i];
+  ask('הפסקת ' + m.name + ' בקבוצה', [
+    {k:'reason',label:'סיבת ההפסקה',type:'select',req:1,options:[['', '— בחר/י סיבה —']].concat(S.RO.reasons.map(function(x){ return [x.code, x.label]; }))},
+    {k:'note',label:'הערה (חובה כשהסיבה "אחר")',type:'textarea',max:200}
+  ], function(v){
+    call('off_stopGroupMember', [S.token, { member_id: m.member_id, reason: v.reason, note: v.note.trim() }], function(res){ rsApply(res); msg('נשמר', true); });
+  }, 'שמירה', rsNoteCheck);
+}
+/** Run 6 O3 / L3: pause with an optional reminder date (it then shows in the home "לטיפול" list from that date). */
+function rsPause(i){
+  var m = S.RO.active[i];
+  ask('השהיית ' + m.name, [
+    {k:'n',type:'note',label:'השחיין/ית נשאר/ת בקבוצה, מסומן/ת "מושהה", ולא נספר/ת בנוכחות מהיום עד החידוש.'},
+    {k:'remind_date',label:'תזכורת לטיפול בתאריך (לא חובה)',type:'date',min:S.RO.today||'',help:'בתאריך הזה השחיין/ית יופיע/תופיע ברשימת "לטיפול" במסך הבית'},
+    {k:'note',label:'הערה (לא חובה)',type:'textarea',max:200}
+  ], function(v){
+    call('off_pauseGroupMember', [S.token, { member_id: m.member_id, remind_date: v.remind_date, note: v.note.trim() }], function(res){ rsApply(res); msg('נשמר', true); });
+  }, 'השהיה');
+}
+function rsResume(i){
+  var m = S.RO.active[i];
+  call('off_resumeGroupMember', [S.token, { member_id: m.member_id }], function(res){ rsApply(res); msg('ההשהיה הסתיימה', true); });
+}
+/** Run 6 O6 / L4: free-text note on the swimmer in this group (empty clears it). */
+function rsNote(i){
+  var m = S.RO.active[i];
+  ask('הערה על ' + m.name, [{k:'note',label:'הערה (עד 200 תווים; ריק = מחיקה)',type:'textarea',max:200,value:m.member_note||''}], function(v){
+    call('off_noteGroupMember', [S.token, { member_id: m.member_id, note: v.note.trim() }], function(res){ rsApply(res); msg('נשמר', true); });
+  }, 'שמירה');
 }
 function grCoachOpts(sel, withEmpty){ return (withEmpty ? [['', '— המדריך/ה הקבוע/ה —']] : []).concat(S.GR.coaches.map(function(c){ return [c.coach_id, c.display_name]; })); }
 function newGroup(){
-  var coaches = S.GR ? S.GR.coaches : [];
+  var coaches = S.GR ? S.GR.coaches : [], cd = (S.GR && S.GR.create_defaults) || {}; // spec 8: type, dates and sessions come from the server, every field stays editable
   if (!coaches.length) { msg('אין מדריכים מחוברים לשיוך קבוצה'); return; }
-  ask('קבוצה חדשה', [{k:'type',label:'סוג',type:'select',options:[['ANNUAL','חוג שנתי (טווח תאריכים, 2–3 אימונים בשבוע)'],['COURSE','קורס (מספר מפגשים)']]},{k:'name',label:'שם הקבוצה',req:1},{k:'coach_id',label:'מדריך/ה קבוע/ה',type:'select',options:grCoachOpts()},
+  ask('קבוצה חדשה', [{k:'type',label:'סוג',type:'select',options:[['ANNUAL','חוג שנתי (טווח תאריכים, 2–3 אימונים בשבוע)'],['COURSE','קורס (מספר מפגשים)']],value:cd.type||'ANNUAL'},{k:'name',label:'שם הקבוצה',req:1},{k:'coach_id',label:'מדריך/ה קבוע/ה',type:'select',options:grCoachOpts()},
     {k:'start_level',label:'רמת פתיחה'},{k:'current_level',label:'רמה נוכחית'},{k:'age_cohort',label:'מחזור / קבוצת גיל'},{k:'weekdays',label:'ימים בשבוע (אין קבוצות בשבת)',type:'days',value:[]},
-    {k:'start_time',label:'שעת התחלה (אותה שעה בכל הימים)',type:'select',options:grTimeOpts(),value:'17:00'},{k:'duration_min',label:'משך',type:'select',options:GR_DUR,value:'45'},{k:'start_date',label:'תאריך התחלה',type:'date',req:1},
-    {k:'end_date',label:'תאריך סיום (לחוג שנתי)',type:'date'},{k:'sessions_total',label:'מספר מפגשים (לקורס)',type:'number',value:'8'}], function(v){
+    {k:'start_time',label:'שעת התחלה (אותה שעה בכל הימים)',type:'select',options:grTimeOpts(),value:'17:00'},{k:'duration_min',label:'משך',type:'select',options:GR_DUR,value:'45'},{k:'start_date',label:'תאריך התחלה',type:'date',value:cd.start_date||'',req:1},
+    {k:'end_date',label:'תאריך סיום (לחוג שנתי)',type:'date',value:cd.end_date||''},{k:'sessions_total',label:'מספר מפגשים (לקורס)',type:'number',value:cd.sessions_total!=null?String(cd.sessions_total):'8'}], function(v){
     v.duration_min = Number(v.duration_min); v.sessions_total = Number(v.sessions_total);
     call('off_saveGroup', [S.token, v], function(g){ msg('הקבוצה נוצרה והמפגשים שובצו', true); loadGroups(); openGroup(g.group_id); }, { ghost: { into: 'groups', label: v.name + ' — קבוצה חדשה' } });
   });
@@ -924,13 +1282,13 @@ function newGroup(){
 function editGroup(id){
   var g = S.GD.group;
   ask('עריכת קבוצה', [{k:'name',label:'שם הקבוצה',value:g.name,req:1},{k:'coach_id',label:'מדריך/ה קבוע/ה',type:'select',options:grCoachOpts().sort(function(a,b){ return a[0]===g.coach_id ? -1 : b[0]===g.coach_id ? 1 : 0; })},{k:'start_level',label:'רמת פתיחה',value:g.start_level},{k:'current_level',label:'רמה נוכחית',value:g.current_level},{k:'age_cohort',label:'מחזור / קבוצת גיל',value:g.age_cohort},{k:'n',type:'note',label:'ימים, שעה, משך, מדריך/ה קבוע/ה ותאריך סיום משתנים ב"עריכת קבוצה (החל מתאריך)". החלפת מדריך/ה כאן חלה מהמפגש הבא.'}], function(v){
-    v.group_id = id; call('off_saveGroup', [S.token, v], function(){ msg('נשמר', true); loadGroups(); openGroup(id); });
+    v.group_id = id; call('off_saveGroup', [S.token, v], function(){ msg('נשמר', true); loadGroups(); openGroup(id, S.grTab); });
   });
 }
 function archiveGroup(id){ ask('העברה לארכיון', [{k:'n',type:'note',label:'הקבוצה תוסתר מרשימת הקבוצות ומהלו"ז. המפגשים נשמרים. להעביר לארכיון?'}], function(){ call('off_archiveGroup', [S.token, id], function(){ msg('הועברה לארכיון', true); $('gr_detail').innerHTML = ''; loadGroups(); }); }); }
-function cancelGS(sid){ ask('ביטול מפגש', [{k:'reason',label:'סיבה (אופציונלי)'}], function(v){ call('off_cancelGroupSession', [S.token, sid, v.reason], function(){ msg('המפגש בוטל. אפשר לקבוע השלמה.', true); openGroup(S.GD.group.group_id); loadGroups(); }); }); }
-function makeupGS(sid){ ask('קבע השלמה', [{k:'date',label:'תאריך ההשלמה (באותה שעה; לא בשבת)',type:'date',req:1}], function(v){ call('off_setGroupMakeup', [S.token, sid, v.date], function(){ msg('נקבעה השלמה', true); openGroup(S.GD.group.group_id); loadGroups(); }); }); }
-function subGS(sid){ var s = S.GD.sessions.filter(function(x){ return x.session_id===sid; })[0]; ask('מחליף/ה למפגש זה', [{k:'coach_id',label:'מדריך/ה מחליף/ה (המדריך/ה הקבוע/ה לא משתנה)',type:'select',options:grCoachOpts(null, true).sort(function(a,b){ return a[0]===s.substitute_coach_id ? -1 : b[0]===s.substitute_coach_id ? 1 : 0; })}], function(v){ call('off_setGroupSubstitute', [S.token, sid, v.coach_id], function(){ msg('נשמר', true); openGroup(S.GD.group.group_id); }); }); }
+function cancelGS(sid){ ask('ביטול מפגש', [{k:'reason',label:'סיבה (אופציונלי)'}], function(v){ call('off_cancelGroupSession', [S.token, sid, v.reason], function(){ msg('המפגש בוטל. אפשר לקבוע השלמה.', true); openGroup(S.GD.group.group_id,'se'); loadGroups(); }); }); }
+function makeupGS(sid){ ask('קבע השלמה', [{k:'date',label:'תאריך ההשלמה (באותה שעה; לא בשבת)',type:'date',req:1}], function(v){ call('off_setGroupMakeup', [S.token, sid, v.date], function(){ msg('נקבעה השלמה', true); openGroup(S.GD.group.group_id,'se'); loadGroups(); }); }); }
+function subGS(sid){ var s = S.GD.sessions.filter(function(x){ return x.session_id===sid; })[0]; ask('מחליף/ה למפגש זה', [{k:'coach_id',label:'מדריך/ה מחליף/ה (המדריך/ה הקבוע/ה לא משתנה)',type:'select',options:grCoachOpts(null, true).sort(function(a,b){ return a[0]===s.substitute_coach_id ? -1 : b[0]===s.substitute_coach_id ? 1 : 0; })}], function(v){ call('off_setGroupSubstitute', [S.token, sid, v.coach_id], function(){ msg('נשמר', true); openGroup(S.GD.group.group_id,'se'); }); }); }
 // G1b (spec v0.3): group edit "החל מ" with a preview; occurrence edit "רק בתאריך הזה"; review flags
 function editSchedGroup(){
   var d = S.GD, g = d.group, f = [{k:'from_date',label:'החל מתאריך (מפגשים שעברו ומפגשים לפני התאריך לא משתנים)',type:'date',value:d.edit_from,req:1},{k:'weekdays',label:'ימים בשבוע (אין קבוצות בשבת)',type:'days',value:g.weekdays},
@@ -945,17 +1303,17 @@ function editSchedGroup(){
         p.flagged ? p.flagged+' מפגשים יסומנו "לבדיקה" (מתוכם '+p.flagged_makeups+' השלמות).' : '', p.coach_changed ? 'מדריך/ה קבוע/ה חדש/ה ל-'+p.coach_sessions+' מפגשים.' : '',
         p.quota ? 'מכסת הקורס: '+p.quota.counted+' מתוך '+p.quota.total+'.' : '', p.first_dates.length ? 'המפגשים הבאים: '+p.first_dates.join(' · ') : ''].filter(String);
       ask('אישור השינוי', lines.map(function(l){ return {k:'n',type:'note',label:l}; }), function(){
-        call('off_editGroupFrom', [S.token, v], function(){ msg('הקבוצה עודכנה', true); loadGroups(); openGroup(g.group_id); });
+        call('off_editGroupFrom', [S.token, v], function(){ msg('הקבוצה עודכנה', true); loadGroups(); openGroup(g.group_id,'se'); });
       });
     });
   });
 }
 function grSess(sid){ return S.GD.sessions.filter(function(x){ return x.session_id===sid; })[0]; }
-function timeGS(sid){ var s = grSess(sid); ask('שעה למפגש זה בלבד ('+fmtDay(s.ymd)+')', [{k:'start_time',label:'שעת התחלה',type:'select',options:grTimeOpts(),value:s.hm},{k:'duration_min',label:'משך',type:'select',options:GR_DUR,value:String((new Date('2000-01-01T'+s.end_hm)-new Date('2000-01-01T'+s.hm))/60000)},{k:'n',type:'note',label:'שאר המפגשים לא משתנים. המפגש יסומן "חריג".'}], function(v){ call('off_setGroupSessionTime', [S.token, sid, v.start_time, Number(v.duration_min)], function(){ msg('נשמר', true); openGroup(S.GD.group.group_id); }); }); }
-function resetTimeGS(sid){ call('off_setGroupSessionTime', [S.token, sid, '', ''], function(){ msg('הוחזר לשעת הקבוצה', true); openGroup(S.GD.group.group_id); }); }
-function reviewGS(sid, fromExc){ call('off_clearGroupReview', [S.token, sid], function(){ msg('אושר', true); if (fromExc) loadGrReviews(); else { openGroup(S.GD.group.group_id); loadGroups(); } }); }
+function timeGS(sid){ var s = grSess(sid); ask('שעה למפגש זה בלבד ('+fmtDay(s.ymd)+')', [{k:'start_time',label:'שעת התחלה',type:'select',options:grTimeOpts(),value:s.hm},{k:'duration_min',label:'משך',type:'select',options:GR_DUR,value:String((new Date('2000-01-01T'+s.end_hm)-new Date('2000-01-01T'+s.hm))/60000)},{k:'n',type:'note',label:'שאר המפגשים לא משתנים. המפגש יסומן "חריג".'}], function(v){ call('off_setGroupSessionTime', [S.token, sid, v.start_time, Number(v.duration_min)], function(){ msg('נשמר', true); openGroup(S.GD.group.group_id,'se'); }); }); }
+function resetTimeGS(sid){ call('off_setGroupSessionTime', [S.token, sid, '', ''], function(){ msg('הוחזר לשעת הקבוצה', true); openGroup(S.GD.group.group_id,'se'); }); }
+function reviewGS(sid, fromExc){ call('off_clearGroupReview', [S.token, sid], function(){ msg('אושר', true); if (fromExc) loadGrReviews(); else { openGroup(S.GD.group.group_id,'se'); loadGroups(); } }); }
 function loadGrReviews(){ call('off_groupReviews', [S.token], function(list){ $('grRev').innerHTML = list.length ? '<h3>קבוצות — מפגשים לבדיקה</h3>' + list.map(function(s){ return '<div class="row"><div class="grow"><b>'+esc(s.group_name)+'</b> · '+esc(fmtDay(s.ymd))+' '+esc(s.hm)+'–'+esc(s.end_hm)+(s.makeup_for?' <span class="badge gray">השלמה</span>':'')+'<div class="muted">'+esc(s.review_reason)+'</div></div><div class="inline"><button class="btn sm" onclick="reviewGS(\''+s.session_id+'\', true)">אישור</button><button class="btn sm ghost" onclick="tab(\'gr\'); openGroup(\''+s.group_id+'\')">לקבוצה</button></div></div>'; }).join('') : ''; }); }
-function noteGS(sid){ var s = S.GD.sessions.filter(function(x){ return x.session_id===sid; })[0]; ask('הערה למפגש', [{k:'note',label:'הערה',value:s.note}], function(v){ call('off_setGroupSessionNote', [S.token, sid, v.note], function(){ msg('נשמר', true); openGroup(S.GD.group.group_id); }); }); }
+function noteGS(sid){ var s = S.GD.sessions.filter(function(x){ return x.session_id===sid; })[0]; ask('הערה למפגש', [{k:'note',label:'הערה',value:s.note}], function(v){ call('off_setGroupSessionNote', [S.token, sid, v.note], function(){ msg('נשמר', true); openGroup(S.GD.group.group_id,'se'); }); }); }
 function loadClosures(){ $('closures').innerHTML = '<div class="muted">טוען…</div>'; call('off_closures', [S.token], function(list){ S.CL = list; $('closures').innerHTML = list.length ? list.map(function(c){ return '<div class="row"><div class="grow"><b>'+esc(fmtDay(c.date))+(c.end_date!==c.date && !(c.all_day==='TRUE' && c.end_date===addDays(c.date,1)) ? ' – '+esc(fmtDay(c.all_day==='TRUE'?addDays(c.end_date,-1):c.end_date)) : '')+'</b> '+(c.all_day==='TRUE' ? '<span class="badge bad">כל היום</span>' : '<span class="badge warn">'+esc(c.start_time)+'–'+esc(c.end_time)+'</span>')+'<div class="muted">'+esc(c.reason)+'</div></div><div class="inline"><button class="btn sm ghost" onclick="editClosure(\''+c.closure_id+'\')">עריכה</button><button class="btn sm ghost" onclick="removeClosure(\''+c.closure_id+'\')">הסרה</button></div></div>'; }).join('') : '<div class="empty">אין סגירות עתידיות</div>'; }); }
 function addDays(ymd, n){ var d = new Date(ymd+'T12:00:00'); d.setDate(d.getDate()+n); return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2); }
 function closureFields(c){ c = c || {}; var allDay = c.all_day !== 'FALSE'; return [{k:'date',label:'תאריך התחלה',type:'date',value:c.date||'',req:1},{k:'end_date',label:'תאריך סיום (ריק = יום אחד)',type:'date',value:c.all_day==='TRUE' && c.end_date ? addDays(c.end_date,-1) : (c.end_date||'')},{k:'all_day',label:'סוג',type:'select',options:allDay?[['TRUE','כל היום'],['FALSE','שעות מסוימות']]:[['FALSE','שעות מסוימות'],['TRUE','כל היום']]},{k:'start_time',label:'משעה (לסגירה חלקית, ב-:00/:15/:30/:45)',type:'time',step:900,value:c.all_day==='FALSE'?c.start_time:'08:00'},{k:'end_time',label:'עד שעה',type:'time',step:900,value:c.all_day==='FALSE'?c.end_time:'12:00'},{k:'reason',label:'סיבה (מוצגת ללקוחות ולמדריכים)',value:c.reason||'',req:1}]; }
