@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
+<meta name="barbur-build" content="TEST fd45e6d3510b288a5abe4a9b6489ba7e8d73f987 2026-11-05T10:02:18.847Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -171,7 +172,7 @@ var Avail = (function(){
   function shell(){
     S.mount.innerHTML = '<div id="av_msg"></div>' +
       '<div class="tabs" id="av_tabs"><button class="on" onclick="Avail.tab(\'sch\')">לוח שיעורים</button><button onclick="Avail.tab(\'av\')">זמינות</button><button onclick="Avail.tab(\'set\')">הגדרות</button><button onclick="Avail.tab(\'up\')">שיעורים קרובים</button></div>' +
-      '<div id="av_p_sch"><div class="card"><h2>לוח שיעורים <a class="btn sm sec" id="av_calbtn2" target="_blank">פתיחת היומן</a></h2>' +
+      '<div id="av_p_sch"><div id="av_gd" class="hidden"></div><div class="card" id="av_schCard"><h2>לוח שיעורים <a class="btn sm sec" id="av_calbtn2" target="_blank">פתיחת היומן</a></h2>' +
         '<div class="nav"><button class="btn sm ghost" onclick="Avail.schWeek(-1)">→ שבוע קודם</button><button class="btn sm ghost" onclick="Avail.schWeek(0)">השבוע</button><button class="btn sm ghost" onclick="Avail.schWeek(1)">שבוע הבא ←</button></div>' +
         '<div class="muted" id="av_schLbl" style="text-align:center;margin-bottom:6px"></div><div id="av_sch"><div class="empty">טוען…</div></div>' +
         '<div class="muted" style="margin-top:8px">שעות הבריכה 06:00–22:00. <span class="badge">שיעור</span> הזמנה אמיתית · <span class="badge ok">זמין</span> חלון זמינות · <span class="badge gray">תפוס</span> יומן חוסם / אירוע אחר · <span class="badge bad">סגור</span> סגירת בית הספר.<br>אפשר להזיז שיעור גם ביומן Google (רק השעה): ההזמנה מתעדכנת בבדיקת היומן הבאה (עד כרבע שעה). מחיקה ביומן אינה ביטול — בטלו כאן.</div></div></div>' +
@@ -404,6 +405,8 @@ var Avail = (function(){
   function schWeek(n){ if (!S.d) return; S.schWeek = n ? addDays(S.schWeek || weekOf(S.d.today), 7*n) : weekOf(S.d.today); S.open = null; notifyNavigation(); loadWeek(); } // ignored until the first load (browser-found: early click threw)
   var LST = { CONFIRMED: ['מאושר','ok'], PENDING: ['ממתין','gray'], CANCELLED: ['בוטל','gray'], LATE_CANCEL: ['ביטול מאוחר','warn'], NO_SHOW: ['לא הגיע/ה','warn'] };
   var ATT = { COMPLETED: 'התקיים', IN_PROGRESS: 'מתקיים עכשיו', UPCOMING: 'עתידי', NO_SHOW: 'לא הגיע/ה' };
+  /** Run 6 L7: the two attendance states of a group swimmer (stored marks V / X). */
+  var ATT_LABEL = { V: 'נוכח/ת', X: 'לא נוכח/ת' };
   function clipHm(ymd, x, endSide){ var y = endSide ? x.end_ymd : x.ymd, hm = endSide ? x.end_hm : x.hm; if (y < ymd) return S.week.open; if (y > ymd) return S.week.close; return hm < S.week.open ? S.week.open : hm > S.week.close ? S.week.close : hm; }
   function renderWeekSched(){
     var w = S.week, out = '';
@@ -421,21 +424,143 @@ var Avail = (function(){
       var n = w.lessons.filter(function(l){ return l.ymd === d.ymd && (l.status === 'CONFIRMED' || l.status === 'PENDING' || l.status === 'NO_SHOW'); }).length;
       var ng = (w.groups || []).filter(function(g){ return g.ymd === d.ymd && g.mine && (g.status === 'PLANNED' || g.status === 'HELD'); }).length;
       var cnt = [n ? n + ' שיעורים' : '', ng ? (ng === 1 ? 'קבוצה' : ng + ' קבוצות') : ''].filter(String).join(' · ') || 'אין שיעורים';
-      out += '<div style="border-top:1px solid var(--line);padding:8px 0' + (d.ymd === w.today ? ';background:linear-gradient(var(--acc-soft),transparent 40px)' : '') + '"><h3 style="margin:2px 0 4px">' + esc(fmt(d.ymd)) + (d.ymd === w.today ? ' <span class="badge">היום</span>' : '') + ' <span class="muted">' + cnt + '</span></h3>' + (items.map(function(i){ return i.html; }).join('') || '<div class="empty">—</div>') + '</div>';
+      out += '<div data-ymd="' + esc(d.ymd) + '" style="border-top:1px solid var(--line);padding:8px 0' + (d.ymd === w.today ? ';background:linear-gradient(var(--acc-soft),transparent 40px)' : '') + '"><h3 style="margin:2px 0 4px">' + esc(fmt(d.ymd)) + (d.ymd === w.today ? ' <span class="badge">היום</span>' : '') + ' <span class="muted">' + cnt + '</span></h3>' + (items.map(function(i){ return i.html; }).join('') || '<div class="empty">—</div>') + '</div>';
     });
     $('av_sch').innerHTML = (w.warn ? '<div class="msg warn">' + esc(w.warn) + '</div>' : '') + out;
   }
-  /** Groups (G1): a separate, read-only layer of the schedule. A group session never blocks private lessons; no edit, no attendance here. */
+  /** Groups (G1): a separate layer of the schedule. A group session never blocks private lessons; the group is not edited here, only attendance is marked (below). */
   var GST = { PLANNED: 'ok', HELD: 'gray', CANCELLED: 'gray', CLOSED_BY_SCHOOL: 'bad' };
+  /** Run 6 C1: a group row in the day schedule; a tap opens that session's attendance screen (Avail.openGroup). */
   function groupRow(g){
-    var off = g.status === 'CANCELLED' || g.status === 'CLOSED_BY_SCHOOL', open = S.openG === g.session_id;
-    return '<div class="row" style="border:1px solid #7a5cc7;border-radius:8px;padding:8px;margin:4px 0;background:' + (off ? '#f6f7f9' : '#f3effc') + (off || !g.mine ? ';opacity:.75' : '') + '"><div class="grow" style="cursor:pointer" onclick="Avail.openGroup(\'' + g.session_id + '\')">' +
+    var off = g.status === 'CANCELLED' || g.status === 'CLOSED_BY_SCHOOL';
+    return '<div class="row" style="border:1px solid #7a5cc7;border-radius:8px;padding:8px;margin:4px 0;background:' + (off ? '#f6f7f9' : '#f3effc') + (off || !g.mine ? ';opacity:.75' : '') + '"><div class="grow" role="button" tabindex="0" aria-label="נוכחות: ' + esc(g.name) + ' ' + esc(g.hm) + '" style="cursor:pointer" onclick="Avail.openGroup(\'' + g.session_id + '\')" onkeydown="if(event.key===\'Enter\')Avail.openGroup(\'' + g.session_id + '\')">' +
       '<b>' + esc(g.hm) + '–' + esc(g.end_hm) + '</b> · <b>' + esc(g.name) + '</b> <span class="badge" style="background:#e4dbf7;color:#4a2f8f">קבוצה</span>' + (g.makeup ? ' <span class="badge gray">השלמה</span>' : '') + (g.exception ? ' <span class="badge warn">חריג</span>' : '') +
-      (g.mine ? '' : '<div class="muted">מחליף/ה: ' + esc(g.substitute_name) + '</div>') + (g.mine && g.substitute_name ? '' : '') + '</div><span class="badge ' + (GST[g.status] || 'gray') + '">' + esc(g.status_label) + '</span></div>' +
-      (open ? '<div class="card" style="margin:4px 0 8px;padding:10px"><div class="kv">' + [['קבוצה', g.name], ['סוג', g.type === 'COURSE' ? 'קורס' : 'חוג שנתי'], ['רמת פתיחה', g.start_level], ['רמה נוכחית', g.current_level], ['מחזור / גיל', g.age_cohort], ['מדריך/ה קבוע/ה', g.coach_name], ['מחליף/ה', g.substitute_name], ['הערה', g.note]]
-        .map(function(kv){ return kv[1] ? '<b>' + kv[0] + '</b><span>' + esc(kv[1]) + '</span>' : ''; }).join('') + '</div><div class="muted" style="margin-top:6px">תצוגה בלבד — הקבוצות מנוהלות במשרד.</div></div>' : '');
+      (g.mine ? '' : '<div class="muted">מחליף/ה: ' + esc(g.substitute_name) + '</div>') + '</div><span class="badge ' + (GST[g.status] || 'gray') + '">' + esc(g.status_label) + '</span></div>';
   }
-  function openGroup(id){ S.openG = S.openG === id ? null : id; renderWeekSched(); }
+  /** Run 6 C1-C3: the attendance screen of one group session, in place of the schedule. S.av = {sid, g (the schedule's group row)}.
+   *  Back arrow -> the day schedule (C2); each tap saves at once, there is no save button (C3); the group details stay one tap away (L8). */
+  function avRender(){
+    var av = S.av; if (!av) return; var g = av.g;
+    var kv = [['סוג', g.type === 'COURSE' ? 'קורס' : 'חוג שנתי'], ['רמת פתיחה', g.start_level], ['רמה נוכחית', g.current_level], ['מחזור / גיל', g.age_cohort], ['מדריך/ה קבוע/ה', g.coach_name], ['מחליף/ה', g.substitute_name], ['הערה', g.note]]
+      .map(function(x){ return x[1] ? '<b>' + x[0] + '</b><span>' + esc(x[1]) + '</span>' : ''; }).join('');
+    $('av_gd').innerHTML = '<div class="card" id="av_attView"><div style="display:flex;align-items:center;gap:8px"><button type="button" id="av_back" class="btn sm ghost" aria-label="חזרה ללוח היומי" title="חזרה ללוח היומי" style="font-size:20px;line-height:1;min-width:44px;min-height:40px" onclick="Avail.closeGroup()">&#8594;</button>' +
+      '<div><h2 style="margin:0">' + esc(g.name) + '</h2><div class="muted">' + esc(fmt(g.ymd)) + ' · ' + esc(g.hm) + '–' + esc(g.end_hm) + (g.mine ? '' : ' · מחליף/ה: ' + esc(g.substitute_name)) + '</div></div></div>' +
+      '<div id="av_att_' + esc(g.session_id) + '" style="margin-top:10px">' + attInner(g.session_id) + '</div>' +
+      '<details style="margin-top:10px"><summary>פרטי המפגש</summary><div class="kv">' + kv + '</div></details>' +
+      (g.group_id ? '<div style="margin-top:8px"><button type="button" class="btn sm sec" onclick="Avail.openGroupDetail(\'' + esc(g.group_id) + '\')">פרטי הקבוצה</button></div>' : '') + '<div class="muted" style="margin-top:6px">פרטי הקבוצה ושיבוץ השחיינים מנוהלים במשרד.</div></div>';
+  }
+  // --- attendance (spec 3): the server decides who may see and mark (co_groupAttendance: FORBIDDEN for the Office and for any coach other than the session's teaching coach) ---
+  /** Inner HTML of one session's attendance block, from S.att[session_id] = {state: loading|ok|forbidden|error, d: server reply}. */
+  function attInner(sid){
+    var a = (S.att || {})[sid];
+    if (!a || a.state === 'loading') return '<div class="muted">טוען…</div>';
+    if (a.state === 'forbidden') return '<div class="msg warn">רק המדריך/ה שמלמד/ת את המפגש מסמן/ת נוכחות</div>';
+    if (a.state === 'error') return '<div class="muted">הנוכחות לא נטענה — סגרו ופתחו את המפגש שוב.</div>';
+    var d = a.d, st = d.session.status, off = st === 'CANCELLED' || st === 'CLOSED_BY_SCHOOL', h = '<h3 style="margin:4px 0">נוכחות שחיינים</h3>';
+    if (!d.swimmers.length) return h + '<div class="empty">אין שחיינים רשומים בקבוצה</div>';
+    if (!d.can_mark && !off) h += '<div class="muted">סימון נוכחות יתאפשר מתחילת המפגש</div>';
+    if (d.can_mark) h += '<div class="muted" id="av_autosave">כל סימון נשמר מיד</div>'; // run 6 C3: no global save button
+    return h + d.swimmers.map(function(w, i){
+      var tail;
+      if (d.can_mark) {
+        // run 6 L7: two states, present (V) / absent (X)
+        tail = '<span style="display:flex;gap:8px">' + ['V', 'X'].map(function(m){
+          var on = w.mark === m, c = m === 'V' ? 'var(--ok)' : 'var(--bad)';
+          return '<button type="button" class="btn sm ' + (on ? '' : 'ghost') + '" data-mark="' + m + '" aria-pressed="' + (on ? 'true' : 'false') + '"' + (w.busy ? ' disabled' : '') + ' style="min-width:64px;min-height:40px;font-weight:700' + (on ? ';background:' + c + ';border-color:' + c + ';color:#fff' : '') + '" onclick="Avail.mark(\'' + esc(sid) + '\',' + i + ',\'' + m + '\')">' + ATT_LABEL[m] + '</button>';
+        }).join('') + '</span>';
+      } else tail = w.mark ? '<span class="badge ' + (w.mark === 'V' ? 'ok' : 'bad') + '">' + esc(ATT_LABEL[w.mark] || w.mark) + '</span>' : '<span class="muted">—</span>';
+      return '<div class="row" role="group" aria-label="' + esc(w.name) + '" style="padding:6px 0"><div class="grow">' + esc(w.name) + '</div>' + tail + '</div>';
+    }).join('');
+  }
+  function refreshAtt(sid, a){ var el = $('av_att_' + sid); if (el && (S.att || {})[sid] === a) el.innerHTML = attInner(sid); }
+  function loadAtt(sid){
+    var a = (S.att = S.att || {})[sid] = { state: 'loading' };
+    S.call('co_groupAttendance', [S.token, sid], function(d){
+      a.state = 'ok'; a.d = d; d.swimmers.forEach(function(w){ w.conf = w.mark; }); refreshAtt(sid, a);
+    }, { onErr: function(res){ a.state = res.code === 'FORBIDDEN' ? 'forbidden' : 'error'; refreshAtt(sid, a); return res.code === 'FORBIDDEN'; } });
+  }
+  /** One tap saves: the highlight moves at once and goes back to the last saved mark if the server refuses. */
+  function mark(sid, i, m){
+    var a = (S.att || {})[sid], w = a && a.state === 'ok' && a.d.can_mark ? a.d.swimmers[i] : null;
+    if (!w || w.busy || w.mark === m) return; // one request in flight per swimmer: the buttons are disabled until the reply (no queue)
+    w.busy = true; w.mark = m; refreshAtt(sid, a);
+    S.call('co_markAttendance', [S.token, { session_id: sid, student_id: w.student_id, mark: m }], function(r){
+      w.busy = false; w.conf = w.mark = r.mark; refreshAtt(sid, a);
+    }, { onErr: function(){ w.busy = false; w.mark = w.conf; refreshAtt(sid, a); return false; } }); // false: the host still shows its normal error line
+  }
+  // --- group detail (run 5, R1-R4): the coach's view of one group inside the schedule tab. S.gd = {gid, state: loading|ok|error, d: co_groupDetail reply, panel, mode: up|past, page}.
+  // Swimmers are plain text and there is no add or header control (Office only); a cell is enabled only on a session the caller teaches (server decides: can_mark).
+  function gdShow(on){ $('av_gd').classList.toggle('hidden', !on); $('av_schCard').classList.toggle('hidden', on); }
+  function openGroupDetail(gid){
+    var gd = S.gd = { gid: gid, state: 'loading', panel: false, mode: 'up', page: 0 };
+    gdShow(true); gdRender();
+    S.call('co_groupDetail', [S.token, gid], function(d){
+      if (S.gd !== gd) return;
+      gd.state = 'ok'; gd.d = d; d.active.forEach(function(a){ a.cells.forEach(function(c){ c.conf = c.mark; }); }); gdRender();
+    }, { onErr: function(){ if (S.gd === gd) { gd.state = 'error'; gdRender(); } return false; } }); // false: the host still shows its normal error line
+  }
+  function closeGroupDetail(){
+    S.gd = null;
+    if (S.av) { avRender(); loadAtt(S.av.sid); return; } // opened from an attendance screen: back to it, marks read again
+    gdShow(false);
+    if (S.week) renderWeekSched();
+  }
+  /** Run 6 C1: open the attendance screen of a group session from the schedule. */
+  function openGroup(id){
+    var g = ((S.week || {}).groups || []).filter(function(x){ return x.session_id === id; })[0]; if (!g) return;
+    S.av = { sid: id, g: g }; S.gd = null; if (S.att) delete S.att[id];
+    gdShow(true); avRender(); loadAtt(id);
+    var v = $('av_attView'); if (v && v.scrollIntoView) v.scrollIntoView({ block: 'start' });
+  }
+  /** Run 6 C2: back arrow -> the day schedule, scrolled to that session's day. */
+  function closeGroup(){
+    var av = S.av; S.av = null; S.gd = null; gdShow(false);
+    if (S.week) renderWeekSched();
+    var day = av && document.querySelector('#av_sch [data-ymd="' + av.g.ymd + '"]'); if (day && day.scrollIntoView) day.scrollIntoView({ block: 'start' });
+  }
+  var GDC = { V: 'background:var(--ok);border-color:var(--ok);color:#fff', X: 'background:var(--bad);border-color:var(--bad);color:#fff', '': 'background:#eceff3;border-color:#c9ced6;color:#555' };
+  function gdRender(){
+    var gd = S.gd, h = '<div class="card"><h2><button type="button" class="btn sm ghost" onclick="Avail.closeGroupDetail()">חזרה</button> ' + (gd.state === 'ok' ? esc(gd.d.group.name) : 'פרטי הקבוצה') + '</h2>';
+    if (gd.state === 'loading') h += '<div class="muted">טוען…</div>';
+    else if (gd.state === 'error') h += '<div class="muted">פרטי הקבוצה לא נטענו.</div>';
+    else {
+      var d = gd.d, ss = d.sessions, grid = 'display:grid;grid-template-columns:minmax(0,1fr) repeat(' + ss.length + ',44px);gap:4px;align-items:center;padding:4px 0';
+      if (!d.active.length) h += '<div class="empty">אין עדיין שחיינים בקבוצה.</div>';
+      else {
+        h += '<div class="muted" style="' + grid + '"><span></span>' + ss.map(function(s){ return '<span style="text-align:center;font-size:12px">' + esc(fmtDM(s.ymd)) + '</span>'; }).join('') + '</div>';
+        h += d.active.map(function(a, i){
+          return '<div style="' + grid + '"><b>' + esc(a.name) + '</b>' + ss.map(function(s, j){
+            var c = a.cells[j] || { mark: '' }, m = c.mark || '', can = s.can_mark && c.can !== false && !c.busy; // run 6: 'can' = the swimmer belongs to that session
+            return '<button type="button" class="rs-c" style="min-width:44px;min-height:40px;border:1px solid;border-radius:6px;font-weight:700;' + GDC[m] + (can ? ';cursor:pointer' : ';opacity:.6') + '"' + (can ? '' : ' disabled') + ' onclick="Avail.gdMark(' + i + ',' + j + ')">' + (m || '-') + '</button>';
+          }).join('') + '</div>';
+        }).join('');
+      }
+      h += '<div style="margin-top:8px"><button type="button" class="btn sm sec" onclick="Avail.gdPanel()">מפגשים</button></div>' + (gd.panel ? gdPanelHtml(d.panel, gd) : '');
+    }
+    $('av_gd').innerHTML = h + '</div>';
+  }
+  /** One tap saves: the cell changes at once (V, X, cleared) and returns to the last saved mark if the server refuses. One request per cell. */
+  function gdMark(i, j){
+    var gd = S.gd, a = gd && gd.state === 'ok' ? gd.d.active[i] : null, s = a ? gd.d.sessions[j] : null, c = s && s.can_mark && a.cells[j] && a.cells[j].can !== false ? a.cells[j] : null;
+    if (!c || c.busy) return;
+    var m = c.mark === 'V' ? 'X' : c.mark === 'X' ? '' : 'V';
+    c.busy = true; c.mark = m; gdRender();
+    S.call('co_markAttendance', [S.token, { session_id: s.session_id, student_id: a.student_id, mark: m }], function(r){
+      c.busy = false; c.conf = c.mark = r.mark || ''; if (S.gd === gd) gdRender();
+    }, { onErr: function(){ c.busy = false; c.mark = c.conf; if (S.gd === gd) gdRender(); return false; } });
+  }
+  function gdPanel(){ var gd = S.gd; if (!gd || gd.state !== 'ok') return; gd.panel = !gd.panel; gd.mode = 'up'; gd.page = 0; gdRender(); }
+  function gdPage(mode, page){ var gd = S.gd; if (!gd) return; gd.mode = mode; gd.page = page; gdRender(); }
+  /** Read-only sessions panel (same state model as the Office: mode up = upcoming, mode past = pages of 5 within the server's two-month window). */
+  function gdPanelHtml(p, gd){
+    var list = gd.mode === 'up' ? p.upcoming : p.past.slice(gd.page * 5, gd.page * 5 + 5), older = (gd.page + 1) * 5 < p.past.length;
+    var rows = list.map(function(s){
+      return '<div class="row" style="padding:6px 0"><div class="grow"><b>' + esc(fmtDM(s.ymd)) + ' ' + esc(s.hm) + '–' + esc(s.end_hm) + '</b>' + (s.substitute_name ? '<div class="muted">מחליף/ה: ' + esc(s.substitute_name) + '</div>' : '') + (s.note ? '<div class="muted">' + esc(s.note) + '</div>' : '') + '</div><span class="badge ' + (GST[s.status] || 'gray') + '">' + esc(s.status_label) + '</span></div>';
+    }).join('') || '<div class="empty">אין מפגשים</div>';
+    var nav = gd.mode === 'up' ? '<button type="button" class="btn sm ghost" onclick="Avail.gdPage(\'past\',0)">מפגשים קודמים</button>'
+      : '<button type="button" class="btn sm ghost"' + (older ? '' : ' disabled') + ' onclick="Avail.gdPage(\'past\',' + (gd.page + 1) + ')">מפגשים קודמים</button> <button type="button" class="btn sm ghost" onclick="Avail.gdPage(\'up\',0)">מפגשים הבאים</button>';
+    return '<div style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px">' + rows + '<div style="margin-top:6px">' + nav + '</div></div>';
+  }
   function openLesson(id){ S.open = S.open === id ? null : id; renderWeekSched(); }
   function lessonPanel(l){
     var kv = function(k, v){ return v ? '<b>' + k + '</b><span>' + v + '</span>' : ''; };
@@ -469,8 +594,8 @@ var Avail = (function(){
   function validNavDate(d){ return /^\d{4}-\d{2}-\d{2}$/.test(d||'') && !isNaN(Date.parse(d)) && new Date(d).toISOString().slice(0,10)===d; }
   function notifyNavigation(){ if(S.onNavigate)S.onNavigate({tab:S.activeTab||'sch',week:S.schWeek||null,previewWeek:S.weekStart||null}); }
   return {
-    init: function(o){ S = o; var n=o.navigation||{}; S.weekStart=validNavDate(n.previewWeek)?n.previewWeek:null; S.schWeek=validNavDate(n.week)?n.week:null; S.startTab=['sch','av','set','up'].indexOf(n.tab)>=0?n.tab:(o.startTab||'sch'); S.activeTab=S.startTab; S.open = null; S.openG = null; S.recentLoaded = false; S.prevLoaded = false; S.upStale = false; shell(); if (S.startTab === 'sch') loadWeek(); load(); },
-    tab: tab, pick: pick, overStart: function(){ overStart(); }, schWeek: schWeek, openLesson: openLesson, openGroup: openGroup, noShow: noShow, cancelLesson: cancelLesson, resched: resched, saveRules: saveRules, addRange: addRange, removeRange: removeRange, toggleDay: toggleDay, check: check, kindChanged: kindChanged, addOverride: addOverride, removeOverride: removeOverride,
+    init: function(o){ S = o; var n=o.navigation||{}; S.weekStart=validNavDate(n.previewWeek)?n.previewWeek:null; S.schWeek=validNavDate(n.week)?n.week:null; S.startTab=['sch','av','set','up'].indexOf(n.tab)>=0?n.tab:(o.startTab||'sch'); S.activeTab=S.startTab; S.open = null; S.openG = null; S.gd = null; S.att = {}; S.recentLoaded = false; S.prevLoaded = false; S.upStale = false; shell(); if (S.startTab === 'sch') loadWeek(); load(); },
+    tab: tab, pick: pick, overStart: function(){ overStart(); }, schWeek: schWeek, openLesson: openLesson, openGroup: openGroup, closeGroup: closeGroup, mark: mark, openGroupDetail: openGroupDetail, closeGroupDetail: closeGroupDetail, gdMark: gdMark, gdPanel: gdPanel, gdPage: gdPage, noShow: noShow, cancelLesson: cancelLesson, resched: resched, saveRules: saveRules, addRange: addRange, removeRange: removeRange, toggleDay: toggleDay, check: check, kindChanged: kindChanged, addOverride: addOverride, removeOverride: removeOverride,
     _opts: { startOpts: startOpts, endOpts: endOpts, minLen: minLen, defEnd: defEnd }, // pure option builders (logic tests)
     saveSettings: saveSettings, preview: preview, prevWeek: prevWeek, prevDay: prevDay, reload: function(){ load(); }
   };
@@ -502,7 +627,7 @@ function load(k){ try { return tokenStorage().getItem(k); } catch(e){ return nul
 //   row; on any failure it is removed at once and the caller's red error is shown — never a row the server did not create.
 // - A write started by the user whose own code shows no message ends with a green "בוצע". opt.quiet = background call, no bar.
 var UX = { seq: 0, live: [], writes: {}, trig: null, trigAt: 0, trigWas: null, bar: null, timer: null, log: [] };
-var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit|syncPlatform)|co_(schedule|week|calendars|recentChanges|preview)|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
+var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit|syncPlatform)|off_groupRoster|off_searchSwimmers|co_(schedule|week|calendars|recentChanges|preview)|co_groupAttendance|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
 // Calls that carry a password or a one-time secret: de-duplicated by function name only, so the secret is never kept in a key.
 var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_platformLogin|st_redeemInvitation|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
 var UX_TEXT = { off_inviteCoach: 'שולח הזמנה…', off_coachReport: 'מכין דוח…', off_coachAnnual: 'מכין דוח…', off_coachReportCsv: 'מכין קובץ CSV…',
@@ -512,6 +637,7 @@ var UX_TEXT = { off_inviteCoach: 'שולח הזמנה…', off_coachReport: 'מ�
   off_revokeInvitation: 'מבטל הזמנה…', off_saveGroup: 'שומר ומשבץ מפגשים…', off_editGroupFrom: 'מעדכן מפגשים…', off_setConfig: 'מעדכן…',
   api_book: 'קובע שיעור…', api_reschedule: 'משנה מועד…', api_cancel: 'מבטל…', api_requestOtp: 'שולח קוד…', api_verifyOtp: 'מאמת…',
   api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_platformLogin: 'נכנס…', st_redeemInvitation: 'מחבר…',
+  off_addGroupMember: 'משבץ…', off_moveGroupMember: 'מעביר…', off_stopGroupMember: 'מפסיק…', co_markAttendance: 'שומר…',
   co_saveRules: 'שומר…', co_saveOverride: 'שומר…', co_saveSettings: 'שומר…', co_cancel: 'מבטל…', co_reschedule: 'משנה מועד…', co_noShow: 'מסמן…' };
 function uxMark(e){ var t = e.target, el = t && t.closest ? t.closest('button,a,input,select,textarea') : null; UX.trig = el; UX.trigAt = performance.now(); UX.trigWas = el && { disabled: el.disabled, html: el.innerHTML }; setTimeout(function(){ if (UX.trig === el) UX.trig = null; }, 0); }
 document.addEventListener('click', uxMark, true);
@@ -611,12 +737,12 @@ function call(fn, args, cb, opt){
   var t0 = Date.now(), h = uxStart(fn, args, opt); if (!h) return;
   rpc(fn, args, function(res){
     perfLog(fn, t0, res); uxEnd(h, res.ok);
-    if (!res.ok) { if (res.code==='AUTH') onAuthLost(res); msg(res.message + (res.debug ? ' ['+res.debug+']' : ''));
+    if (!res.ok) { var handled = opt && opt.onErr ? opt.onErr(res) : false; if (handled && res.code!=='AUTH') return; if (res.code==='AUTH') onAuthLost(res); msg(res.message + (res.debug ? ' ['+res.debug+']' : ''));
       // D-19: valid Coach Platform identity but no BARBUR access → offer the coach's own Platform area instead of a dead end
       if (res.next && (/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/(exec|dev)$/.test(res.next) || /^https:\/\/[a-z0-9-]+\.github\.io\/[A-Za-z0-9_\/-]+\/platform\/$/.test(res.next))) $('msg').insertAdjacentHTML('beforeend', '<a class="btn block" target="_top" href="'+res.next+'" style="margin-top:8px">מעבר לאזור המאמן שלי בפלטפורמה</a>');
       return; }
     cb(res.data); uxDone(h);
-  }, function(e){ uxEnd(h, false); console.log('[barbur] ' + fn + ' transport: ' + e); msg(uxNetMsg(h)); });
+  }, function(e){ uxEnd(h, false); console.log('[barbur] ' + fn + ' transport: ' + e); if (opt && opt.onErr) opt.onErr({ ok: false, code: 'NETWORK', message: uxNetMsg(h) }); msg(uxNetMsg(h)); });
 }
 /** TEST-only timing line per server call (W1-6): wall ms, server ms, sheet reads / calendar calls from the server profile. */
 function perfLog(fn, t0, res){ if (!ENV_IS_TEST) return; try { var p = res && res.prof; console.log('[barbur] ' + fn + ' ' + (Date.now() - t0) + 'ms wall · ' + (res && res.ms) + 'ms server' + (p ? ' · sheetReads ' + p.sheetReads + ' (' + p.sheetMs + 'ms) · cal ' + p.cal + ' (' + p.calMs + 'ms) | platform ' + (p.platform||0) + ' (' + (p.platformMs||0) + 'ms)' : '')); } catch (e) {} }

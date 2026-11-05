@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
+<meta name="barbur-build" content="TEST fd45e6d3510b288a5abe4a9b6489ba7e8d73f987 2026-11-05T10:02:18.847Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -204,7 +205,7 @@ function load(k){ try { return localStorage.getItem(k); } catch(e){ return null;
 //   row; on any failure it is removed at once and the caller's red error is shown — never a row the server did not create.
 // - A write started by the user whose own code shows no message ends with a green "בוצע". opt.quiet = background call, no bar.
 var UX = { seq: 0, live: [], writes: {}, trig: null, trigAt: 0, trigWas: null, bar: null, timer: null, log: [] };
-var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit|syncPlatform)|co_(schedule|week|calendars|recentChanges|preview)|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
+var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit|syncPlatform)|off_groupRoster|off_searchSwimmers|co_(schedule|week|calendars|recentChanges|preview)|co_groupAttendance|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
 // Calls that carry a password or a one-time secret: de-duplicated by function name only, so the secret is never kept in a key.
 var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_platformLogin|st_redeemInvitation|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
 var UX_TEXT = { off_inviteCoach: 'שולח הזמנה…', off_coachReport: 'מכין דוח…', off_coachAnnual: 'מכין דוח…', off_coachReportCsv: 'מכין קובץ CSV…',
@@ -214,6 +215,7 @@ var UX_TEXT = { off_inviteCoach: 'שולח הזמנה…', off_coachReport: 'מ�
   off_revokeInvitation: 'מבטל הזמנה…', off_saveGroup: 'שומר ומשבץ מפגשים…', off_editGroupFrom: 'מעדכן מפגשים…', off_setConfig: 'מעדכן…',
   api_book: 'קובע שיעור…', api_reschedule: 'משנה מועד…', api_cancel: 'מבטל…', api_requestOtp: 'שולח קוד…', api_verifyOtp: 'מאמת…',
   api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_platformLogin: 'נכנס…', st_redeemInvitation: 'מחבר…',
+  off_addGroupMember: 'משבץ…', off_moveGroupMember: 'מעביר…', off_stopGroupMember: 'מפסיק…', co_markAttendance: 'שומר…',
   co_saveRules: 'שומר…', co_saveOverride: 'שומר…', co_saveSettings: 'שומר…', co_cancel: 'מבטל…', co_reschedule: 'משנה מועד…', co_noShow: 'מסמן…' };
 function uxMark(e){ var t = e.target, el = t && t.closest ? t.closest('button,a,input,select,textarea') : null; UX.trig = el; UX.trigAt = performance.now(); UX.trigWas = el && { disabled: el.disabled, html: el.innerHTML }; setTimeout(function(){ if (UX.trig === el) UX.trig = null; }, 0); }
 document.addEventListener('click', uxMark, true);
