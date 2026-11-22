@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST fd45e6d3510b288a5abe4a9b6489ba7e8d73f987 2026-11-05T10:02:18.847Z">
+<meta name="barbur-build" content="TEST 4a281dd997d10c934f7fcb42a3048839b3cdacdc 2026-11-22T09:59:11.292Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -88,7 +88,6 @@ details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0
 .skel { height:14px; border-radius:6px; background:linear-gradient(90deg,#eef1f4,#f6f8fa,#eef1f4); background-size:200% 100%; animation:sk 1.2s linear infinite; margin:6px 0; }
 .tgroup { margin:8px 0; } .tgroup .tl { font-size:12px; color:var(--muted); margin-bottom:4px; }
 .wa { display:inline-flex; align-items:center; gap:6px; color:var(--ok); text-decoration:none; font-weight:600; }
-.tel { display:inline-flex; align-items:center; gap:6px; color:var(--acc); text-decoration:none; font-weight:600; }
 .hero { display:flex; justify-content:space-between; align-items:flex-end; gap:10px; }
 .steps { display:flex; gap:6px; margin-bottom:10px; } .steps span { flex:1; height:4px; border-radius:2px; background:var(--line); } .steps span.on { background:var(--acc); }
 
@@ -141,7 +140,7 @@ a.ux-pending { pointer-events:none; opacity:.7; }
 
   <section id="home" class="hidden">
     <div class="card">
-      <div class="hero"><div><div class="muted" id="hhName"></div><div class="big" id="balance"></div><div class="muted" id="expiry"></div></div></div>
+      <div class="hero"><div><div class="muted" id="hhName"></div><div class="big" id="balance"></div><div class="muted" id="balSplit"></div><div class="muted" id="expiry"></div></div></div>
       <div class="muted" id="studentsLine" style="margin-top:6px"></div>
       <button class="btn block" id="bookStart" onclick="startBooking()">הזמנת שיעור</button>
       <div class="muted" id="noCoach" style="margin-top:8px"></div>
@@ -150,6 +149,7 @@ a.ux-pending { pointer-events:none; opacity:.7; }
       <h2>השיעורים הקרובים</h2>
       <div id="upcoming"><div class="skel"></div><div class="skel" style="width:70%"></div></div>
     </div>
+    <div class="card hidden" id="feesBox"><h2>דמי מדריך</h2><div id="fees"></div></div>
     <div class="card" id="officeCard"><h2>המזכירות</h2><div class="muted">ביטול פחות מ־<span id="lateH"></span> שעות לפני השיעור, שינויים ורכישת שיעורים — דרך המזכירות.</div><div id="officeContact" style="margin-top:6px"></div></div>
   </section>
 
@@ -379,11 +379,12 @@ function applyBalances(b){
   invalidateWeeks(); return true;
 }
 /** D-21: a swimmer can book with their assigned (bookable) coach only, and only with their own credit. */
+function balNums(b){ b = b || {}; var n = function(x){ return Number(x || 0); }; return { total: n(b.total != null ? b.total : b.usable), booked: n(b.booked), taken: n(b.taken), remaining: n(b.remaining != null ? b.remaining : b.usable) }; }
+function balLine(b){ var x = balNums(b); return 'נותרו ' + x.remaining + ' · הוזמנו ' + x.booked + ' · התקיימו ' + x.taken; }
 function canBook(){ return S.home.students.filter(function(s){ return s.bookable && s.balance && s.balance.usable > 0; }); }
-/** Office contact numbers (owner 2026-10-23): WhatsApp as a wa.me link and the landline as a tel: link, both from Office settings. */
+/** Office contact (owner 2026-10-23; landline removed 2026-11-19): WhatsApp as a wa.me link, from Office settings. */
 function contactsHtml(c){ c = c || {}; var a = [];
   if (c.wa_link) a.push('<a class="wa" target="_blank" rel="noopener" href="' + esc(c.wa_link) + '">וואטסאפ ' + esc(c.whatsapp_display) + '</a>');
-  if (c.tel_link) a.push('<a class="tel" href="' + esc(c.tel_link) + '">טלפון ' + esc(c.phone_display) + '</a>');
   return a.join(' · '); }
 /** Login screen: the numbers come from the public info call (no sign-in needed). */
 function loadPublicInfo(){ S.contacts = S.contacts || {}; call('api_publicInfo', [], function(res){ if (!res.ok) return; S.contacts = res.data.contacts || {}; var h = contactsHtml(S.contacts); $('loginContacts').innerHTML = h ? 'שאלות? המזכירות: ' + h : ''; }, { quiet: true }); }
@@ -392,22 +393,29 @@ function renderHome(){
   var h = S.home;
   $('testbar').classList.toggle('hidden', h.env !== 'TEST');
   $('hhName').textContent = h.household + ' · ' + h.contact;
-  $('balance').textContent = h.balance.usable + ' שיעורים ביתרה';
-  $('expiry').textContent = h.balance.validUntil ? ('בתוקף לשיעורים עד ' + h.balance.validUntil.split('-').reverse().join('/')) : (h.balance.usable ? '' : 'אין יתרה בתוקף');
+  // Item 3 (owner 2026-11-19): total / booked / took place / remaining, all from the server (householdBalance_).
+  var bn = balNums(h.balance);
+  $('balance').textContent = bn.remaining + ' שיעורים נותרו להזמנה';
+  $('balSplit').textContent = 'סה"כ בתוקף ' + bn.total + ' · הוזמנו ' + bn.booked + ' · התקיימו ' + bn.taken;
+  $('expiry').textContent = h.balance.validUntil ? ('בתוקף לשיעורים עד ' + h.balance.validUntil.split('-').reverse().join('/')) : (bn.remaining ? '' : bn.booked ? 'כל השיעורים שבתוקף כבר הוזמנו' : 'אין יתרה בתוקף');
   var withCoach = h.students.filter(function(s){ return s.bookable; });
-  $('studentsLine').innerHTML = h.students.length ? h.students.map(function(s){ return '<b>' + esc(s.first_name) + '</b> · ' + (s.balance ? s.balance.usable : 0) + ' שיעורים' + (s.coach_name ? ' · מאמן/ת: ' + esc(s.coach_name) + (s.bookable ? '' : ' <span style="color:var(--warn)">(עדיין לא פתוח להזמנות באפליקציה)</span>') : ' · <span style="color:var(--warn)">ללא מאמן משויך</span>'); }).join('<br>') : 'אין שחיינים רשומים — פנו למזכירות';
+  $('studentsLine').innerHTML = h.students.length ? h.students.map(function(s){ return '<b>' + esc(s.first_name) + '</b> · ' + balLine(s.balance) + (s.coach_name ? ' · מאמן/ת: ' + esc(s.coach_name) + (s.bookable ? '' : ' <span style="color:var(--warn)">(עדיין לא פתוח להזמנות באפליקציה)</span>') : ' · <span style="color:var(--warn)">ללא מאמן משויך</span>'); }).join('<br>') : 'אין שחיינים רשומים — פנו למזכירות';
   $('bookStart').disabled = !canBook().length;
   $('noCoach').textContent = h.students.length && !withCoach.length ? (h.students.some(function(s){ return s.coach_id; }) ? 'המדריך עדיין לא פתוח להזמנות באפליקציה — פנו למזכירות' : 'לא נמצא מדריך פעיל — פנו למזכירות') : '';
-  if (h.balance.usable <= 0) msg('אין יתרה — פנו למזכירות לרכישה', 'warn');
+  if (bn.remaining <= 0 && !bn.booked) msg('אין יתרה — פנו למזכירות לרכישה', 'warn'); // everything booked is not "no balance" (item 3)
   $('lateH').textContent = h.late_hours;
-  var contacts = h.contacts ? contactsHtml(h.contacts) : (h.office_whatsapp ? '<a class="wa" target="_blank" href="' + esc(waLink(h.office_whatsapp)) + '">וואטסאפ ' + esc(h.office_whatsapp) + '</a>' : '') + (h.office_phone ? ' <span class="muted">· טלפון ' + esc(h.office_phone) + '</span>' : ''); // older backends: no contacts field
+  var contacts = h.contacts ? contactsHtml(h.contacts) : (h.office_whatsapp ? '<a class="wa" target="_blank" href="' + esc(waLink(h.office_whatsapp)) + '">וואטסאפ ' + esc(h.office_whatsapp) + '</a>' : ''); // older backends: no contacts field
   $('officeContact').innerHTML = contacts || '<span class="muted">פרטי הקשר יתפרסמו בקרוב</span>';
   var u = h.upcoming;
   $('upcoming').innerHTML = u.length ? u.map(function(b){
     return '<div class="row" id="bk_' + esc(b.booking_id) + '"><div class="grow"><div><b>' + esc(b.student) + '</b> · ' + esc(fmtDay(b.ymd)) + ' ' + esc(b.hm) + '</div><div class="muted">' + esc(b.coach) + ' · ' + esc(b.location) + '</div></div>' +
       (b.can_cancel ? '<div class="inline">' + (b.can_reschedule ? '<button class="btn sm sec" onclick="startResched(\'' + esc(b.booking_id) + '\')">שינוי מועד</button>' : '') + '<button class="btn sm sec" onclick="askCancel(\'' + esc(b.booking_id) + '\',\'' + esc(b.cancel_until) + '\')">ביטול</button></div>'
-                    : '<span class="muted">ביטול או שינוי מועד פחות מ־' + esc(h.late_hours) + ' שעות — דרך המזכירות' + (contacts ? ' · ' + contacts : '') + '</span>') + '</div>';
+                    : (b.can_late_cancel ? '<div class="inline"><button class="btn sm sec" data-late="' + esc(b.booking_id) + '" onclick="askLateCancel(\'' + esc(b.booking_id) + '\',' + Number(b.late_fee) + ')">ביטול בתשלום דמי מדריך</button></div>' : '') +
+                      '<span class="muted">ביטול ללא חיוב או שינוי מועד פחות מ־' + esc(h.late_hours) + ' שעות — דרך המזכירות' + (contacts ? ' · ' + contacts : '') + '</span>') + '</div>';
   }).join('') : '<p class="muted">אין שיעורים קרובים</p>';
+  // item 4 (e): instructor fees of late cancellations - red until collected, green once collected
+  var fees = h.fees || []; $('feesBox').classList.toggle('hidden', !fees.length);
+  $('fees').innerHTML = fees.map(function(f){ return '<div class="row"><div class="grow"><b>' + esc(f.student) + '</b> · ' + esc(fmtDay(f.ymd)) + ' ' + esc(f.hm) + '<div class="muted">ביטול וחיוב מדריך · ' + esc(f.amount) + ' ₪</div></div><span class="badge ' + (f.state === 'COLLECTED' ? 'ok' : 'bad') + '">' + (f.state === 'COLLECTED' ? 'שולם' : 'טרם שולם') + '</span></div>'; }).join('');
 }
 // Inline confirmation (no native confirm(): blocked/ugly inside the sandboxed iframe).
 function askCancel(id, until){
@@ -415,6 +423,27 @@ function askCancel(id, until){
   row.innerHTML = '<div class="grow"><div><b>לבטל את השיעור?</b></div><div class="muted">היתרה תוחזר. ביטול ללא חיוב אפשרי עד ' + esc(until) + '</div></div>' +
     '<button class="btn sm danger" onclick="cancelB(\'' + esc(id) + '\')">כן, לבטל</button> <button class="btn sm sec" onclick="renderHome()">לא</button>';
   row.querySelector('button').focus();
+}
+/**
+ * Item 4 (owner 2026-11-19): inside the late window the customer may cancel and pay the instructor fee; the lesson credit is kept.
+ * "לא" changes nothing: the lesson stays booked and the row shows the office contacts again, as before.
+ */
+function askLateCancel(id, fee){
+  var row = $('bk_' + id); if (!row) return;
+  row.innerHTML = '<div class="grow"><div><b>לבטל ולשלם דמי מדריך ' + esc(fee) + ' ₪?</b></div><div class="muted">הביטול בתוך ' + esc(S.home.late_hours) + ' השעות שלפני השיעור. יתרת השיעור שלכם נשמרת ותוכלו להזמין שיעור אחר. המזכירות או המדריך ייצרו קשר לתשלום.</div></div>' +
+    '<button class="btn sm danger" id="lateYes" onclick="cancelLate(\'' + esc(id) + '\',' + Number(fee) + ')">כן, לבטל ולשלם ' + esc(fee) + ' ₪</button> <button class="btn sm sec" id="lateNo" onclick="renderHome()">לא, השיעור נשאר</button>';
+  row.querySelector('button').focus();
+}
+function cancelLate(id, fee){
+  $('bk_' + id).innerHTML = '<div class="grow muted">מבטל…</div>';
+  call('api_cancel', [S.token, id, { accept_fee: true, fee: fee }], function(res){
+    if (!res.ok) { msg(res.message); refresh(); return; }
+    var done = 'השיעור בוטל. דמי מדריך ' + fee + ' ₪ — טרם שולמו. יתרת השיעור נשמרה.';
+    S.home.upcoming = S.home.upcoming.filter(function(b){ return b.booking_id !== id; });
+    if (res.data.fee) S.home.fees = [res.data.fee].concat((S.home.fees || []).filter(function(f){ return f.fee_id !== res.data.fee.fee_id; }));
+    if (!applyBalances(res.data.balances)) { refresh(function(){ msg(done, 'ok'); }); return; }
+    renderHome(); show('home'); msg(done, 'ok');
+  }, { fail: renderHome });
 }
 function cancelB(id){
   $('bk_' + id).innerHTML = '<div class="grow muted">מבטל…</div>';
@@ -431,7 +460,8 @@ function showHome(){ show('home'); msg(''); }
 function applyBooked(b, moved){
   var h = S.home; if (!h || !b) return;
   h.upcoming = h.upcoming.filter(function(x){ return x.booking_id !== b.booking_id; }).concat([b]).sort(function(a, c){ return (a.ymd + a.hm) < (c.ymd + c.hm) ? -1 : 1; });
-  if (!moved) { h.balance.usable = Math.max(0, h.balance.usable - 1); var st = h.students.filter(function(x){ return x.student_id === b.student_id; })[0]; if (st && st.balance) st.balance.usable = Math.max(0, st.balance.usable - 1); }
+  var dec = function(bal){ if (!bal) return; bal.usable = Math.max(0, bal.usable - 1); if (bal.remaining != null) bal.remaining = bal.usable; if (bal.booked != null) bal.booked++; };
+  if (!moved && !b.balances) { dec(h.balance); var st = h.students.filter(function(x){ return x.student_id === b.student_id; })[0]; if (st) dec(st.balance); }
   renderHome();
 }
 function step(n){ Array.prototype.forEach.call($('steps').children, function(c, i){ c.classList.toggle('on', i <= n); }); }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST fd45e6d3510b288a5abe4a9b6489ba7e8d73f987 2026-11-05T10:02:18.847Z">
+<meta name="barbur-build" content="TEST 4a281dd997d10c934f7fcb42a3048839b3cdacdc 2026-11-22T09:59:11.292Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -88,7 +88,6 @@ details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0
 .skel { height:14px; border-radius:6px; background:linear-gradient(90deg,#eef1f4,#f6f8fa,#eef1f4); background-size:200% 100%; animation:sk 1.2s linear infinite; margin:6px 0; }
 .tgroup { margin:8px 0; } .tgroup .tl { font-size:12px; color:var(--muted); margin-bottom:4px; }
 .wa { display:inline-flex; align-items:center; gap:6px; color:var(--ok); text-decoration:none; font-weight:600; }
-.tel { display:inline-flex; align-items:center; gap:6px; color:var(--acc); text-decoration:none; font-weight:600; }
 .hero { display:flex; justify-content:space-between; align-items:flex-end; gap:10px; }
 .steps { display:flex; gap:6px; margin-bottom:10px; } .steps span { flex:1; height:4px; border-radius:2px; background:var(--line); } .steps span.on { background:var(--acc); }
 
@@ -172,7 +171,7 @@ var Avail = (function(){
   function shell(){
     S.mount.innerHTML = '<div id="av_msg"></div>' +
       '<div class="tabs" id="av_tabs"><button class="on" onclick="Avail.tab(\'sch\')">לוח שיעורים</button><button onclick="Avail.tab(\'av\')">זמינות</button><button onclick="Avail.tab(\'set\')">הגדרות</button><button onclick="Avail.tab(\'up\')">שיעורים קרובים</button></div>' +
-      '<div id="av_p_sch"><div id="av_gd" class="hidden"></div><div class="card" id="av_schCard"><h2>לוח שיעורים <a class="btn sm sec" id="av_calbtn2" target="_blank">פתיחת היומן</a></h2>' +
+      '<div id="av_p_sch"><div id="av_gd" class="hidden"></div><div class="card hidden" id="av_fees"><h2>לטיפול <span class="badge bad" id="av_feesN"></span></h2><div class="muted">ביטולים מאוחרים של לקוחות עם דמי מדריך שעדיין לא נגבו — לחזור ללקוח. המשרד מסמן כשנגבה.</div><div id="av_feesList"></div></div><div class="card" id="av_schCard"><h2>לוח שיעורים <a class="btn sm sec" id="av_calbtn2" target="_blank">פתיחת היומן</a></h2>' +
         '<div class="nav"><button class="btn sm ghost" onclick="Avail.schWeek(-1)">→ שבוע קודם</button><button class="btn sm ghost" onclick="Avail.schWeek(0)">השבוע</button><button class="btn sm ghost" onclick="Avail.schWeek(1)">שבוע הבא ←</button></div>' +
         '<div class="muted" id="av_schLbl" style="text-align:center;margin-bottom:6px"></div><div id="av_sch"><div class="empty">טוען…</div></div>' +
         '<div class="muted" style="margin-top:8px">שעות הבריכה 06:00–22:00. <span class="badge">שיעור</span> הזמנה אמיתית · <span class="badge ok">זמין</span> חלון זמינות · <span class="badge gray">תפוס</span> יומן חוסם / אירוע אחר · <span class="badge bad">סגור</span> סגירת בית הספר.<br>אפשר להזיז שיעור גם ביומן Google (רק השעה): ההזמנה מתעדכנת בבדיקת היומן הבאה (עד כרבע שעה). מחיקה ביומן אינה ביטול — בטלו כאן.</div></div></div>' +
@@ -195,7 +194,7 @@ var Avail = (function(){
   // tab, the upcoming list only when its tab opens after a lesson action made it stale. The default (schedule) tab never pays for them.
   function tab(t){ if(['sch','av','set','up'].indexOf(t)<0)t='sch'; S.activeTab=t; notifyNavigation(); ['sch','av','set','up'].forEach(function(x, i){ $('av_p_'+x).classList.toggle('hidden', x!==t); $('av_tabs').children[i].classList.toggle('on', x===t); }); msg(''); if (t === 'set' && S.d && !S.calsLoaded) loadCals(); if (t === 'up' && !S.recentLoaded) loadRecent(); if (t === 'up' && S.upStale) refreshUp(); if (t === 'av' && S.d && !S.prevLoaded) preview(); if (t === 'sch') loadWeek(true); }
   /** The upcoming list after a lesson action: refetched only when its tab is actually shown. */
-  function refreshUp(){ S.upStale = false; if (!S.d) return; var coach = S.coachId; S.call('co_schedule', [S.token, coach], function(d){ if (S.coachId !== coach) return; S.d = d; renderUp(); }); }
+  function refreshUp(){ S.upStale = false; if (!S.d) return; var coach = S.coachId; S.call('co_schedule', [S.token, coach], function(d){ if (S.coachId !== coach) return; S.d = d; renderUp(); renderFees(); }); }
   // Perf: the audit-derived feed is fetched only when the "שיעורים קרובים" tab is opened (never on first paint).
   function loadRecent(){
     S.recentLoaded = true; var coach = S.coachId;
@@ -205,6 +204,9 @@ var Avail = (function(){
       $('av_recent').innerHTML = list.length ? list.map(function(x){ var k = K[x.kind] || ['', '']; return '<div class="row" style="padding:6px 0"><div class="grow">' + esc(x.text) + '<div class="muted">' + esc(fmtTs(x.ts)) + '</div></div><span class="badge ' + k[1] + '">' + k[0] + '</span></div>'; }).join('') : '<div class="empty">אין שינויים בשבוע האחרון</div>';
     });
   }
+  /** Item 4 (owner 2026-11-19): read-only queue of open instructor fees on this coach's lessons (customer, lesson, amount). */
+  function renderFees(){ var f = (S.d && S.d.fees_todo) || [], box = $('av_fees'); if (!box) return; box.classList.toggle('hidden', !f.length); $('av_feesN').textContent = f.length || '';
+    $('av_feesList').innerHTML = f.map(function(x){ return '<div class="row fee-todo" style="padding:6px 0"><div class="grow"><b>' + esc(x.student) + '</b> (' + esc(x.household) + ')<div class="muted">שיעור ' + esc(fmt(x.ymd)) + ' ' + esc(x.hm) + '</div></div><span class="badge bad">' + esc(x.amount) + ' ₪ — טרם נגבה</span></div>'; }).join(''); }
   function fmtTs(ts){ return ts ? ts.slice(8,10) + '/' + ts.slice(5,7) + ' ' + ts.slice(11,16) : ''; }
   function load(cb){
     if (S.d) { S.week = null; S.weekGeneration = (S.weekGeneration || 0) + 1; S.weekPending = false; }
@@ -214,7 +216,7 @@ var Avail = (function(){
       if (S !== current) return;
       S.d = d; S.prevLoaded = false; S.ro = !d.is_office && d.coach.management_mode === 'OFFICE_MANAGED'; S.mount.querySelectorAll('.card').forEach(function(c){ c.style.opacity = 1; });
       $('av_lessonName').textContent = d.coach.lesson.name + ' (' + d.coach.lesson.minutes + ' דקות)';
-      renderWeek(); renderOver(); renderClosures(); renderSet(); renderCals(); renderUp(); overStart('16:00', '18:00');
+      renderWeek(); renderOver(); renderClosures(); renderSet(); renderCals(); renderUp(); renderFees(); overStart('16:00', '18:00');
       if (!$('av_p_up').classList.contains('hidden')) { S.recentLoaded = false; loadRecent(); } // reload after save if the tab is open
       $('av_calbtn').href = d.coach.booking_calendar.url; $('av_calbtn2').href = d.coach.booking_calendar.url;
       if (!S.weekStart) S.weekStart = weekOf(d.today);
@@ -414,7 +416,7 @@ var Avail = (function(){
       var items = [];
       w.closures.forEach(function(x){ if (x.ymd <= d.ymd && x.end_ymd >= d.ymd) { var a = clipHm(d.ymd, x), z = clipHm(d.ymd, x, true); if (a < z) items.push({ s: a, k: 0, html: '<div class="row" style="background:var(--bad-bg);border-radius:8px;padding:6px 8px"><div class="grow"><b>' + a + '–' + z + '</b> סגירת בית הספר · ' + esc(x.reason) + '</div><span class="badge bad">סגור</span></div>' }); } });
       w.lessons.filter(function(l){ return l.ymd === d.ymd; }).forEach(function(l){
-        var st = LST[l.status] || [l.status, 'gray'], off = l.status === 'CANCELLED' || l.status === 'LATE_CANCEL';
+        var st = l.cancel_kind === 'CUSTOMER_LATE_FEE' ? ['בוטל — דמי מדריך', 'bad'] : LST[l.status] || [l.status, 'gray'], off = l.status === 'CANCELLED' || l.status === 'LATE_CANCEL';
         items.push({ s: l.hm, k: 1, html: '<div class="row" style="border:1px solid var(--acc);border-radius:8px;padding:8px;margin:4px 0;background:' + (off ? '#f6f7f9' : 'var(--acc-soft)') + (off ? ';opacity:.7' : '') + '"><div class="grow" style="cursor:pointer" onclick="Avail.openLesson(\'' + l.booking_id + '\')"><b>' + esc(l.hm) + '–' + esc(l.end_hm) + '</b> · <b>' + esc(l.student) + '</b>' + (l.location ? '<div class="muted">' + esc(l.location) + '</div>' : '') + '</div><span class="badge ' + st[1] + '">' + st[0] + '</span>' + (l.needs_review ? '<span class="badge warn">לבדיקה</span>' : '') + '<button class="btn sm ghost" onclick="Avail.openLesson(\'' + l.booking_id + '\')">' + (S.open === l.booking_id ? 'סגירה' : 'פרטים') + '</button></div>' + (S.open === l.booking_id ? lessonPanel(l) : '') });
       });
       (w.groups || []).filter(function(g){ return g.ymd === d.ymd; }).forEach(function(g){ items.push({ s: g.hm, k: 1.5, html: groupRow(g) }); }); // read-only layer (groups G1)

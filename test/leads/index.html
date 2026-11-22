@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST fd45e6d3510b288a5abe4a9b6489ba7e8d73f987 2026-11-05T10:02:18.847Z">
+<meta name="barbur-build" content="TEST 4a281dd997d10c934f7fcb42a3048839b3cdacdc 2026-11-22T09:59:11.292Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -88,7 +88,6 @@ details summary { cursor:pointer; color:var(--acc); font-size:15px; margin:8px 0
 .skel { height:14px; border-radius:6px; background:linear-gradient(90deg,#eef1f4,#f6f8fa,#eef1f4); background-size:200% 100%; animation:sk 1.2s linear infinite; margin:6px 0; }
 .tgroup { margin:8px 0; } .tgroup .tl { font-size:12px; color:var(--muted); margin-bottom:4px; }
 .wa { display:inline-flex; align-items:center; gap:6px; color:var(--ok); text-decoration:none; font-weight:600; }
-.tel { display:inline-flex; align-items:center; gap:6px; color:var(--acc); text-decoration:none; font-weight:600; }
 .hero { display:flex; justify-content:space-between; align-items:flex-end; gap:10px; }
 .steps { display:flex; gap:6px; margin-bottom:10px; } .steps span { flex:1; height:4px; border-radius:2px; background:var(--line); } .steps span.on { background:var(--acc); }
 
@@ -135,7 +134,6 @@ legend { font-size:13px; color:var(--muted); padding:0; margin-bottom:4px; }
 .check { display:flex; gap:8px; align-items:flex-start; color:var(--ink); font-size:15px; margin-top:10px; }
 .check input { margin-top:3px; }
 .hp { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; } /* honeypot: invisible, no RTL overflow */
-.tel { color:var(--acc); text-decoration:none; font-weight:600; }
 </style>
 </head>
 <body>
@@ -330,10 +328,9 @@ function call(fn, args, cb){
     .then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
     .then(function(res){ uxEnd(h, res.ok); cb(res); if (res.ok) uxDone(h); }, function(){ uxEnd(h, false); cb({ ok: false, code: 'NET', message: uxNetMsg(h) }); });
 }
-/** Office contact numbers: WhatsApp (wa.me) and the landline (tel:), from Office settings. */
+/** Office contact: WhatsApp (wa.me), from Office settings (landline removed 2026-11-19). */
 function contactsHtml(c){ c = c || {}; var a = [];
   if (c.wa_link) a.push('<a class="wa" target="_blank" rel="noopener" href="' + esc(c.wa_link) + '">וואטסאפ ' + esc(c.whatsapp_display) + '</a>');
-  if (c.tel_link) a.push('<a class="tel" href="' + esc(c.tel_link) + '">טלפון ' + esc(c.phone_display) + '</a>');
   return a.join(' · '); }
 function radio(name){ var el = document.querySelector('input[name="'+name+'"]:checked'); return el ? el.value : ''; }
 function checked(box){ return Array.prototype.map.call($(box).querySelectorAll('input:checked'), function(x){ return x.value; }); }
