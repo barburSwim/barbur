@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST 4a281dd997d10c934f7fcb42a3048839b3cdacdc 2026-11-22T09:59:11.292Z">
+<meta name="barbur-build" content="TEST 79b28dce0a7a3362340f8c1023f8ce4c6533867c 2026-11-22T10:24:08.191Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -972,15 +972,20 @@ function bookFree(){ var d=$('b_d').value, t=$('b_t').value, mode=$('b_mode').va
  * Item 1 (owner 2026-11-19): the Office cancel asks explicitly "לחייב או ללא חיוב?". Charge = the lesson is consumed (LATE_CANCEL);
  * no charge = the credit returns. Default: inside the late window "charge", outside it "no charge"; either can be flipped.
  * Coach / school cancellations stay as no-charge sub-reasons. No charge inside the window = the existing waiver (reason required).
+ * FEE (owner 2026-11-22): "cancel at instructor cost" = the customer's late cancel with the instructor fee (same server path, any
+ * time before the lesson): the credit returns and one fee opens in "לטיפול". Offered when the server reports a fee amount.
  */
-function cxKind(choice, late){ return choice === 'CHARGE' ? 'LATE' : choice === 'COACH' || choice === 'SCHOOL' ? choice : late ? 'WAIVED' : 'ONTIME'; }
+function cxKind(choice, late){ return choice === 'CHARGE' ? 'LATE' : choice === 'FEE' ? 'FEE' : choice === 'COACH' || choice === 'SCHOOL' ? choice : late ? 'WAIVED' : 'ONTIME'; }
 function cx(id, late){
-  late = !!late; var hrs = (S.B && S.B.late_hours) || '48';
+  late = !!late; var hrs = (S.B && S.B.late_hours) || '48', fee = Number(S.B && S.B.late_fee) || 0;
+  var opts = [['CHARGE','לחייב — השיעור נספר מהיתרה'],['NOCHARGE','ללא חיוב — היתרה חוזרת']];
+  if (fee > 0) opts.push(['FEE','על חשבון המדריך — דמי מדריך ' + fee + ' ₪, היתרה חוזרת']);
+  opts.push(['COACH','ללא חיוב — ביטול מדריך'],['SCHOOL','ללא חיוב — ביטול בית הספר']);
   ask('ביטול שיעור', [
     {k:'note', type:'note', label: late ? 'השיעור בעוד פחות מ-'+hrs+' שעות (בתוך חלון הביטול המאוחר). ברירת המחדל: לחייב.' : 'השיעור בעוד יותר מ-'+hrs+' שעות. ברירת המחדל: ללא חיוב.'},
-    {k:'choice', type:'select', label:'לחייב או ללא חיוב?', value: late ? 'CHARGE' : 'NOCHARGE', options:[['CHARGE','לחייב — השיעור נספר מהיתרה'],['NOCHARGE','ללא חיוב — היתרה חוזרת'],['COACH','ללא חיוב — ביטול מדריך'],['SCHOOL','ללא חיוב — ביטול בית הספר']]},
+    {k:'choice', type:'select', label:'לחייב או ללא חיוב?', value: late ? 'CHARGE' : 'NOCHARGE', options: opts},
     {k:'reason', label:'סיבה' + (late ? ' (חובה בביטול ללא חיוב)' : '')}
-  ], function(v){ call('off_cancel', [S.token, id, cxKind(v.choice, late), v.reason||''], function(){ msg(v.choice==='CHARGE' ? 'בוטל — השיעור חויב' : 'בוטל — היתרה הוחזרה', true); openHH(S.hid); }); }, 'אישור ביטול',
+  ], function(v){ var k = cxKind(v.choice, late); call('off_cancel', [S.token, id, k, v.reason||''].concat(k === 'FEE' ? [fee] : []), function(){ msg(v.choice==='CHARGE' ? 'בוטל — השיעור חויב' : v.choice==='FEE' ? 'בוטל על חשבון המדריך — דמי מדריך ' + fee + ' ₪ ממתינים לגבייה, היתרה הוחזרה' : 'בוטל — היתרה הוחזרה', true); openHH(S.hid); }); }, 'אישור ביטול',
   function(v){ return late && v.choice === 'NOCHARGE' && !String(v.reason||'').trim() ? 'ביטול ללא חיוב בתוך חלון הביטול המאוחר מחייב סיבה' : ''; });
 }
 function noShow(id){ ask('אי-הגעה', [{type:'note', label:'לסמן אי-הגעה? השיעור יחויב.'}], function(){ call('off_noShow', [S.token, id], function(){ msg('סומן', true); openHH(S.hid); }); }); }
