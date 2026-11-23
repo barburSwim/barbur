@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST 79b28dce0a7a3362340f8c1023f8ce4c6533867c 2026-11-22T10:24:08.191Z">
+<meta name="barbur-build" content="TEST 78a29d5329375f318d1ec01e15e301501d5fcd7c 2026-11-23T09:34:11.440Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -692,16 +692,16 @@ function uuid(){ return 'o' + Date.now().toString(36) + Math.random().toString(3
 //   row; on any failure it is removed at once and the caller's red error is shown — never a row the server did not create.
 // - A write started by the user whose own code shows no message ends with a green "בוצע". opt.quiet = background call, no bar.
 var UX = { seq: 0, live: [], writes: {}, trig: null, trigAt: 0, trigWas: null, bar: null, timer: null, log: [] };
-var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit|syncPlatform)|off_groupRoster|off_searchSwimmers|co_(schedule|week|calendars|recentChanges|preview)|co_groupAttendance|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
+var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit)|off_groupRoster|off_searchSwimmers|co_(schedule|week|calendars|recentChanges|preview)|co_groupAttendance|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
 // Calls that carry a password or a one-time secret: de-duplicated by function name only, so the secret is never kept in a key.
-var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_platformLogin|st_redeemInvitation|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
-var UX_TEXT = { off_inviteCoach: 'שולח הזמנה…', off_coachReport: 'מכין דוח…', off_coachAnnual: 'מכין דוח…', off_coachReportCsv: 'מכין קובץ CSV…',
+var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_coachGoogleLogin|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
+var UX_TEXT = { off_coachReport: 'מכין דוח…', off_coachAnnual: 'מכין דוח…', off_coachReportCsv: 'מכין קובץ CSV…',
   off_refreshCache: 'מרענן נתונים…', off_exceptions: 'בודק מול היומן…', off_adminRun: 'הפעולה רצה — עד כמה דקות…', off_createFamily: 'יוצר משפחה…',
   off_convertLead: 'יוצר כרטיסייה…', off_addGrant: 'רושם כרטיסייה…', off_book: 'קובע שיעור…', off_cancel: 'מבטל…', off_reschedule: 'משנה מועד…',
-  off_createBookingCalendar: 'יוצר יומן…', off_shareBookingCalendar: 'משתף יומן…', off_unlinkPlatformCoach: 'מנתק…', off_deleteCoach: 'מוחק…',
-  off_revokeInvitation: 'מבטל הזמנה…', off_saveGroup: 'שומר ומשבץ מפגשים…', off_editGroupFrom: 'מעדכן מפגשים…', off_setConfig: 'מעדכן…',
+  off_createBookingCalendar: 'יוצר יומן…', off_connectCoachCalendar: 'מחבר יומן…', off_sendCoachLoginLink: 'שולח…', off_shareBookingCalendar: 'משתף יומן…', off_resetCoachGoogle: 'מאפס…', off_deleteCoach: 'מוחק…',
+  off_saveGroup: 'שומר ומשבץ מפגשים…', off_editGroupFrom: 'מעדכן מפגשים…', off_setConfig: 'מעדכן…',
   api_book: 'קובע שיעור…', api_reschedule: 'משנה מועד…', api_cancel: 'מבטל…', api_requestOtp: 'שולח קוד…', api_verifyOtp: 'מאמת…',
-  api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_platformLogin: 'נכנס…', st_redeemInvitation: 'מחבר…',
+  api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_coachGoogleLogin: 'נכנס…',
   off_addGroupMember: 'משבץ…', off_moveGroupMember: 'מעביר…', off_stopGroupMember: 'מפסיק…', co_markAttendance: 'שומר…',
   co_saveRules: 'שומר…', co_saveOverride: 'שומר…', co_saveSettings: 'שומר…', co_cancel: 'מבטל…', co_reschedule: 'משנה מועד…', co_noShow: 'מסמן…' };
 function uxMark(e){ var t = e.target, el = t && t.closest ? t.closest('button,a,input,select,textarea') : null; UX.trig = el; UX.trigAt = performance.now(); UX.trigWas = el && { disabled: el.disabled, html: el.innerHTML }; setTimeout(function(){ if (UX.trig === el) UX.trig = null; }, 0); }
@@ -843,12 +843,8 @@ function boot(){
     S.B = d; $('who').textContent = d.email; $('testbar').classList.toggle('hidden', d.env !== 'TEST'); $('dbLink').href = d.db_url; setLinksBar();
     if (!$('p_co').classList.contains('hidden')) renderCoaches(); if (!$('p_set').classList.contains('hidden')) renderCfg();
     if(S.restoring){ S.restoring=false; restoreOfficeNav(saved); }
-    syncPlatform();
   });
 }
-// D-20 on Office load (W1-5): the Platform membership sync runs right after the screen is usable, never before it. A coach who left
-// the school on the Platform is disconnected here, announced, and the coach list is refreshed.
-function syncPlatform(){ call('off_syncPlatform', [S.token], function(r){ if (r && r.unlinked && r.unlinked.length) { msg('מדריכים שהתנתקו מבית הספר בפלטפורמת המאמנים נותקו גם בברבור: '+r.unlinked.join(', '), true); reboot(function(){ if (!$('p_co').classList.contains('hidden')) renderCoaches(); }); } }, { quiet: true }); }
 // --- home ---
 function home(){
   if (!S.homeLoaded) ['homeExc','homeAtt','homeUp'].forEach(function(id){ $(id).innerHTML = '<div class="empty">טוען…</div>'; });
@@ -1010,47 +1006,58 @@ function ign(ev){ ask('התעלמות מאירוע', [{k:'r',label:'סיבה',re
 var MODE = { SELF_MANAGED:'מנהל את עצמו', OFFICE_MANAGED:'בניהול המשרד' }, CST = { PILOT:'פיילוט', ACTIVE:'פעיל', LEGACY_ONLY:'ללא הזמנות באפליקציה', INACTIVE:'לא פעיל' };
 function renderCoaches(){
   if (!S.B) { $('coachList').innerHTML = '<div class="empty">טוען…</div>'; return; }
-  $('coachList').innerHTML = S.B.coaches.filter(function(c){ return !c.archived && (S.showInactive || c.status!=='INACTIVE'); }).map(function(c){ return '<div class="row"><div class="grow"><b>'+esc(c.display_name)+'</b> <span class="badge '+(c.status==='INACTIVE'||c.status==='LEGACY_ONLY'?'gray':'ok')+'">'+esc(CST[c.status]||c.status)+'</span>'+(modeRelevant(c) ? ' <span class="badge '+(c.management_mode==='OFFICE_MANAGED'?'warn':'')+'">'+esc(MODE[c.management_mode]||c.management_mode)+'</span>' : '')+'<div class="muted">'+((c.contact_email||c.login_email) ? 'אימייל: '+esc(c.contact_email||c.login_email) : 'ללא אימייל')+' · '+(c.booking_calendar.id ? 'יומן הזמנות: '+esc(c.booking_calendar.name) : 'ללא יומן הזמנות — לא פתוח להזמנות באפליקציה')+(c.location ? ' · '+esc(c.location) : '')+'</div>'+onbBadges(c)+'</div><div class="inline">'+(c.booking_calendar.id ? '<button class="btn sm" onclick="openAvail(\''+c.coach_id+'\', \'sch\')">לו"ז שבועי</button><button class="btn sm sec" onclick="openAvail(\''+c.coach_id+'\', \'av\')">ניהול זמינות</button>' : '')+'<button class="btn sm sec" onclick="reportOpen(\''+c.coach_id+'\')">דוח חודשי</button><button class="btn sm ghost" onclick="editCoach(\''+c.coach_id+'\')">עריכה</button>'+onbButtons(c)+(c.onboarding && c.onboarding.platform === 'LINKED' ? '' : '<button class="btn sm ghost" onclick="deleteCoach(\''+c.coach_id+'\')">מחיקה</button>')+'</div></div>'; }).join('') + (S.B.coaches.some(function(c){ return c.status==='INACTIVE' && !c.archived; }) ? '<div class="muted" style="margin-top:8px"><a href="#" onclick="S.showInactive=!S.showInactive;renderCoaches();return false">'+(S.showInactive?'הסתרת מדריכים לא פעילים':'הצגת מדריכים לא פעילים')+'</a></div>' : '') || '<div class="empty">אין מדריכים</div>';
+  $('coachList').innerHTML = S.B.coaches.filter(function(c){ return !c.archived && (S.showInactive || c.status!=='INACTIVE'); }).map(function(c){ return '<div class="row"><div class="grow"><b>'+esc(c.display_name)+'</b> <span class="badge '+(c.status==='INACTIVE'||c.status==='LEGACY_ONLY'?'gray':'ok')+'">'+esc(CST[c.status]||c.status)+'</span>'+(modeRelevant(c) ? ' <span class="badge '+(c.management_mode==='OFFICE_MANAGED'?'warn':'')+'">'+esc(MODE[c.management_mode]||c.management_mode)+'</span>' : '')+'<div class="muted">'+((c.contact_email||c.login_email) ? 'אימייל: '+esc(c.contact_email||c.login_email) : 'ללא אימייל')+' · '+(c.booking_calendar.id ? 'יומן הזמנות: '+esc(c.booking_calendar.name) : 'ללא יומן הזמנות — לא פתוח להזמנות באפליקציה')+(c.location ? ' · '+esc(c.location) : '')+'</div>'+onbBadges(c)+'</div><div class="inline">'+(c.booking_calendar.id ? '<button class="btn sm" onclick="openAvail(\''+c.coach_id+'\', \'sch\')">לו"ז שבועי</button><button class="btn sm sec" onclick="openAvail(\''+c.coach_id+'\', \'av\')">ניהול זמינות</button>' : '')+'<button class="btn sm sec" onclick="reportOpen(\''+c.coach_id+'\')">דוח חודשי</button><button class="btn sm ghost" onclick="editCoach(\''+c.coach_id+'\')">עריכה</button>'+onbButtons(c)+'<button class="btn sm ghost" onclick="deleteCoach(\''+c.coach_id+'\')">מחיקה</button>'+'</div></div>'; }).join('') + (S.B.coaches.some(function(c){ return c.status==='INACTIVE' && !c.archived; }) ? '<div class="muted" style="margin-top:8px"><a href="#" onclick="S.showInactive=!S.showInactive;renderCoaches();return false">'+(S.showInactive?'הסתרת מדריכים לא פעילים':'הצגת מדריכים לא פעילים')+'</a></div>' : '') || '<div class="empty">אין מדריכים</div>';
 }
-var ONB_P = { LINKED:['מחובר לברבור','ok'], INVITED:['הוזמן — ממתין להתחברות','warn'], NOT_INVITED:['לא מחובר לברבור','gray'] };
+var ONB_G = { BOUND:['נכנס עם Google','ok'], NOT_BOUND:['טרם נכנס עם Google','gray'] };
 var ONB_C = { CONNECTED:['יומן הזמנות מחובר','ok'], INACTIVE:['יומן הזמנות מחובר — לא פעיל','gray'], MISSING:['אין יומן הזמנות','gray'] };
-// Management mode only matters for a coach who is connected (or for a coach who needs no Platform connection).
-function modeRelevant(c){ var o = c.onboarding; return !o || !o.link_required || o.platform === 'LINKED'; }
-var ONB_R = { STATUS:'סטטוס לא פעיל', NO_CALENDAR:'אין יומן הזמנות', NOT_LINKED:'לא מחובר לברבור', NO_AVAILABILITY:'אין זמינות', NO_COACH:'' };
-function onbBadges(c){ var o = c.onboarding; if (!o) return ''; var p = ONB_P[o.platform] || [o.platform,'gray'];
-  return '<div class="inline" style="flex-wrap:wrap;gap:4px;margin-top:4px"><span class="badge '+p[1]+'">'+esc(p[0])+'</span><span class="badge '+(ONB_C[o.calendar]||ONB_C.MISSING)[1]+'">'+esc((ONB_C[o.calendar]||[o.calendar])[0])+'</span><span class="badge '+(o.bookable?'ok':'bad')+'">'+(o.bookable?'פתוח להזמנות':'לא פתוח להזמנות — '+esc(ONB_R[o.bookable_reason]||o.bookable_reason))+'</span></div>'; }
+function modeRelevant(c){ return true; } // coaches are BARBUR records (owner 2026-11-20): the management mode always applies
+var ONB_R = { STATUS:'סטטוס לא פעיל', NO_CALENDAR:'אין יומן הזמנות', NO_AVAILABILITY:'אין זמינות', NO_COACH:'' };
+function onbBadges(c){ var o = c.onboarding; if (!o) return ''; var p = ONB_G[o.google] || ONB_G.NOT_BOUND;
+  return '<div class="inline" style="flex-wrap:wrap;gap:4px;margin-top:4px"><span class="badge '+p[1]+'">'+esc(p[0])+'</span><span class="badge '+(ONB_C[o.calendar]||ONB_C.MISSING)[1]+'">'+esc((ONB_C[o.calendar]||[o.calendar])[0])+'</span>'+(o.calendar==='CONNECTED' && o.calendar_manage===false ? '<span class="badge warn" title="תנו לחשבון המערכת הרשאת Make changes and manage sharing ביומן, או צרו יומן חדש">יומן בהרשאת עריכה בלבד: חסר ניהול שיתוף</span>' : '')+'<span class="badge '+(o.bookable?'ok':'bad')+'">'+(o.bookable?'פתוח להזמנות':'לא פתוח להזמנות — '+esc(ONB_R[o.bookable_reason]||o.bookable_reason))+'</span></div>'; }
 function calButtons(c){ var o = c.onboarding; if (!o || c.status === 'INACTIVE' || c.status === 'LEGACY_ONLY') return '';
-  if (S.B && S.B.env === 'TEST' && o.platform !== 'LINKED' && o.calendar === 'MISSING') return '<button class="btn sm sec" onclick="calBeforeLink(CID)">יצירת יומן הזמנות</button>'.replace('CID', "'"+c.coach_id+"'");
-  return o.calendar === 'MISSING' ? '<button class="btn sm sec" onclick="createCal(\''+c.coach_id+'\', false)">יצירת יומן הזמנות</button>'
-    : '<button class="btn sm ghost" onclick="shareCal(\''+c.coach_id+'\')">שיתוף יומן</button><button class="btn sm ghost" onclick="createCal(\''+c.coach_id+'\', true)">יצירה מחדש</button>'; }
+  return o.calendar === 'MISSING' ? '<button class="btn sm sec" onclick="connectCal(\''+c.coach_id+'\')">חיבור יומן</button>'
+    : (c.login_email && c.status !== 'INACTIVE' ? '<button class="btn sm sec" onclick="sendLink(\''+c.coach_id+'\')">שליחת קישור כניסה</button>' : '')
+    + '<button class="btn sm ghost" onclick="connectCal(\''+c.coach_id+'\')">החלפת יומן</button><button class="btn sm ghost" onclick="shareCal(\''+c.coach_id+'\')">שיתוף יומן</button><button class="btn sm ghost" onclick="createCal(\''+c.coach_id+'\', true)">יצירה מחדש</button>'; }
+// Office "new coach" flow (owner 2026-11-23): (1) the coach and the coach's Google email, (2) a REQUIRED calendar choice - a new
+// calendar, or an existing one that the server checks at once (readable + manage sharing) - and (3) only after the calendar step
+// succeeded, the plain login link by mail. A refused step shows its error and goes no further; nothing waits for the coach.
+var CAL_MODES = [['', 'בחרו…'], ['NEW', 'יצירת יומן חדש (בבעלות חשבון המערכת)'], ['EXISTING', 'חיבור יומן קיים']];
+function sheetField(k){ return $('f_'+k); } // a field of the open ask() sheet (ids are f_<key>, built by ask)
+function calModeShow(el){ var on = !!el && el.value === 'EXISTING', inp = sheetField('cal'); if (!inp) return; var l = $('shBody').querySelector('label[for='+inp.id+']'), h = inp.nextElementSibling;
+  [l, inp, h && h.classList.contains('muted') ? h : null].forEach(function(x){ if (x) x.classList.toggle('hidden', !on); }); }
+function connectCal(id, prev, err){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0]; prev = prev || {};
+  ask('חיבור יומן הזמנות — '+c.display_name, [{type:'note', label:'היומן ישותף עם '+(c.login_email||'—')+' בהרשאת עריכה: הזזת שיעור ביומן מזיזה אותו גם במערכת. קישור הכניסה נשלח רק אחרי שהיומן מחובר.'},
+    {k:'mode', label:'יומן הזמנות', type:'select', options:CAL_MODES, value:prev.mode||'', oninput:calModeShow},
+    {k:'cal', label:'מזהה היומן הקיים (Calendar ID)', value:prev.cal||'', help:'בהגדרות היומן ב-Google Calendar, בקטע "שילוב היומן". היומן חייב להיות משותף עם חשבון המערכת בהרשאה "Make changes and manage sharing".'}],
+    function(v){ call('off_connectCoachCalendar', [S.token, id, v.mode, v.mode==='EXISTING' ? String(v.cal||'').trim() : ''], function(d){ calConnected(id, d); },
+      { onErr: function(res){ connectCal(id, v, res.message); return true; } }); },
+    'חיבור', function(v){ if (!v.mode) return 'בחרו: יצירת יומן חדש או חיבור יומן קיים'; if (v.mode==='EXISTING' && !String(v.cal||'').trim()) return 'הזינו את מזהה היומן הקיים'; });
+  calModeShow(sheetField('mode')); if (err) $('shErr').textContent = err; }
+function calConnected(id, d){ if (d.unchanged && d.calendar_manage === false) { msg('היומן הזה כבר מחובר, בהרשאת עריכה בלבד. כדי לשלוח קישור כניסה: תנו לחשבון המערכת "Make changes and manage sharing" ביומן, או "יצירה מחדש".'); reboot(function(){ tab('co', true); }); return; }
+  reboot(function(){ tab('co', true); var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0] || { display_name: '' };
+  ask('היומן מחובר — '+c.display_name, [{type:'note', label:'היומן "'+d.name+'" מחובר ומשותף עם '+d.shared_with+' בהרשאת '+(d.role==='owner'?'בעלים':'עריכה')+'. עכשיו אפשר לשלוח למדריך קישור כניסה.'}], function(){ sendLinkNow(id); }, 'שליחת קישור כניסה'); }); }
+function sendLink(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
+  ask('שליחת קישור כניסה — '+c.display_name, [{type:'note', label:'נשלח מייל אל '+c.login_email+' עם קישור לדף המדריכים. הכניסה עם Google, ורק הכתובת הזו מתקבלת.'}], function(){ sendLinkNow(id); }, 'שליחה'); }
+function sendLinkNow(id){ call('off_sendCoachLoginLink', [S.token, id], function(d){ msg('קישור הכניסה נשלח אל '+d.sent_to, true); }); }
 function createCal(id, recreate){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
   ask(recreate ? 'יצירה מחדש של יומן הזמנות' : 'יצירת יומן הזמנות', [{type:'note', label:(recreate ? 'נוצר יומן חדש בבעלות חשבון המערכת והמדריך עובר אליו. היומן הקודם נשאר ולא נמחק. ' : 'נוצר יומן בשם "BARBUR — '+c.display_name+'" בבעלות חשבון המערכת. ')+'המדריך מקבל הרשאת עריכת אירועים בלבד (לא ניהול שיתוף).'},{k:'email', label:'כתובת Google לשיתוף עם המדריך (לשיתוף בלבד, לא לזיהוי)', type:'email', value:c.contact_email||c.login_email||'', req:1}],
     function(v){ call('off_createBookingCalendar', [S.token, id, v.email, recreate], function(d){ msg('היומן נוצר ושותף עם '+d.shared_with, true); reboot(function(){ tab('co', true); }); }); }); }
 function shareCal(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
   ask('שיתוף יומן ההזמנות', [{k:'email', label:'כתובת Google לשיתוף (הרשאת עריכת אירועים)', type:'email', value:c.contact_email||c.login_email||'', req:1}], function(v){ call('off_shareBookingCalendar', [S.token, id, v.email], function(){ msg('היומן שותף', true); }); }); }
-// Coach onboarding buttons wherever the Platform is configured (o != null): TEST and LIVE alike since round 1 (the LIVE pilot needs
-// the invitation from the Office; the server rules — inviteCoach_, unlinkPlatformCoach_ — are identical in both environments).
-function onbButtons(c){ var cb = calButtons(c), o = c.onboarding; if (o && o.platform === 'LINKED' && S.B) return cb + '<button class="btn sm ghost" onclick="unlinkCoach(\''+c.coach_id+'\')">נתק מברבור</button>'; if (!o || !S.B || c.status === 'INACTIVE' || o.platform === 'LINKED') return cb;
-  return cb+'<button class="btn sm sec" onclick="inviteCoach(\''+c.coach_id+'\')">'+(o.platform==='INVITED'?'שליחת הזמנה מחדש':'חבר לברבור')+'</button>'+(o.platform==='INVITED'?'<button class="btn sm ghost" onclick="revokeInvite(\''+c.coach_id+'\')">ביטול הזמנה</button>':''); }
-function inviteCoach(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
-  var send = function(){ call('off_inviteCoach', [S.token, id], function(d){ var em = d.email || {};
-    reboot(function(){ tab('co', true); });
-    if (em.status === 'SENT') { msg('ההזמנה נשלחה במייל אל '+em.to, true); return; }
-    var why = em.status === 'BLOCKED_TEST' ? 'בסביבת הבדיקה לא נשלח מייל אל '+em.to+' (כתובת לא מורשית ב-TEST).' : 'שליחת המייל אל '+(em.to||'')+' נכשלה.';
-    ask('ההזמנה לא נשלחה', [{type:'note', label:why+' אפשר לשלוח את הקישור ידנית (מוצג פעם אחת, תקף עד '+String(d.expires_at).slice(0,10)+').'},{k:'link', label:'קישור הזמנה', value:d.link}], function(){}); }); };
-  if (c.contact_email) { send(); return; }
-  ask('צריך אימייל של המדריך', [{type:'note', label:'כדי לשלוח הזמנה צריך את האימייל של המדריך. הוא נשמר בכרטיס המדריך ומשמש רק להזמנה ולשיתוף יומן.'},{k:'contact_email', label:'אימייל המדריך', type:'email', value:'', req:1}],
-    function(v){ call('off_saveCoach', [S.token, { coach_id:id, display_name:c.display_name, management_mode:c.management_mode, status:c.status, contact_email:v.contact_email }], function(){ c.contact_email = v.contact_email; send(); }); }); }
-function calBeforeLink(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
-  ask('המדריך עדיין לא מחובר לבית הספר', [{type:'note', label:c.display_name+' עדיין לא מחובר. קודם מחברים את המדריך לבית הספר, ורק אז נוצר יומן ההזמנות — הוא ייווצר וישותף איתו אוטומטית ברגע שיתחבר. לשלוח לו עכשיו הזמנת התחברות?'}], function(){ inviteCoach(id); }); }
+// Coach sign-in = Google (owner 2026-11-20): the Office types the coach's Google address (login_email); nothing is sent. The first
+// sign-in binds the coach to that Google account; "איפוס חיבור Google" clears the binding (audited) so another account can bind.
+function onbButtons(c){ var cb = calButtons(c), o = c.onboarding; if (o && o.google === 'BOUND') return cb + '<button class="btn sm ghost" onclick="resetGoogle(\''+c.coach_id+'\')">איפוס חיבור Google</button>'; return cb; }
+function resetGoogle(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
+  ask('איפוס חיבור Google — '+c.display_name, [{type:'note', label:'המדריך יוצא מיד מכל החיבורים הפתוחים, והשיתוף של יומן ההזמנות מוסר. בכניסה הבאה, חשבון ה-Google של כתובת הכניסה הרשומה ('+(c.login_email||'לא הוגדרה')+') יחובר מחדש. משמש כשמדריך החליף חשבון Google או כשהכתובת עודכנה.'}],
+    function(){ call('off_resetCoachGoogle', [S.token, id], function(){ msg('החיבור אופס', true); reboot(function(){ tab('co', true); }); }); }, 'איפוס'); }
 function deleteCoach(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
   ask('מחיקת המדריך '+c.display_name, [{type:'note', label:'אזהרה: מדריך בלי היסטוריה נמחק לצמיתות. מדריך עם שיעורים או תלמידים עובר לארכיון: הוא נעלם מהמסכים, והתיעוד נשמר. לאישור הזינו את סיסמת המשרד.'},{k:'pw', label:'סיסמת המשרד', type:'password', value:'', req:1}],
     function(v){ call('off_deleteCoach', [S.token, id, v.pw], function(d){ msg(d.result==='DELETED' ? 'המדריך נמחק' : 'המדריך הועבר לארכיון', true); reboot(function(){ tab('co', true); }); }); }); }
-function unlinkCoach(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0];
-  ask('ניתוק '+c.display_name+' מברבור', [{type:'note', label:'אזהרה: המדריך לא יוכל להיכנס לברבור, והוא ייסגר להזמנות לקוחות עד שיתחבר מחדש. החיבור שלו לבית הספר מסתיים גם בפלטפורמת המאמנים; החשבון האישי שלו שם נשאר. חיבור מחדש מחייב הזמנה חדשה מהמשרד. היומן לא נמחק: יסומן "(לא פעיל)" וגישת המדריך אליו תוסר. המדריך יקבל במייל קובץ עם תיעוד השיעורים שלו, בלי פרטי לקוחות.'}], function(){ call('off_unlinkPlatformCoach', [S.token, id], function(d){ var a = d.after || {}, h = a.history || {}; msg('המדריך נותק מברבור.' + (a.calendar && a.calendar.status==='DEACTIVATED' ? ' היומן סומן "לא פעיל" וגישת המדריך הוסרה.' : '') + (h.status==='SENT' ? ' תיעוד השיעורים נשלח אל '+h.to+'.' : h.status ? ' תיעוד השיעורים לא נשלח ('+h.status+').' : ''), true); reboot(function(){ tab('co', true); }); }); }); }
-function revokeInvite(id){ call('off_revokeInvitation', [S.token, id], function(){ msg('ההזמנה בוטלה', true); reboot(function(){ tab('co', true); }); }); }
-function coachFields(c){ c = c || {}; return [{k:'display_name',label:'שם',value:c.display_name,req:1},{k:'contact_email',label:'אימייל המדריך — לשליחת הזמנה ושיתוף יומן (לא משמש לזיהוי)',type:'email',value:c.contact_email||''},{k:'management_mode',label:'מצב ניהול',type:'select',options:(c.management_mode==='OFFICE_MANAGED'?[['OFFICE_MANAGED',MODE.OFFICE_MANAGED],['SELF_MANAGED',MODE.SELF_MANAGED]]:[['SELF_MANAGED',MODE.SELF_MANAGED],['OFFICE_MANAGED',MODE.OFFICE_MANAGED]])},{k:'status',label:'סטטוס',type:'select',options:[[c.status||'PILOT',CST[c.status||'PILOT']]].concat(Object.keys(CST).filter(function(k){ return k!==(c.status||'PILOT'); }).map(function(k){ return [k,CST[k]]; }))},{k:'booking_calendar_id',label:'מזהה יומן ההזמנות של בית הספר (Calendar ID; ריק = ללא יומן / ללא שינוי — אפשר לחבר מאוחר יותר). היומן חייב להיות משותף עם חשבון המערכת בהרשאת "Make changes to events"',value:''}]; }
-function newCoach(){ ask('מדריך חדש', coachFields(), function(v){ call('off_saveCoach', [S.token, v], function(){ msg('המדריך נוצר', true); reboot(function(){ tab('co', true); }); }, { ghost: { into: 'coachList', label: v.display_name + ' — מדריך חדש' } }); }); }
+function coachFields(c){ c = c || {}; return [{k:'display_name',label:'שם',value:c.display_name,req:1},{k:'login_email',label:'אימייל כניסה (חשבון Google של המדריך) — רק הכתובת הזו יכולה להיכנס',type:'email',value:c.login_email||''},{k:'contact_email',label:'אימייל ליצירת קשר (לא משמש לכניסה)',type:'email',value:c.contact_email||''},{k:'management_mode',label:'מצב ניהול',type:'select',options:(c.management_mode==='OFFICE_MANAGED'?[['OFFICE_MANAGED',MODE.OFFICE_MANAGED],['SELF_MANAGED',MODE.SELF_MANAGED]]:[['SELF_MANAGED',MODE.SELF_MANAGED],['OFFICE_MANAGED',MODE.OFFICE_MANAGED]])},{k:'status',label:'סטטוס',type:'select',options:[[c.status||'PILOT',CST[c.status||'PILOT']]].concat(Object.keys(CST).filter(function(k){ return k!==(c.status||'PILOT'); }).map(function(k){ return [k,CST[k]]; }))}]; }
+// Gate-5 F1 (2026-11-23): no calendar-ID field in the coach forms - the Office connects a calendar only through the checked step
+// (connectCal: read + manage sharing, writer share to the login email).
+function newCoach(){ var f = coachFields(); f.forEach(function(x){ if (x.k === 'login_email') x.req = 1; }); // the calendar is step 2
+  ask('מדריך חדש', f, function(v){ call('off_saveCoach', [S.token, v], function(d){ msg('המדריך נוצר', true); reboot(function(){ tab('co', true); connectCal(d.coach_id); }); }, { ghost: { into: 'coachList', label: v.display_name + ' — מדריך חדש' } }); }); }
 function editCoach(id){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0]; ask('עריכת מדריך', coachFields(c), function(v){ v.coach_id = id; call('off_saveCoach', [S.token, v], function(){ msg('נשמר', true); reboot(function(){ tab('co', true); }); }); }); }
 function reboot(cb){ call('off_bootstrap', [S.token], function(d){ S.B = d; if (cb) cb(); }); }
 function openAvail(id, startTab){ var c = S.B.coaches.filter(function(x){ return x.coach_id===id; })[0]; $('coachAvailBox').classList.remove('hidden'); $('coachAvailTitle').textContent = (startTab==='av' ? 'זמינות והגדרות — ' : 'לו"ז שבועי — ') + c.display_name; S.availCoach=id; Avail.init({ token:S.token, coachId:id, call:call, mount:$('avail'), isOffice:true, startTab:startTab||'sch', navigation:S.restoreAvail, onNavigate:function(n){S.availNav=n;saveOfficeNav();} }); S.restoreAvail=null; saveOfficeNav(); $('coachAvailBox').scrollIntoView({behavior:'smooth'}); }

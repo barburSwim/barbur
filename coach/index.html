@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST 79b28dce0a7a3362340f8c1023f8ce4c6533867c 2026-11-22T10:24:08.191Z">
+<meta name="barbur-build" content="TEST 78a29d5329375f318d1ec01e15e301501d5fcd7c 2026-11-23T09:34:11.440Z">
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'unsafe-inline' https://accounts.google.com/gsi/style; frame-src https://accounts.google.com/gsi/; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="referrer" content="no-referrer">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="robots" content="noindex">
 <title>ברבור — הלוח שלי (TEST)</title>
 <style>
@@ -119,20 +119,14 @@ a.ux-pending { pointer-events:none; opacity:.7; }
 </style>
 </head>
 <body>
-<header class="top"><div><div class="brand">ברבור — הלוח שלי</div><div class="sub" id="who"></div></div><div class="inline"><button id="unlinkBtn" class="hidden" onclick="$('unlinkBox').classList.remove('hidden')">ניתוק</button><button id="logoutBtn" class="hidden" onclick="logout()">התנתק</button></div></header>
+<header class="top"><div><div class="brand">ברבור — הלוח שלי</div><div class="sub" id="who"></div></div><div class="inline"><button id="logoutBtn" class="hidden" onclick="logout()">התנתק</button></div></header>
 <div class="testbar hidden" id="testbar">סביבת בדיקה (TEST) — יומנים ונתונים מלאכותיים בלבד</div>
 <main>
   <div id="msg"></div>
-  <section id="unlinkBox" class="card hidden"><h2>ניתוק מברבור</h2><p class="muted"><b>אזהרה:</b> אחרי הניתוק לא תוכלו להיכנס לברבור, ולקוחות לא יוכלו להזמין אצלכם שיעורים עד שתתחברו מחדש. החיבור שלכם לבית הספר מסתיים גם בפלטפורמת המאמנים; החשבון האישי שלכם שם נשאר. חיבור מחדש מחייב הזמנה חדשה מהמשרד. השיעורים והיומן לא נמחקים; תקבלו במייל קובץ עם תיעוד השיעורים שלכם, בלי פרטי לקוחות.</p><div class="inline"><button class="btn" onclick="unlinkSelf()">אישור ניתוק</button><button class="btn sec" onclick="$('unlinkBox').classList.add('hidden')">ביטול</button></div></section>
   <section id="login" class="card hidden">
     <h2>כניסת מדריך</h2>
-    <p class="muted" id="pnote">הכניסה למערכת המדריכים נעשית דרך פלטפורמת המאמנים: נכנסים שם עם Google ולוחצים "פתח את BARBUR".</p>
-    <a class="btn block hidden" id="pbtn" href="#" target="_top">כניסה דרך פלטפורמת המאמנים</a>
-  </section>
-  <section id="invite" class="card hidden">
-    <h2>הזמנה להצטרף לברבור</h2>
-    <p class="muted">המשרד הזמין אתכם להתחבר. ההתחברות נעשית עם חשבון Google שלכם בפלטפורמת המאמנים — לא נדרשת סיסמה.</p>
-    <a class="btn block" id="invbtn" href="#" target="_top">התחברות עם Google והצטרפות</a>
+    <p class="muted">נכנסים עם חשבון Google שהמשרד רשם עבורכם. אין סיסמה נוספת.</p>
+    <div id="gbtn" style="min-height:44px"></div>
   </section>
   <section id="app" class="hidden">
     <div class="card hidden" id="coachPick"><label>מדריך</label><select id="coachSel" onchange="mountAvail()"></select></div>
@@ -629,16 +623,16 @@ function load(k){ try { return tokenStorage().getItem(k); } catch(e){ return nul
 //   row; on any failure it is removed at once and the caller's red error is shown — never a row the server did not create.
 // - A write started by the user whose own code shows no message ends with a green "בוצע". opt.quiet = background call, no bar.
 var UX = { seq: 0, live: [], writes: {}, trig: null, trigAt: 0, trigWas: null, bar: null, timer: null, log: [] };
-var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit|syncPlatform)|off_groupRoster|off_searchSwimmers|co_(schedule|week|calendars|recentChanges|preview)|co_groupAttendance|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
+var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit)|off_groupRoster|off_searchSwimmers|co_(schedule|week|calendars|recentChanges|preview)|co_groupAttendance|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
 // Calls that carry a password or a one-time secret: de-duplicated by function name only, so the secret is never kept in a key.
-var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_platformLogin|st_redeemInvitation|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
-var UX_TEXT = { off_inviteCoach: 'שולח הזמנה…', off_coachReport: 'מכין דוח…', off_coachAnnual: 'מכין דוח…', off_coachReportCsv: 'מכין קובץ CSV…',
+var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_coachGoogleLogin|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
+var UX_TEXT = { off_coachReport: 'מכין דוח…', off_coachAnnual: 'מכין דוח…', off_coachReportCsv: 'מכין קובץ CSV…',
   off_refreshCache: 'מרענן נתונים…', off_exceptions: 'בודק מול היומן…', off_adminRun: 'הפעולה רצה — עד כמה דקות…', off_createFamily: 'יוצר משפחה…',
   off_convertLead: 'יוצר כרטיסייה…', off_addGrant: 'רושם כרטיסייה…', off_book: 'קובע שיעור…', off_cancel: 'מבטל…', off_reschedule: 'משנה מועד…',
-  off_createBookingCalendar: 'יוצר יומן…', off_shareBookingCalendar: 'משתף יומן…', off_unlinkPlatformCoach: 'מנתק…', off_deleteCoach: 'מוחק…',
-  off_revokeInvitation: 'מבטל הזמנה…', off_saveGroup: 'שומר ומשבץ מפגשים…', off_editGroupFrom: 'מעדכן מפגשים…', off_setConfig: 'מעדכן…',
+  off_createBookingCalendar: 'יוצר יומן…', off_connectCoachCalendar: 'מחבר יומן…', off_sendCoachLoginLink: 'שולח…', off_shareBookingCalendar: 'משתף יומן…', off_resetCoachGoogle: 'מאפס…', off_deleteCoach: 'מוחק…',
+  off_saveGroup: 'שומר ומשבץ מפגשים…', off_editGroupFrom: 'מעדכן מפגשים…', off_setConfig: 'מעדכן…',
   api_book: 'קובע שיעור…', api_reschedule: 'משנה מועד…', api_cancel: 'מבטל…', api_requestOtp: 'שולח קוד…', api_verifyOtp: 'מאמת…',
-  api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_platformLogin: 'נכנס…', st_redeemInvitation: 'מחבר…',
+  api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_coachGoogleLogin: 'נכנס…',
   off_addGroupMember: 'משבץ…', off_moveGroupMember: 'מעביר…', off_stopGroupMember: 'מפסיק…', co_markAttendance: 'שומר…',
   co_saveRules: 'שומר…', co_saveOverride: 'שומר…', co_saveSettings: 'שומר…', co_cancel: 'מבטל…', co_reschedule: 'משנה מועד…', co_noShow: 'מסמן…' };
 function uxMark(e){ var t = e.target, el = t && t.closest ? t.closest('button,a,input,select,textarea') : null; UX.trig = el; UX.trigAt = performance.now(); UX.trigWas = el && { disabled: el.disabled, html: el.innerHTML }; setTimeout(function(){ if (UX.trig === el) UX.trig = null; }, 0); }
@@ -727,11 +721,11 @@ function rpc(fn, args, onRes, onFail){
     .then(onRes, function(e){ onFail(e && e.message ? e.message : String(e)); });
 }
 function tokenStorage(){ return window.sessionStorage; }
-function loadPageInfo(cb){ rpc('api_coachPageInfo', [], function(r){ if (r && r.ok) { PLATFORM_HOME_URL = String(r.data.platform_home || ''); PLATFORM_INVITE_AUTH_URL = String(r.data.invite_auth || ''); } cb(); }, function(){ cb(); }); }
+function loadPageInfo(cb){ rpc('api_coachPageInfo', [], function(r){ if (r && r.ok) GOOGLE_CLIENT_ID = String(r.data.google_client_id || ''); cb(); }, function(){ cb(); }); }
 /*TRANSPORT_END*/
-// D1 (2026-10-23): the session ended (idle timeout, sign-out elsewhere). Sign-in goes through the Platform page (a new document),
-// so an open form is saved field by field (sessionStorage) and put back after the next sign-in; the coach presses שמירה again.
-function onAuthLost(res){ store('bbCoachTok',null); S.token=null; saveDraft(); show('login'); initPlatform(); }
+// D1 (2026-10-23): the session ended (idle timeout, sign-out elsewhere). An open form is saved field by field (sessionStorage)
+// and put back after the next sign-in; the coach presses שמירה again.
+function onAuthLost(res){ store('bbCoachTok',null); S.token=null; saveDraft(); show('login'); initGoogle(); }
 function saveDraft(){ try { var d = {}; document.querySelectorAll('#avail input[id], #avail select[id], #avail textarea[id]').forEach(function(el){ if (el.type==='checkbox') { if (el.checked) d[el.id] = '1'; } else if (String(el.value||'').trim()) d[el.id] = el.value; }); if (Object.keys(d).length) sessionStorage.setItem('bbCoachDraft', JSON.stringify(d)); } catch(e){} }
 function restoreDraft(){ var raw = null; try { raw = sessionStorage.getItem('bbCoachDraft'); sessionStorage.removeItem('bbCoachDraft'); } catch(e){} if (!raw) return; var d = JSON.parse(raw), ids = Object.keys(d), tries = 0;
   (function tick(){ var found = ids.filter(function(i){ return !!document.getElementById(i); }); if (found.length < ids.length && tries++ < 40) { setTimeout(tick, 300); return; } found.forEach(function(i){ var el = document.getElementById(i); if (el.type==='checkbox') el.checked = true; else el.value = d[i]; }); if (found.length) msg('הטופס שוחזר — בדקו את הפרטים ולחצו שמירה שוב', 'ok'); })(); }
@@ -740,17 +734,15 @@ function call(fn, args, cb, opt){
   rpc(fn, args, function(res){
     perfLog(fn, t0, res); uxEnd(h, res.ok);
     if (!res.ok) { var handled = opt && opt.onErr ? opt.onErr(res) : false; if (handled && res.code!=='AUTH') return; if (res.code==='AUTH') onAuthLost(res); msg(res.message + (res.debug ? ' ['+res.debug+']' : ''));
-      // D-19: valid Coach Platform identity but no BARBUR access → offer the coach's own Platform area instead of a dead end
-      if (res.next && (/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/(exec|dev)$/.test(res.next) || /^https:\/\/[a-z0-9-]+\.github\.io\/[A-Za-z0-9_\/-]+\/platform\/$/.test(res.next))) $('msg').insertAdjacentHTML('beforeend', '<a class="btn block" target="_top" href="'+res.next+'" style="margin-top:8px">מעבר לאזור המאמן שלי בפלטפורמה</a>');
       return; }
     cb(res.data); uxDone(h);
   }, function(e){ uxEnd(h, false); console.log('[barbur] ' + fn + ' transport: ' + e); if (opt && opt.onErr) opt.onErr({ ok: false, code: 'NETWORK', message: uxNetMsg(h) }); msg(uxNetMsg(h)); });
 }
 /** TEST-only timing line per server call (W1-6): wall ms, server ms, sheet reads / calendar calls from the server profile. */
 function perfLog(fn, t0, res){ if (!ENV_IS_TEST) return; try { var p = res && res.prof; console.log('[barbur] ' + fn + ' ' + (Date.now() - t0) + 'ms wall · ' + (res && res.ms) + 'ms server' + (p ? ' · sheetReads ' + p.sheetReads + ' (' + p.sheetMs + 'ms) · cal ' + p.cal + ' (' + p.calMs + 'ms) | platform ' + (p.platform||0) + ' (' + (p.platformMs||0) + 'ms)' : '')); } catch (e) {} }
-function show(id){ ['login','app','invite'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('logoutBtn').classList.toggle('hidden', id==='login'); }
-function logout(){ clearNav(); var t=S.token; store('bbCoachTok',null); store('bbBypass',null); store('bbCoach',null); S.token=null; show('login'); if (t) call('st_logout',[t],function(){},{ quiet: true }); }
-var ENV_IS_TEST = true; // coach sign-in is the Coach Platform only (D-18); the email-code and Google-ID-token paths left this page
+function show(id){ ['login','app'].forEach(function(x){ $(x).classList.toggle('hidden', x!==id); }); $('logoutBtn').classList.toggle('hidden', id==='login'); }
+function logout(){ clearNav(); var t=S.token; store('bbCoachTok',null); store('bbBypass',null); store('bbCoach',null); S.token=null; show('login'); initGoogle(); if (t) call('st_logout',[t],function(){},{ quiet: true }); }
+var ENV_IS_TEST = true; // coach sign-in = Google (74_CoachGoogle, owner 2026-11-20); no email code, no Platform
 function boot(){
   // Perf: if we already know which coach this session showed last time, mount the schedule at once (co_schedule) in parallel
   // with st_me; st_me only confirms the coach list / picker. Authorization is still enforced server-side on every call.
@@ -758,7 +750,7 @@ function boot(){
   var raw = load('bbCoach'), tag = String(S.token || '').slice(0, 12) + '|', cached = raw && raw.indexOf(tag) === 0 ? raw.substr(tag.length) : null, mounted = null;
   if (cached) { show('app'); mounted = cached; Avail.init({ token: S.token, coachId: cached, call: call, mount: $('avail'), navigation:(readNav()||{}).state, onNavigate:saveCoachNav }); }
   call('st_me', [S.token], function(me){
-    S.me = me; $('unlinkBtn').classList.toggle('hidden', me.via !== 'platform'); $('who').textContent = me.email || (me.coach_id + (me.via === 'platform' ? ' · פלטפורמה' : '')); $('testbar').classList.toggle('hidden', me.env !== 'TEST');
+    S.me = me; $('who').textContent = me.email || me.coach_id; $('testbar').classList.toggle('hidden', me.env !== 'TEST');
     $('coachSel').innerHTML = me.coaches.map(function(c){ return '<option value="'+c.coach_id+'">'+esc(c.display_name)+'</option>'; }).join('');
     $('coachPick').classList.toggle('hidden', me.coaches.length < 2);
     if (!me.coaches.length) { store('bbCoach', null); $('avail').innerHTML = ''; show('app'); msg('לא משויך מדריך לחשבון הזה'); return; }
@@ -766,45 +758,30 @@ function boot(){
     if (ok) $('coachSel').value = mounted; else { show('app'); mountAvail(); }
   });
 }
-function unlinkSelf(){ call('co_unlinkSelf', [S.token], function(){ store('bbCoachTok', null); store('bbCoach', null); S.token = null; $('unlinkBox').classList.add('hidden'); $('unlinkBtn').classList.add('hidden'); show('login'); initPlatform(); msg('נותקתם מברבור. החשבון האישי שלכם בפלטפורמה נשאר. לחיבור מחדש בקשו הזמנה חדשה מהמשרד.', 'ok'); }); }
 function mountAvail(){ var id = $('coachSel').value; store('bbCoach', String(S.token || '').slice(0, 12) + '|' + id); Avail.init({ token: S.token, coachId: id, call: call, mount: $('avail'), navigation:(readNav()||{}).state, onNavigate:saveCoachNav }); }
 function saveCoachNav(n){ writeNav({coach:$('coachSel').value||S.me&&S.me.coach_id,state:n}); }
-// Platform login (TEST, /dev): Supabase returns #access_token=… in the top URL fragment. Read it, remove the fragment from the
-// URL and browser history at once, then pass only the access token, once, to the server (C3 is decided there).
-// Coach entry = the Coach Platform page ONLY (owner decision 2026-10-13): this page never starts a Google / OAuth sign-in for a
-// coach. It accepts the Platform hand-off (#access_token=… from the Platform page's "פתח את BARBUR"), validated by st_platformLogin.
-var PLATFORM_HOME_URL = '', PLATFORM_INVITE_AUTH_URL = '';
-// Invitation (Task D): the link carries ?t=<invite token>. The token is kept only in this page's storage across the Google
-// round trip, removed from the URL at once, and sent once to the server together with the Platform access token.
-function showInvite(){ show('invite'); if (PLATFORM_INVITE_AUTH_URL.indexOf('https://') === 0) $('invbtn').href = PLATFORM_INVITE_AUTH_URL; else { $('invbtn').classList.add('hidden'); msg('ההצטרפות דרך הפלטפורמה אינה זמינה כרגע.'); } }
-function redeemInvite(inv, t){ call('st_redeemInvitation', [inv, t], function(d){ S.token = d.token; store('bbCoachTok', S.token); store('bbBypass', null); S.bypass = false; msg('החיבור הושלם', 'ok'); boot(); }); }
-function initPlatform(){ if (PLATFORM_HOME_URL.indexOf('https://') !== 0) return; $('pbtn').href = PLATFORM_HOME_URL; $('pbtn').classList.remove('hidden'); } // a link to the Platform page, never an OAuth start
-function platformLogin(t){ call('st_platformLogin', [t], function(d){ S.token = d.token; store('bbCoachTok', S.token); store('bbBypass', null); S.bypass = false; msg(''); boot(); restoreDraft(); }); }
-function start(){ S.token = load('bbCoachTok'); if (S.token) boot(); else { show('login'); initPlatform(); } }
+// Coach sign-in = Google (owner decisions 2026-11-20). The Google button gives an ID token; only that token goes to the server
+// (st_coachGoogleLogin), which verifies it with Google and checks the Office allow-list. The page never names the user.
+var GOOGLE_CLIENT_ID = '';
+function initGoogle(){
+  var box = $('gbtn'); if (!box || box.getAttribute('data-ready')) return;
+  if (!/^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/.test(GOOGLE_CLIENT_ID)) { msg('הכניסה עם Google עדיין לא הוגדרה. פנו למשרד.'); return; }
+  var go = function(){ try { google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: googleCred, auto_select: false, cancel_on_tap_outside: true });
+    google.accounts.id.renderButton(box, { theme: 'outline', size: 'large', text: 'continue_with', locale: 'he', width: 300 }); box.setAttribute('data-ready', '1'); }
+    catch (e) { msg('לא ניתן לטעון את הכניסה עם Google. רעננו את הדף.'); } };
+  if (window.google && google.accounts && google.accounts.id) { go(); return; }
+  var sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true; sc.onload = go;
+  sc.onerror = function(){ msg('לא ניתן לטעון את הכניסה עם Google. בדקו את החיבור ורעננו.'); }; document.head.appendChild(sc);
+}
+function googleCred(r){ if (!r || typeof r.credential !== 'string') return; msg('מאמת כניסה…', 'ok');
+  call('st_coachGoogleLogin', [r.credential], function(d){ S.token = d.token; store('bbCoachTok', S.token); store('bbBypass', null); S.bypass = false; msg(''); boot(); restoreDraft(); }); }
+function start(){ S.token = load('bbCoachTok'); if (S.token) boot(); else { show('login'); initGoogle(); } }
 /*LOCATION_START*/
 // Static page: the address is the real one. Query → parameter map, fragment → hash; scrubbing rewrites the address without a reload.
 function getLoc(cb){ var q = new URLSearchParams(location.search), p = {}; q.forEach(function(v, k){ p[k] = v; }); cb({ parameter: p, hash: String(location.hash || '').replace(/^#/, '') }); }
-function scrubLoc(params){ try { history.replaceState(null, '', location.pathname + (params && params.p === 'invite' ? '?p=invite' : '')); } catch(e){} } // the coach page itself needs no query; the invite screen keeps ?p=invite
+function scrubLoc(params){ try { history.replaceState(null, '', location.pathname); } catch(e){} } // the coach page needs no query or fragment
 /*LOCATION_END*/
-(function init(){
-  loadPageInfo(function(){ getLoc(function(loc){
-    var h = new URLSearchParams(String(loc.hash || '').replace(/^#/, '')), t = h.get('access_token'), err = h.get('error') || h.get('error_description');
-    var prm = loc.parameter || {}, inviteMode = prm.p === 'invite';
-    if (inviteMode && prm.t) { store('bbInvite', String(prm.t)); scrubLoc({ p: 'invite' }); }
-    if (t || err) scrubLoc({ p: inviteMode ? 'invite' : 'coach' });
-    h = null;
-    if (inviteMode) {
-      var inv = load('bbInvite');
-      if (t && inv) { store('bbInvite', null); show('invite'); $('invbtn').classList.add('hidden'); msg('מאמת את ההזמנה…', 'ok'); redeemInvite(inv, t); t = null; return; }
-      if (t) { t = null; show('login'); initPlatform(); msg('לא נמצאה הזמנה בדפדפן הזה. פתחו שוב את קישור ההזמנה.'); return; }
-      if (inv) { showInvite(); if (err) msg('ההתחברות לא הושלמה. נסו שוב.'); return; }
-      show('login'); initPlatform(); msg('קישור ההזמנה אינו תקין. בקשו מהמשרד קישור חדש.'); return;
-    }
-    if (t) { show('login'); initPlatform(); msg('מאמת כניסה…', 'ok'); platformLogin(t); t = null; return; }
-    start();
-    if (err) msg('הכניסה לא הושלמה. היכנסו שוב דרך פלטפורמת המאמנים.');
-  }); });
-})();
+(function init(){ loadPageInfo(function(){ getLoc(function(){ scrubLoc({ p: 'coach' }); start(); }); }); })(); // leftover ?p=invite / #fragment from the old Platform links are dropped
 </script>
 </body>
 </html>
