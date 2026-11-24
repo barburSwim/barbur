@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST e012a3e7545a44e7521c779811a7aae1207fe86e 2026-11-24T09:56:18.628Z">
+<meta name="barbur-build" content="TEST 878c0dfb2d376a7807c1096a425c1823a2118850 2026-11-24T10:41:30.420Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'unsafe-inline' https://accounts.google.com/gsi/style; frame-src https://accounts.google.com/gsi/; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1211,7 +1211,7 @@ function rsRender(){
   var ed = r.editable;
   h.innerHTML = '<h3 style="margin:0">שחיינים פעילים ('+r.active.length+')</h3>' + (!ed ? '<span class="badge gray">בארכיון — לצפייה בלבד</span>' : r.active.length ? '<button class="btn sm" onclick="rsOpen()">הוספת שחיין/ית</button>' : '');
   var act = r.active.length ? (r.sessions.length ? rsDates(r) : '<div class="muted">אין עדיין מפגשים שהתקיימו</div>') + r.active.map(function(x, i){
-    return '<div class="row'+(x.paused ? ' rs-paused' : '')+'"><div class="grow">'+(x.household_id ? '<button class="rs-name link" data-stu="'+esc(x.student_id)+'" onclick="rsName('+i+')">'+esc(x.name)+'</button>' : '<b>'+esc(x.name)+'</b>')+' <span class="muted">'+rsWho(x)+'</span>'+rsMark(x.other_groups)+
+    return '<div class="row'+(x.paused ? ' rs-paused' : '')+'"><div class="grow">'+(x.household_id ? '<button class="rs-name link" data-stu="'+esc(x.student_id)+'" onclick="rsName('+i+')">'+esc(x.name)+'</button>' : '<b>'+esc(x.name)+'</b>')+' <span class="muted">'+rsWho(x)+'</span>'+' '+(ed ? '<button class="badge '+(x.paid?'ok':'bad')+'" data-paid="'+(x.paid?'1':'0')+'" title="לחיצה מחליפה" onclick="rsPaid('+i+')">'+(x.paid?'שולם':'לא שולם')+'</button>' : '<span class="badge '+(x.paid?'ok':'bad')+'">'+(x.paid?'שולם':'לא שולם')+'</span>')+rsMark(x.other_groups)+
       '<div class="muted">הצטרף/ה '+esc(dmy2(x.joined_date))+'</div>'+rsPauseLine(x)+(x.member_note ? '<div class="rs-note">הערה: '+esc(x.member_note)+'</div>' : '')+(ed ? rsActs(x, i) : '')+'</div>' +
       '<div class="inline">'+(r.sessions.length ? rsAtt(x, i, r.sessions) : '')+'</div></div>';
   }).join('') : '<div class="empty">אין שחיינים בקבוצה.' + (ed ? ' הוסיפו מהמאגר.' : '') + '</div>' + (ed ? '<div style="text-align:center;margin:12px 0"><button id="rs_plus" class="btn" aria-label="הוספת שחיין/ית" onclick="rsOpen()">+</button></div>' : '');
@@ -1321,6 +1321,8 @@ function rsResume(i){
   call('off_resumeGroupMember', [S.token, { member_id: m.member_id }], function(res){ rsApply(res); msg('ההשהיה הסתיימה', true); });
 }
 /** Run 6 O6 / L4: free-text note on the swimmer in this group (empty clears it). */
+/** D8 (owner 2026-11-24): paid / not paid per swimmer in the group, Office only. One tap flips it. */
+function rsPaid(i){ var m = S.RO.active[i]; call('off_setGroupMemberPaid', [S.token, { member_id: m.member_id, paid: !m.paid }], function(res){ rsApply(res); msg(!m.paid ? 'סומן: שולם' : 'סומן: לא שולם', true); }); }
 function rsNote(i){
   var m = S.RO.active[i];
   ask('הערה על ' + m.name, [{k:'note',label:'הערה (עד 200 תווים; ריק = מחיקה)',type:'textarea',max:200,value:m.member_note||''}], function(v){
