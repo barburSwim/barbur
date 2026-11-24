@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST 47f350e1723215b2682477bea14c94ae21e5e393 2026-11-23T13:47:27.524Z">
+<meta name="barbur-build" content="TEST e3278a62e13bfffad6e627c33310a0e36b40c837 2026-11-24T04:48:32.360Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'unsafe-inline' https://accounts.google.com/gsi/style; frame-src https://accounts.google.com/gsi/; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -689,14 +689,14 @@ function uuid(){ return 'o' + Date.now().toString(36) + Math.random().toString(3
 var UX = { seq: 0, live: [], writes: {}, trig: null, trigAt: 0, trigWas: null, bar: null, timer: null, log: [] };
 var UX_READ = /^(off_(bootstrap|home|search|household|householdAudit|slots|readExceptions|groups|groupDetail|groupReviews|closures|leads|lead|policies|coachReport|coachAnnual|coachReportCsv|previewGroupEdit)|off_groupRoster|off_searchSwimmers|co_(schedule|week|calendars|recentChanges|preview)|co_groupAttendance|api_(home|slots|publicInfo|leadForm|coachPageInfo)|st_me)$/;
 // Calls that carry a password or a one-time secret: de-duplicated by function name only, so the secret is never kept in a key.
-var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_coachGoogleLogin|st_officeGoogleLogin|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
+var UX_SECRET = /^(st_officeLogin|st_officeWebLogin|st_coachGoogleLogin|st_officeGoogleLogin|st_officeKeyLogin|api_verifyOtp|off_setTestPassword|off_deleteCoach|off_exceptions|off_adminRun)$/;
 var UX_TEXT = { off_coachReport: 'מכין דוח…', off_coachAnnual: 'מכין דוח…', off_coachReportCsv: 'מכין קובץ CSV…',
   off_refreshCache: 'מרענן נתונים…', off_exceptions: 'בודק מול היומן…', off_adminRun: 'הפעולה רצה — עד כמה דקות…', off_createFamily: 'יוצר משפחה…',
   off_convertLead: 'יוצר כרטיסייה…', off_addGrant: 'רושם כרטיסייה…', off_book: 'קובע שיעור…', off_cancel: 'מבטל…', off_reschedule: 'משנה מועד…',
   off_createBookingCalendar: 'יוצר יומן…', off_connectCoachCalendar: 'מחבר יומן…', off_sendCoachLoginLink: 'שולח…', off_shareBookingCalendar: 'משתף יומן…', off_resetCoachGoogle: 'מאפס…', off_deleteCoach: 'מוחק…',
   off_saveGroup: 'שומר ומשבץ מפגשים…', off_editGroupFrom: 'מעדכן מפגשים…', off_setConfig: 'מעדכן…',
   api_book: 'קובע שיעור…', api_reschedule: 'משנה מועד…', api_cancel: 'מבטל…', api_requestOtp: 'שולח קוד…', api_verifyOtp: 'מאמת…',
-  api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_coachGoogleLogin: 'נכנס…', st_officeGoogleLogin: 'נכנס…',
+  api_submitLead: 'שולח…', st_officeLogin: 'נכנס…', st_officeWebLogin: 'נכנס…', st_coachGoogleLogin: 'נכנס…', st_officeGoogleLogin: 'נכנס…', st_officeKeyLogin: 'נכנס…',
   off_addGroupMember: 'משבץ…', off_moveGroupMember: 'מעביר…', off_stopGroupMember: 'מפסיק…', co_markAttendance: 'שומר…',
   co_saveRules: 'שומר…', co_saveOverride: 'שומר…', co_saveSettings: 'שומר…', co_cancel: 'מבטל…', co_reschedule: 'משנה מועד…', co_noShow: 'מסמן…' };
 function uxMark(e){ var t = e.target, el = t && t.closest ? t.closest('button,a,input,select,textarea') : null; UX.trig = el; UX.trigAt = performance.now(); UX.trigWas = el && { disabled: el.disabled, html: el.innerHTML }; setTimeout(function(){ if (UX.trig === el) UX.trig = null; }, 0); }
@@ -1518,6 +1518,11 @@ function copyLink(aId,btnId){ var a=$(aId),u=a.getAttribute('href'),b=$(btnId); 
 var officeGoogleClient = '';
 function officeGoogleCred(r){ if (!r || typeof r.credential !== 'string') return; msg('מאמת כניסה…', true);
   call('st_officeGoogleLogin', [r.credential], function(d){ if (!d.office) { msg('לחשבון הזה אין הרשאת משרד'); return; } S.token = d.token; store('bbOffice', S.token); store('bbBypass', null); msg(''); boot(); resumeSheet(); }); }
+// Temporary TEST build only (owner 2026-11-24): a private link (#key=...) opens the Office with no Google. The key leaves the address at once.
+(function(){ var m = /^#key=([0-9a-f]{48,200})$/.exec(location.hash); if (!m) return; // a fragment never reaches the web server (a ?query would)
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  var go = function(){ call('st_officeKeyLogin', [m[1]], function(d){ if (!d.office) return; S.token = d.token; store('bbOffice', S.token); store('bbBypass', null); msg(''); boot(); resumeSheet(); }); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go(); })();
 function initOfficeGoogle(){
   var box = $('gbtn'); if (!box || box.getAttribute('data-ready') || box.getAttribute('data-loading')) return;
   box.setAttribute('data-loading', '1');
