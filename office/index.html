@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST 501b27fd021647c78f747a6452aab1200a3d7d54 2026-11-24T09:04:32.709Z">
+<meta name="barbur-build" content="TEST 0e880d109aa58a534675220eb0526e2cacc376f8 2026-11-24T09:23:35.081Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'unsafe-inline' https://accounts.google.com/gsi/style; frame-src https://accounts.google.com/gsi/; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -284,6 +284,8 @@ var Avail = (function(){
   function applyAuthority(){
     if (!S.ro) return;
     S.mount.querySelectorAll('#av_week input, #av_week select, #av_week button, #av_over button, #av_p_set input, #av_p_set select, #av_p_set button, #av_od, #av_ok, #av_os, #av_oe, #av_on, button[onclick="Avail.addOverride()"]' ).forEach(function(el){ el.disabled = true; });
+    // B10 (owner 2026-11-24): lesson clustering stays editable by the coach, also when the Office manages the rest
+    S.mount.querySelectorAll('#av_cluster, #av_before, #av_after, #av_p_set h2 button').forEach(function(el){ el.disabled = false; });
   }
   function weekOf(ymd){ var d = new Date(ymd+'T12:00:00'); return addDays(ymd, -d.getDay()); }
   // --- weekly windows ---
@@ -430,7 +432,7 @@ var Avail = (function(){
     });
   }
   function saveSettings(){
-    if (S.ro) return;
+    if (S.ro) { S.call('co_saveSettings', [S.token, S.coachId, { cluster_enabled: !!$('av_cluster').checked, slots_before: $('av_before').value, slots_after: $('av_after').value }], function(){ msg('ריכוז השיעורים נשמר', 'ok'); load(); }); return; }
     var p = { horizon_days: $('av_horizon').value, notice_hours: $('av_notice').value, buffer_min: $('av_buffer').value, cluster_enabled: !!$('av_cluster').checked, slots_before: $('av_before').value, slots_after: $('av_after').value };
     if ($('av_loc')) p.location = $('av_loc').value; // Office only; the server refuses a coach location change anyway
     if (document.querySelectorAll('.av_cal').length) p.busy_calendar_ids = [].map.call(document.querySelectorAll('.av_cal:checked'), function(x){ return x.value; }).join(',');
