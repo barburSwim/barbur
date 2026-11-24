@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST eaed250126132659be1c10fc6039ee38fc7dda5b 2026-11-24T09:43:13.425Z">
+<meta name="barbur-build" content="TEST e012a3e7545a44e7521c779811a7aae1207fe86e 2026-11-24T09:56:18.628Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'unsafe-inline' https://accounts.google.com/gsi/style; frame-src https://accounts.google.com/gsi/; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -568,7 +568,7 @@ var Avail = (function(){
     return '<div class="card" style="margin:4px 0 8px;padding:10px"><div class="kv">' + kv('שחיין/ית', esc(l.student) + (l.customer_no ? ' · מס לקוח ' + esc(l.customer_no) : '')) + kv('איש קשר', esc(l.payer) + (l.household && l.household.trim() !== String(l.payer).trim() ? ' (' + esc(l.household) + ')' : '')) +
       kv('טלפון', l.phone ? '<a class="link" href="tel:' + esc(l.phone) + '">' + esc(l.phone) + '</a>' : '') + kv('מועד', esc(fmt(l.ymd)) + ' ' + esc(l.hm) + '–' + esc(l.end_hm)) + kv('מיקום', esc(l.location)) + kv('מס הזמנה', esc(l.booking_id)) +
       kv('סטטוס', (LST[l.status] || [l.status])[0]) + kv('נוכחות', ATT[l.attendance] || '') + kv('לבדיקה', l.needs_review ? esc(l.review_reason) : '') +
-      kv('אזור אישי ללקוח', l.area_url ? '<a class="link" target="_blank" href="' + esc(l.area_url) + '">קישור</a>' : '') + kv('יומן', l.event_url ? '<a class="link" target="_blank" href="' + esc(l.event_url) + '">פתיחת האירוע</a>' : '') + '</div>' +
+      '</div>' + // A5 (owner): no customer-area link and no event link for the coach
       (acts ? '<div style="margin-top:8px">' + acts + '</div>' : '') + '</div>';
   }
   function lessonTimes(sel){ var L = S.week.lesson_minutes, o = ''; for (var m = OPEN; m + L <= CLOSE; m += 15) o += opt(m2hm(m), sel); return o; }
@@ -582,7 +582,7 @@ var Avail = (function(){
     // private lessons + the coach's group sessions (read-only, groups G1), one list in time order
     var rows = S.d.upcoming.map(function(b){ return { k: b.ymd + ' ' + b.hm, html: '<div class="row"><div class="grow"><b>' + esc(fmt(b.ymd)) + ' ' + esc(b.hm) + '</b> · ' + esc(b.student) + '<div class="muted">' + esc(b.household) + ' · ' + esc(b.location) + '</div></div>' +
         '<span class="badge ' + (b.needs_review ? 'warn' : b.status==='CONFIRMED' ? 'ok' : 'gray') + '">' + (b.needs_review ? 'לבדיקה' : b.status==='CONFIRMED' ? 'מאושר' : 'ממתין') + '</span>' +
-        (b.event_url ? '<a class="link" target="_blank" href="' + esc(b.event_url) + '">פתח ביומן</a>' : '') + '</div>' }; })
+        '</div>' }; }) // A5: no per-lesson event link
       .concat((S.d.upcoming_groups || []).map(function(g){ return { k: g.ymd + ' ' + g.hm, html: '<div class="row" style="border-inline-start:3px solid #7a5cc7;padding-inline-start:8px"><div class="grow"><b>' + esc(fmt(g.ymd)) + ' ' + esc(g.hm) + '–' + esc(g.end_hm) + '</b> · ' + esc(g.name) + ' <span class="badge" style="background:#e4dbf7;color:#4a2f8f">קבוצה</span>' + (g.exception ? ' <span class="badge warn">חריג</span>' : '') +
         '<div class="muted">' + (g.type === 'COURSE' ? 'קורס' : 'חוג שנתי') + (g.mine ? '' : ' · מחליף/ה: ' + esc(g.substitute_name)) + '</div></div><span class="badge ' + (GST[g.status] || 'gray') + '">' + esc(g.status_label) + '</span></div>' }; }))
       .sort(function(a, b){ return a.k < b.k ? -1 : a.k > b.k ? 1 : 0; });
