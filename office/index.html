@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST 216c3bad806f8d484ee1793a88c0f4d72e68d30f 2026-11-25T09:26:23.262Z">
+<meta name="barbur-build" content="TEST 5ca8b3905717e29b60a966ffe19c0fa10c048974 2026-11-25T10:51:35.860Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'unsafe-inline' https://accounts.google.com/gsi/style; frame-src https://accounts.google.com/gsi/; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -520,7 +520,7 @@ var Avail = (function(){
           return '<button type="button" class="btn sm ' + (on ? '' : 'ghost') + '" data-mark="' + m + '" aria-pressed="' + (on ? 'true' : 'false') + '"' + (w.busy ? ' disabled' : '') + ' style="min-width:64px;min-height:40px;font-weight:700' + (on ? ';background:' + c + ';border-color:' + c + ';color:#fff' : '') + '" onclick="Avail.mark(\'' + esc(sid) + '\',' + i + ',\'' + m + '\')">' + ATT_LABEL[m] + '</button>';
         }).join('') + '</span>';
       } else tail = w.mark ? '<span class="badge ' + (w.mark === 'V' ? 'ok' : 'bad') + '">' + esc(ATT_LABEL[w.mark] || w.mark) + '</span>' : '<span class="muted">—</span>';
-      return '<div class="row" role="group" aria-label="' + esc(w.name) + '" style="padding:6px 0"><div class="grow">' + esc(w.name) + '</div>' + tail + '</div>';
+      return '<div class="row" role="group" aria-label="' + esc(w.name) + '" style="padding:6px 0"><div class="grow">' + esc(w.name) + (w.trial ? ' <span class="badge warn">ניסיון</span>' : '') + '</div>' + tail + '</div>';
     }).join('');
   }
   function refreshAtt(sid, a){ var el = $('av_att_' + sid); if (el && (S.att || {})[sid] === a) el.innerHTML = attInner(sid); }
@@ -535,7 +535,7 @@ var Avail = (function(){
     var a = (S.att || {})[sid], w = a && a.state === 'ok' && a.d.can_mark ? a.d.swimmers[i] : null;
     if (!w || w.busy || w.mark === m) return; // one request in flight per swimmer: the buttons are disabled until the reply (no queue)
     w.busy = true; w.mark = m; refreshAtt(sid, a);
-    S.call('co_markAttendance', [S.token, { session_id: sid, student_id: w.student_id, mark: m }], function(r){
+    S.call('co_markAttendance', [S.token, w.trial ? { session_id: sid, trial_id: w.trial_id, mark: m } : { session_id: sid, student_id: w.student_id, mark: m }], function(r){ // D6: a trial child is marked by its trial id
       w.busy = false; w.conf = w.mark = r.mark; refreshAtt(sid, a);
     }, { onErr: function(){ w.busy = false; w.mark = w.conf; refreshAtt(sid, a); return false; } }); // false: the host still shows its normal error line
   }
@@ -1210,14 +1210,36 @@ function rsRender(){
   var r = S.RO, h = $('rs_head'), l = $('rs_list'); if (!h || !l) return;
   if (!r) { h.innerHTML = '<h3 style="margin:0">שחיינים פעילים</h3>'; l.innerHTML = '<div class="msg err">' + esc(S.ROerr || 'לא ניתן לטעון את השחיינים') + '</div>'; return; }
   var ed = r.editable;
-  h.innerHTML = '<h3 style="margin:0">שחיינים פעילים ('+r.active.length+')</h3>' + (!ed ? '<span class="badge gray">בארכיון — לצפייה בלבד</span>' : r.active.length ? '<button class="btn sm" onclick="rsOpen()">הוספת שחיין/ית</button>' : '');
+  h.innerHTML = '<h3 style="margin:0">שחיינים פעילים ('+r.active.length+')</h3>' + (!ed ? '<span class="badge gray">בארכיון — לצפייה בלבד</span>' : (r.active.length ? '<button class="btn sm" onclick="rsOpen()">הוספת שחיין/ית</button> ' : '') + '<button class="btn sm sec" id="trialAddBtn" onclick="trialAdd()">ילד/ה לשיעור ניסיון</button>');
   var act = r.active.length ? (r.sessions.length ? rsDates(r) : '<div class="muted">אין עדיין מפגשים שהתקיימו</div>') + r.active.map(function(x, i){
     return '<div class="row'+(x.paused ? ' rs-paused' : '')+'"><div class="grow">'+(x.household_id ? '<button class="rs-name link" data-stu="'+esc(x.student_id)+'" onclick="rsName('+i+')">'+esc(x.name)+'</button>' : '<b>'+esc(x.name)+'</b>')+' <span class="muted">'+rsWho(x)+'</span>'+' '+(ed ? '<button class="badge '+(x.paid?'ok':'bad')+'" data-paid="'+(x.paid?'1':'0')+'" title="לחיצה מחליפה" onclick="rsPaid('+i+')">'+(x.paid?'שולם':'לא שולם')+'</button>' : '<span class="badge '+(x.paid?'ok':'bad')+'">'+(x.paid?'שולם':'לא שולם')+'</span>')+rsMark(x.other_groups)+
       '<div class="muted">הצטרף/ה '+esc(dmy2(x.joined_date))+'</div>'+rsPauseLine(x)+(x.member_note ? '<div class="rs-note">הערה: '+esc(x.member_note)+'</div>' : '')+(ed ? rsActs(x, i) : '')+'</div>' +
       '<div class="inline">'+(r.sessions.length ? rsAtt(x, i, r.sessions) : '')+'</div></div>';
   }).join('') : '<div class="empty">אין שחיינים בקבוצה.' + (ed ? ' הוסיפו מהמאגר.' : '') + '</div>' + (ed ? '<div style="text-align:center;margin:12px 0"><button id="rs_plus" class="btn" aria-label="הוספת שחיין/ית" onclick="rsOpen()">+</button></div>' : '');
-  l.innerHTML = act + ((r.history || r.past).length > r.active.length ? '<div class="muted" style="margin-top:8px">שחיינים שעזבו והעברות — בלשונית <button class="link" onclick="grTab(\'hi\')">היסטוריית שחיינים</button></div>' : '');
+  l.innerHTML = act + trialsHtml(r) + ((r.history || r.past).length > r.active.length ? '<div class="muted" style="margin-top:8px">שחיינים שעזבו והעברות — בלשונית <button class="link" onclick="grTab(\'hi\')">היסטוריית שחיינים</button></div>' : '');
 }
+// ---- D6 (owner 2026-11-25): a trial child on ONE group session. Office only: name + parent contact; no membership, credit or fee. The coach sees the name only. ----
+function trialUpcoming(){ var ss = (S.GD && S.GD.sessions) || [], today = (S.RO && S.RO.today) || ''; return ss.filter(function(s){ return s.status === 'PLANNED' && s.ymd >= today; }).slice(0, 30); }
+function trialAdd(){ var ups = trialUpcoming(); if (!ups.length) { msg('אין מפגשים עתידיים בקבוצה'); return; }
+  ask('ילד/ה לשיעור ניסיון', [{type:'note', label:'לא חבר/ה בקבוצה, בלי זיכוי ובלי חיוב. המדריך/ה רואה רק את השם בנוכחות; פרטי ההורה נראים למשרד בלבד.'},
+    {k:'sid', label:'מפגש', type:'select', options:[['', 'בחרו…']].concat(ups.map(function(s){ return [s.session_id, dmy2(s.ymd) + ' ' + s.hm]; })), value:''},
+    {k:'name', label:'שם הילד/ה', req:1, value:''}, {k:'contact', label:'פרטי קשר של ההורה (טלפון או מייל)', req:1, value:''}],
+    function(v){ call('off_addGroupTrial', [S.token, { session_id: v.sid, child_name: v.name, parent_contact: v.contact }], function(res){ rsApply(res); msg('נוסף/ה שיעור ניסיון', true); }); }, 'הוספה', function(v){ if (!v.sid) return 'בחרו מפגש'; }); }
+function trialsHtml(r){ var tr = r.trials || []; if (!tr.length) return '';
+  return '<h3 id="rs_trials" style="margin:14px 0 4px">שיעורי ניסיון ('+tr.length+')</h3>' + tr.map(function(t, i){
+    var act = t.status === 'ACTIVE', st = act ? '<span class="badge warn">ניסיון</span>' : '<span class="badge ok">הומר/ה לחבר/ה'+(t.converted_name ? ': '+esc(t.converted_name) : '')+'</span>';
+    var marks = act && r.editable && t.can_mark ? '<span class="inline">'+['V', 'X'].map(function(m){ var on = t.mark === m; return '<button type="button" class="btn sm '+(on ? '' : 'ghost')+'" data-trial-mark="'+m+'" aria-pressed="'+(on ? 'true' : 'false')+'" onclick="trialMark('+i+', \''+m+'\')">'+(m === 'V' ? 'נוכח/ת' : 'נעדר/ת')+'</button>'; }).join('')+'</span>'
+      : (t.mark ? '<span class="badge '+(t.mark === 'V' ? 'ok' : 'bad')+'">'+(t.mark === 'V' ? 'נוכח/ת' : 'נעדר/ת')+'</span>' : '');
+    return '<div class="row" data-trial="'+esc(t.trial_id)+'"><div class="grow"><b>'+esc(t.child_name)+'</b> '+st+'<div class="muted">'+esc(dmy2(t.ymd))+' '+esc(t.hm)+' · '+esc(t.parent_contact)+'</div></div>'+marks+
+      (act && r.editable ? '<button class="btn sm sec" onclick="trialConvert('+i+')">הפיכה לחבר/ה</button><button class="btn sm ghost" onclick="trialRemove('+i+')">הסרה</button>' : '')+'</div>'; }).join(''); }
+function trialMark(i, m){ var t = S.RO.trials[i]; if (!t || t.mark === m) return; call('off_markAttendance', [S.token, { session_id: t.session_id, trial_id: t.trial_id, mark: m }], function(){ call('off_groupRoster', [S.token, S.GD.group.group_id], function(res){ rsApply(res); }); }); }
+function trialRemove(i){ var t = S.RO.trials[i]; ask('הסרת ילד/ה משיעור ניסיון', [{type:'note', label:t.child_name+' יוסר/תוסר מהמפגש '+dmy2(t.ymd)+'. הרישום נשמר בהיסטוריה.'}], function(){ call('off_removeGroupTrial', [S.token, { trial_id: t.trial_id }], function(res){ rsApply(res); msg('הוסר/ה', true); }); }, 'הסרה'); }
+function trialConvert(i){ var t = S.RO.trials[i];
+  ask('הפיכה לחבר/ה בקבוצה — ' + t.child_name, [{type:'note', label:'בוחרים שחיין/ית קיים/ת במאגר; הוא/היא יירשם/תירשם לקבוצה והנוכחות מהשיעור נשמרת. רק המשרד רושם ילדים.'}, {k:'q', label:'חיפוש במאגר (שם / מספר לקוח)', req:1, value:t.child_name}],
+    function(v){ call('off_searchSwimmers', [S.token, v.q, S.GD.group.group_id], function(list){ var free = list.filter(function(x){ return !x.in_group; }); if (!free.length) { msg('לא נמצא שחיין/ית שאפשר לצרף'); return; }
+      ask('בחירת שחיין/ית — ' + t.child_name, [{k:'sid', label:'שחיין/ית', type:'select', options:free.map(function(x){ return [x.student_id, x.name + (x.household_name ? ' · ' + x.household_name : '') + (x.other_groups && x.other_groups.length ? ' (פעיל/ה גם בקבוצה אחרת)' : '')]; }), value:free[0].student_id}],
+        function(w){ var go = function(confirm){ call('off_convertGroupTrial', [S.token, { trial_id: t.trial_id, student_id: w.sid, confirm_multi: confirm === true }], function(res){ rsApply(res); msg('הפך/ה לחבר/ה בקבוצה', true); }, { onErr: rsMultiErr(go) }); }; // gate 5 S14 F1: the multi-group confirmation is asked, never pre-accepted
+          var sw = free.filter(function(x){ return x.student_id === w.sid; })[0]; if (sw && sw.other_groups && sw.other_groups.length) rsMulti(sw.name + ' כבר פעיל/ה ב: ' + rsNames(sw.other_groups) + '. שיבוץ ביותר מקבוצה אחת הוא חריג. לשבץ בכל זאת?', go); else go(false); }, 'הפיכה לחבר/ה'); }); }, 'חיפוש'); }
 /** Run 6 L5: every swimmer who was in the group (one row per membership period), newest first. */
 function rsHistRender(){
   var b = $('rs_hist'), r = S.RO; if (!b) return;

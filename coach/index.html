@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST 216c3bad806f8d484ee1793a88c0f4d72e68d30f 2026-11-25T09:26:23.262Z">
+<meta name="barbur-build" content="TEST 5ca8b3905717e29b60a966ffe19c0fa10c048974 2026-11-25T10:51:35.860Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'unsafe-inline' https://accounts.google.com/gsi/style; frame-src https://accounts.google.com/gsi/; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -466,7 +466,7 @@ var Avail = (function(){
           return '<button type="button" class="btn sm ' + (on ? '' : 'ghost') + '" data-mark="' + m + '" aria-pressed="' + (on ? 'true' : 'false') + '"' + (w.busy ? ' disabled' : '') + ' style="min-width:64px;min-height:40px;font-weight:700' + (on ? ';background:' + c + ';border-color:' + c + ';color:#fff' : '') + '" onclick="Avail.mark(\'' + esc(sid) + '\',' + i + ',\'' + m + '\')">' + ATT_LABEL[m] + '</button>';
         }).join('') + '</span>';
       } else tail = w.mark ? '<span class="badge ' + (w.mark === 'V' ? 'ok' : 'bad') + '">' + esc(ATT_LABEL[w.mark] || w.mark) + '</span>' : '<span class="muted">—</span>';
-      return '<div class="row" role="group" aria-label="' + esc(w.name) + '" style="padding:6px 0"><div class="grow">' + esc(w.name) + '</div>' + tail + '</div>';
+      return '<div class="row" role="group" aria-label="' + esc(w.name) + '" style="padding:6px 0"><div class="grow">' + esc(w.name) + (w.trial ? ' <span class="badge warn">ניסיון</span>' : '') + '</div>' + tail + '</div>';
     }).join('');
   }
   function refreshAtt(sid, a){ var el = $('av_att_' + sid); if (el && (S.att || {})[sid] === a) el.innerHTML = attInner(sid); }
@@ -481,7 +481,7 @@ var Avail = (function(){
     var a = (S.att || {})[sid], w = a && a.state === 'ok' && a.d.can_mark ? a.d.swimmers[i] : null;
     if (!w || w.busy || w.mark === m) return; // one request in flight per swimmer: the buttons are disabled until the reply (no queue)
     w.busy = true; w.mark = m; refreshAtt(sid, a);
-    S.call('co_markAttendance', [S.token, { session_id: sid, student_id: w.student_id, mark: m }], function(r){
+    S.call('co_markAttendance', [S.token, w.trial ? { session_id: sid, trial_id: w.trial_id, mark: m } : { session_id: sid, student_id: w.student_id, mark: m }], function(r){ // D6: a trial child is marked by its trial id
       w.busy = false; w.conf = w.mark = r.mark; refreshAtt(sid, a);
     }, { onErr: function(){ w.busy = false; w.mark = w.conf; refreshAtt(sid, a); return false; } }); // false: the host still shows its normal error line
   }
