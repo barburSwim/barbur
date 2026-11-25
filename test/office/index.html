@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="barbur-build" content="TEST 924422c6afaec8e919047aa29e6cd6a0a1071f06 2026-11-25T06:40:00.136Z">
+<meta name="barbur-build" content="TEST 6b3a8b7366f8c8c04db9f0d3f8ec5c33c69da92a 2026-11-25T06:56:34.108Z">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'unsafe-inline' https://accounts.google.com/gsi/style; frame-src https://accounts.google.com/gsi/; img-src data:; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1007,9 +1007,9 @@ function renderCoaches(){
 var ONB_G = { BOUND:['נכנס עם Google','ok'], NOT_BOUND:['טרם נכנס עם Google','gray'] };
 var ONB_C = { CONNECTED:['יומן הזמנות מחובר','ok'], INACTIVE:['יומן הזמנות מחובר — לא פעיל','gray'], MISSING:['אין יומן הזמנות','gray'] };
 function modeRelevant(c){ return true; } // coaches are BARBUR records (owner 2026-11-20): the management mode always applies
-var ONB_R = { STATUS:'סטטוס לא פעיל', NO_CALENDAR:'אין יומן הזמנות', NO_AVAILABILITY:'אין זמינות', NO_COACH:'' };
+var ONB_R = { STATUS:'סטטוס לא פעיל', NO_CALENDAR:'אין יומן הזמנות', NO_AVAILABILITY:'אין זמינות', NO_COACH:'', CALENDAR_READ_ONLY:'היומן בקריאה בלבד' };
 function onbBadges(c){ var o = c.onboarding; if (!o) return ''; var p = ONB_G[o.google] || ONB_G.NOT_BOUND;
-  return '<div class="inline" style="flex-wrap:wrap;gap:4px;margin-top:4px"><span class="badge '+p[1]+'">'+esc(p[0])+'</span><span class="badge '+(ONB_C[o.calendar]||ONB_C.MISSING)[1]+'">'+esc((ONB_C[o.calendar]||[o.calendar])[0])+'</span>'+(o.calendar==='CONNECTED' && o.calendar_manage===false ? '<span class="badge warn" title="תנו לחשבון המערכת הרשאת Make changes and manage sharing ביומן, או צרו יומן חדש">יומן בהרשאת עריכה בלבד: חסר ניהול שיתוף</span>' : '')+'<span class="badge '+(o.bookable?'ok':'bad')+'">'+(o.bookable?'פתוח להזמנות':'לא פתוח להזמנות — '+esc(ONB_R[o.bookable_reason]||o.bookable_reason))+'</span></div>'; }
+  return '<div class="inline" style="flex-wrap:wrap;gap:4px;margin-top:4px"><span class="badge '+p[1]+'">'+esc(p[0])+'</span><span class="badge '+(ONB_C[o.calendar]||ONB_C.MISSING)[1]+'">'+esc((ONB_C[o.calendar]||[o.calendar])[0])+'</span>'+(o.calendar==='CONNECTED' && o.calendar_write===false ? '<span class="badge bad" title="שיעורים חדשים לא ייכתבו ליומן הזה. שתפו את היומן עם חשבון המערכת בהרשאה Make changes to events (עריכת אירועים), או חברו יומן אחר">היומן בקריאה בלבד: אין לחשבון המערכת הרשאת עריכה</span>' : o.calendar==='CONNECTED' && o.calendar_manage===false ? '<span class="badge warn" title="תנו לחשבון המערכת הרשאת Make changes and manage sharing ביומן, או צרו יומן חדש">יומן בהרשאת עריכה בלבד: חסר ניהול שיתוף</span>' : '')+'<span class="badge '+(o.bookable?'ok':'bad')+'">'+(o.bookable?'פתוח להזמנות':'לא פתוח להזמנות — '+esc(ONB_R[o.bookable_reason]||o.bookable_reason))+'</span></div>'; }
 function calButtons(c){ var o = c.onboarding; if (!o || c.status === 'INACTIVE' || c.status === 'LEGACY_ONLY') return '';
   // owner 2026-11-24 (S8-Y): ONE calendar button per coach; every calendar action is inside it
   return o.calendar === 'MISSING' ? '<button class="btn sm sec" onclick="connectCal(\''+c.coach_id+'\')">חיבור יומן</button>' + (o.google === 'BOUND' ? '<button class="btn sm ghost" onclick="resetGoogle(\''+c.coach_id+'\')">איפוס חיבור Google</button>' : '') // no calendar menu yet: keep the reset reachable
